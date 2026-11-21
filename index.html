@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Computer Engineering Item Tracker (CEIT)</title>
+  <title>CEIT - Computer Engineering Item Tracker</title>
   <style>
     :root {
       --bg: #0f172a;
@@ -11,168 +11,415 @@
       --border: #334155;
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --success: #10b981;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --google-btn: #ffffff;
+      --google-text: #1f2937;
+      --danger: #ef4444;
       --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
+
     * { box-sizing: border-box; margin: 0; padding: 0; }
+
     body {
       font-family: var(--font);
       background-color: var(--bg);
       color: var(--text);
-      line-height: 1.6;
-      padding: 40px 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      gap: 32px;
-    }
-    header {
-      text-align: center;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 24px;
-    }
-    header h1 {
-      font-size: 2.2rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: #fff;
-    }
-    header p {
-      color: var(--text-muted);
-      margin-top: 8px;
-      font-size: 1.1rem;
-    }
-    .badge-bar {
-      display: flex;
+      align-items: center;
       justify-content: center;
-      gap: 12px;
-      margin-top: 16px;
-      flex-wrap: wrap;
+      padding: 20px;
     }
-    .tag {
-      background: #1e293b;
-      border: 1px solid var(--border);
-      padding: 4px 12px;
-      border-radius: 9999px;
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 20px;
-    }
-    .card {
+
+    .auth-container {
+      width: 100%;
+      max-width: 420px;
       background: var(--card-bg);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 16px;
-      transition: transform 0.2s, border-color 0.2s;
+      border-radius: 16px;
+      padding: 32px 28px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
-    .card:hover {
-      transform: translateY(-2px);
-      border-color: #475569;
-    }
-    .card h3 {
-      font-size: 1.2rem;
-      color: #f1f5f9;
-    }
-    .card p {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-    }
-    .btn {
-      display: inline-block;
+
+    .header {
       text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .header h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: -0.01em;
+    }
+
+    .header p {
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      margin-top: 6px;
+    }
+
+    .btn-google {
+      width: 100%;
+      background: var(--google-btn);
+      color: var(--google-text);
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.05s;
+    }
+    .btn-google:hover {
+      background: #f3f4f6;
+    }
+    .btn-google:active {
+      transform: scale(0.99);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0 20px 0;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .divider::before, .divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+    .divider span {
+      padding: 0 12px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #cbd5e1;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      color: #fff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      transition: border-color 0.15s;
+    }
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn-submit {
+      width: 100%;
       background: var(--primary);
       color: #fff;
-      text-decoration: none;
-      padding: 10px 16px;
+      border: none;
       border-radius: 8px;
+      padding: 11px;
+      font-size: 0.95rem;
       font-weight: 600;
-      font-size: 0.9rem;
+      cursor: pointer;
       transition: background 0.15s;
+      margin-top: 4px;
     }
-    .btn:hover { background: var(--primary-hover); }
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .toggle-mode {
+      text-align: center;
+      margin-top: 18px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .toggle-mode a {
+      color: #60a5fa;
+      text-decoration: none;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    .toggle-mode a:hover {
+      text-decoration: underline;
+    }
+
+    .error-msg {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .user-card {
+      text-align: center;
+      padding: 12px 0;
+    }
+    .user-card .avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .user-card h3 {
+      font-size: 1.1rem;
+      color: #fff;
+    }
+    .user-card p {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      margin-top: 2px;
+    }
+    .role-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .role-teacher { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .role-student { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+
     .btn-secondary {
       background: #334155;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
     }
-    .btn-secondary:hover { background: #475569; }
-    .btn-success {
-      background: var(--success);
-    }
-    .btn-success:hover { background: #059669; }
-
-    .status-box {
-      background: #1e293b;
-      border-left: 4px solid var(--primary);
-      padding: 16px;
-      border-radius: 4px;
-      font-size: 0.9rem;
+    .btn-secondary:hover {
+      background: #475569;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <header>
+<div class="auth-container">
+  <div class="header">
     <h1>Computer Engineering Item Tracker</h1>
-    <p>Peel District School Board &bull; Mr. Kidston (p0161177@pdsb.net)</p>
-    <div class="badge-bar">
-      <span class="tag">Team: Ahmed Salem & Yousuf Yaghmour</span>
-      <span class="tag">Vanilla HTML/CSS/JS</span>
-      <span class="tag">Firebase v11 CDN</span>
-    </div>
-  </header>
-
-  <div class="status-box">
-    <strong>Backend Status:</strong> The Firebase modular services, authentication pipeline, atomic checkout transactions, and security rules are ready.
-    To test the live backend, open the <a href="test-backend.html" style="color: #60a5fa; font-weight: 600;">Diagnostic Test Console</a>.
+    <p>Sign in to check out and track lab components</p>
   </div>
 
-  <div class="grid">
-    <div class="card" style="border-color: var(--primary);">
-      <div>
-        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-bottom: 6px;">Developer Tool</div>
-        <h3>Backend Test Console</h3>
-        <p>Interactive testing suite for Firebase Auth (Google & Email), Firestore inventory CRUD, QR code lookup, and atomic sign-outs/returns.</p>
-      </div>
-      <a href="test-backend.html" class="btn">Open Test Console &rarr;</a>
+  <div id="error-box" class="error-msg"></div>
+
+  <!-- Signed Out View -->
+  <div id="auth-forms">
+    <button id="btn-google" class="btn-google" type="button">
+      <svg width="18" height="18" viewBox="0 0 24 24">
+        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+      </svg>
+      Sign In with School Account
+    </button>
+
+    <div class="divider">
+      <span>or with password</span>
     </div>
 
-    <div class="card">
-      <div>
-        <div style="font-size: 0.75rem; text-transform: uppercase; color: #10b981; font-weight: 700; margin-bottom: 6px;">Setup Documentation</div>
-        <h3>Firebase Setup Guide</h3>
-        <p>Complete instructions for creating the Firebase project, activating Google/Email Auth, deploying Firestore rules, and setting teacher whitelists.</p>
+    <form id="email-form">
+      <div id="signup-fields" style="display: none;">
+        <div class="form-group">
+          <label for="name-input">Full Name</label>
+          <input type="text" id="name-input" placeholder="e.g. John Doe">
+        </div>
+        <div class="form-group">
+          <label for="student-num-input">Student Number</label>
+          <input type="text" id="student-num-input" placeholder="e.g. 123456">
+        </div>
       </div>
-      <a href="FIREBASE_SETUP.md" target="_blank" class="btn btn-secondary">Read Setup Guide &rarr;</a>
+
+      <div class="form-group">
+        <label for="email-input">School Email</label>
+        <input type="email" id="email-input" placeholder="student@pdsb.net" required>
+      </div>
+
+      <div class="form-group">
+        <label for="password-input">Password</label>
+        <input type="password" id="password-input" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" id="submit-btn" class="btn-submit">Sign In</button>
+    </form>
+
+    <div class="toggle-mode">
+      <span id="toggle-text">Need an account?</span>
+      <a id="toggle-btn">Sign up</a>
     </div>
   </div>
 
-  <div class="card" style="background: rgba(30, 41, 59, 0.5);">
-    <h3 style="font-size: 1.1rem;">CEIT Application Roadmap</h3>
-    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
-      Next scheduled implementation milestones for Ahmed and Yousuf:
-    </p>
-    <ul style="padding-left: 20px; font-size: 0.9rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
-      <li><strong>Backend setup (Nov 18 - Complete):</strong> Firebase config, Auth service, Item service, Checkout service, Security rules, Test console.</li>
-      <li><strong>Log in system (Nov 19 - Ahmed):</strong> Sign-in / sign-up page UI connected to <code>auth-service.js</code> with role-based routing.</li>
-      <li><strong>Student dashboard (Nov 23 - Ahmed):</strong> List of active student checkouts via <code>subscribeToStudentActiveCheckouts</code>.</li>
-      <li><strong>Teacher panel (Nov 24 - Yousuf):</strong> Item creator, live inventory, and active checkouts monitor with return action.</li>
-      <li><strong>Check out page (Nov 25 - Ahmed):</strong> QR camera scan / text code entry with <code>checkOutItem</code>.</li>
-    </ul>
+  <!-- Signed In View -->
+  <div id="auth-signed-in" style="display: none;" class="user-card">
+    <div class="avatar" id="user-avatar">U</div>
+    <h3 id="user-name">Welcome Back</h3>
+    <p id="user-email"></p>
+    <div id="user-role" class="role-badge role-student">Student</div>
+
+    <div style="margin-top: 24px;">
+      <button id="btn-continue" class="btn-submit">Go to Dashboard &rarr;</button>
+      <button id="btn-logout" class="btn-secondary">Sign Out</button>
+    </div>
   </div>
 </div>
+
+<script type="module">
+  import {
+    signInWithGoogle,
+    signInWithEmail,
+    signUpWithEmail,
+    signOutUser,
+    observeAuthState
+  } from "./js/services/auth-service.js";
+
+  let isSignUpMode = false;
+  let currentUser = null;
+
+  const errorBox = document.getElementById("error-box");
+  const authForms = document.getElementById("auth-forms");
+  const authSignedIn = document.getElementById("auth-signed-in");
+  const signupFields = document.getElementById("signup-fields");
+  const submitBtn = document.getElementById("submit-btn");
+  const toggleBtn = document.getElementById("toggle-btn");
+  const toggleText = document.getElementById("toggle-text");
+
+  function showError(msg) {
+    if (!msg) {
+      errorBox.style.display = "none";
+      errorBox.textContent = "";
+      return;
+    }
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+  }
+
+  // Toggle Login / Sign Up
+  toggleBtn.addEventListener("click", () => {
+    isSignUpMode = !isSignUpMode;
+    showError("");
+    if (isSignUpMode) {
+      signupFields.style.display = "block";
+      submitBtn.textContent = "Create Account";
+      toggleText.textContent = "Already have an account?";
+      toggleBtn.textContent = "Sign in";
+    } else {
+      signupFields.style.display = "none";
+      submitBtn.textContent = "Sign In";
+      toggleText.textContent = "Need an account?";
+      toggleBtn.textContent = "Sign up";
+    }
+  });
+
+  // Observe Auth State
+  observeAuthState((user) => {
+    currentUser = user;
+    if (user) {
+      authForms.style.display = "none";
+      authSignedIn.style.display = "block";
+
+      const name = user.displayName || user.profile?.displayName || "Student";
+      const email = user.email || "";
+      const role = user.profile?.role || "student";
+
+      document.getElementById("user-name").textContent = name;
+      document.getElementById("user-email").textContent = email;
+      document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+
+      const roleBadge = document.getElementById("user-role");
+      roleBadge.textContent = role.toUpperCase();
+      roleBadge.className = `role-badge ${role === "teacher" ? "role-teacher" : "role-student"}`;
+
+      const continueBtn = document.getElementById("btn-continue");
+      if (role === "teacher") {
+        continueBtn.textContent = "Go to Teacher Panel →";
+      } else {
+        continueBtn.textContent = "Go to Student Dashboard →";
+      }
+    } else {
+      authForms.style.display = "block";
+      authSignedIn.style.display = "none";
+    }
+  });
+
+  // Google Sign In
+  document.getElementById("btn-google").addEventListener("click", async () => {
+    showError("");
+    try {
+      await signInWithGoogle(true);
+    } catch (err) {
+      showError(err.message);
+    }
+  });
+
+  // Email Submit (Sign In or Sign Up)
+  document.getElementById("email-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showError("");
+    const email = document.getElementById("email-input").value.trim();
+    const password = document.getElementById("password-input").value;
+
+    try {
+      if (isSignUpMode) {
+        const name = document.getElementById("name-input").value.trim();
+        const studentNum = document.getElementById("student-num-input").value.trim();
+        await signUpWithEmail(email, password, name, studentNum);
+      } else {
+        await signInWithEmail(email, password);
+      }
+    } catch (err) {
+      showError(err.message);
+    }
+  });
+
+  // Continue to role-specific dashboard
+  document.getElementById("btn-continue").addEventListener("click", () => {
+    if (!currentUser) return;
+    const role = currentUser.profile?.role || "student";
+    window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
+  });
+
+  // Sign out
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await signOutUser();
+  });
+</script>
 
 </body>
 </html>
