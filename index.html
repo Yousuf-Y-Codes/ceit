@@ -347,42 +347,23 @@
     }
   });
 
-  // Observe Auth State
+  // Observe Auth State: automatically route user to their dashboard
   observeAuthState((user) => {
-    currentUser = user;
     if (user) {
-      authForms.style.display = "none";
-      authSignedIn.style.display = "block";
-
-      const name = user.displayName || user.profile?.displayName || "Student";
-      const email = user.email || "";
       const role = user.profile?.role || "student";
-
-      document.getElementById("user-name").textContent = name;
-      document.getElementById("user-email").textContent = email;
-      document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
-
-      const roleBadge = document.getElementById("user-role");
-      roleBadge.textContent = role.toUpperCase();
-      roleBadge.className = `role-badge ${role === "teacher" ? "role-teacher" : "role-student"}`;
-
-      const continueBtn = document.getElementById("btn-continue");
-      if (role === "teacher") {
-        continueBtn.textContent = "Go to Teacher Panel →";
-      } else {
-        continueBtn.textContent = "Go to Student Dashboard →";
-      }
+      window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
     } else {
       authForms.style.display = "block";
-      authSignedIn.style.display = "none";
+      const signedInCard = document.getElementById("auth-signed-in");
+      if (signedInCard) signedInCard.style.display = "none";
     }
   });
 
-  // Google Sign In
+  // Google Sign In (allows test accounts during development)
   document.getElementById("btn-google").addEventListener("click", async () => {
     showError("");
     try {
-      await signInWithGoogle(true);
+      await signInWithGoogle(false);
     } catch (err) {
       showError(err.message);
     }

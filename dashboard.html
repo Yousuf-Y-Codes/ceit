@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard - CEIT</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --success: #10b981;
+      --danger: #ef4444;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 24px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .btn {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      display: inline-block;
+      font-size: 0.9rem;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #334155;
+    }
+    .btn-secondary:hover { background: #475569; }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+    th { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .badge-active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge-overdue { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div>
+      <h1 style="font-size: 1.4rem;">Student Dashboard</h1>
+      <p style="color: var(--text-muted); font-size: 0.85rem;">Computer Engineering Item Tracker</p>
+    </div>
+    <div class="user-info">
+      <div class="avatar" id="avatar">S</div>
+      <div>
+        <div id="student-name" style="font-weight: 600; font-size: 0.9rem;">Loading...</div>
+        <div id="student-number" style="font-size: 0.8rem; color: var(--text-muted);"></div>
+      </div>
+      <button id="btn-logout" class="btn btn-secondary btn-sm" style="margin-left: 8px;">Sign Out</button>
+    </div>
+  </header>
+
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2 style="font-size: 1.15rem;">My Checked Out Components</h2>
+    <a href="checkout.html" class="btn">+ Check Out New Item</a>
+  </div>
+
+  <div class="card">
+    <div style="overflow-x: auto;">
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Code</th>
+            <th>Checked Out</th>
+            <th>Due Date</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="checkouts-list">
+          <tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">Loading your checkouts...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { observeAuthState, signOutUser } from "./js/services/auth-service.js";
+  import { subscribeToStudentActiveCheckouts, returnItem, getCheckoutDisplayStatus } from "./js/services/checkout-service.js";
+
+  let currentUser = null;
+
+  observeAuthState((user) => {
+    if (!user) {
+      window.location.href = "index.html";
+      return;
+    }
+    currentUser = user;
+
+    const name = user.displayName || user.profile?.displayName || "Student";
+    const studentNum = user.profile?.studentNumber || "";
+
+    document.getElementById("student-name").textContent = name;
+    document.getElementById("student-number").textContent = studentNum ? `Student #${studentNum}` : user.email;
+    document.getElementById("avatar").textContent = name.charAt(0).toUpperCase();
+
+    // Load active items
+    subscribeToStudentActiveCheckouts(user.uid, (items) => {
+      const tbody = document.getElementById("checkouts-list");
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">You have no checked out components right now.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = items.map((co) => {
+        const status = getCheckoutDisplayStatus(co);
+        const checkedDate = co.checkedOutAt?.toDate ? co.checkedOutAt.toDate().toLocaleDateString() : "Recently";
+        const dueDate = co.dueDate?.toDate ? co.dueDate.toDate().toLocaleDateString() : "N/A";
+        const badge = status === "overdue" ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-active">ACTIVE</span>';
+
+        return `
+          <tr>
+            <td><strong>${co.itemName}</strong></td>
+            <td><code>${co.itemCode}</code></td>
+            <td>${checkedDate}</td>
+            <td>${dueDate} ${badge}</td>
+            <td>
+              <button class="btn btn-secondary btn-sm btn-return" data-id="${co.id}">Return Item</button>
+            </td>
+          </tr>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".btn-return").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const id = e.target.getAttribute("data-id");
+          if (confirm("Return this component back into inventory?")) {
+            try {
+              await returnItem(id, currentUser.email);
+            } catch (err) {
+              alert("Error returning item: " + err.message);
+            }
+          }
+        });
+      });
+    });
+  });
+
+  document.getElementById("btn-logout").addEventListener("click", async () => {
+    await signOutUser();
+    window.location.href = "index.html";
+  });
+</script>
+
+</body>
+</html>

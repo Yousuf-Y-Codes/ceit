@@ -74,59 +74,58 @@ export function isWhitelistedTeacher(email) {
  */
 export async function syncUserProfile(firebaseUser, extraData = {}) {
   assertFirebaseReady();
-  const userRef = doc(db, "users", firebaseUser.uid);
-  const userSnap = await getDoc(userRef);
-
   const email = (firebaseUser.email || "").toLowerCase();
   const isTeacher = isWhitelistedTeacher(email);
   const inferredStudentNumber =
     extraData.studentNumber || extractStudentNumberFromEmail(email);
 
-  if (!userSnap.exists()) {
-    // New user record
-    const profile = {
-      uid: firebaseUser.uid,
-      email: email,
-      displayName: firebaseUser.displayName || extraData.displayName || "User",
-      role: isTeacher ? "teacher" : "student",
-      studentNumber: inferredStudentNumber || "",
-      createdAt: serverTimestamp(),
-      lastLoginAt: serverTimestamp()
-    };
-    await setDoc(userRef, profile);
-    return profile;
-  } else {
-    // Existing user
-    const existingData = userSnap.data();
-    const updates = {
-      lastLoginAt: serverTimestamp()
-    };
+  const fallbackProfile = {
+    uid: firebaseUser.uid,
+    email: email,
+    displayName: firebaseUser.displayName || extraData.displayName || "User",
+    role: isTeacher ? "teacher" : "student",
+    studentNumber: inferredStudentNumber || ""
+  };
 
-    // If newly whitelisted as teacher, update role
-    if (isTeacher && existingData.role !== "teacher") {
-      updates.role = "teacher";
+  try {
+    const userRef = doc(db, "users", firebaseUser.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      const profile = {
+        ...fallbackProfile,
+        createdAt: serverTimestamp(),
+        lastLoginAt: serverTimestamp()
+      };
+      await setDoc(userRef, profile);
+      return profile;
+    } else {
+      const existingData = userSnap.data();
+      const updates = { lastLoginAt: serverTimestamp() };
+      if (isTeacher && existingData.role !== "teacher") updates.role = "teacher";
+      if (inferredStudentNumber && !existingData.studentNumber) updates.studentNumber = inferredStudentNumber;
+      if (extraData.displayName && extraData.displayName !== existingData.displayName) {
+        updates.displayName = extraData.displayName;
+      }
+      await updateDoc(userRef, updates);
+      return { ...existingData, ...updates };
     }
-
-    if (inferredStudentNumber && !existingData.studentNumber) {
-      updates.studentNumber = inferredStudentNumber;
-    }
-
-    if (extraData.displayName && extraData.displayName !== existingData.displayName) {
-      updates.displayName = extraData.displayName;
-    }
-
-    await updateDoc(userRef, updates);
-    return { ...existingData, ...updates };
+  } catch (err) {
+    console.warn(
+      "[CEIT] Firestore profile sync skipped (database may not be initialized yet):",
+      err.message
+    );
+    return fallbackProfile;
   }
 }
 
 /**
  * Sign in with Google Popup.
- * Restricts to @pdsb.net domain (can be bypassed for testing if domain enforcement is disabled).
- * @param {boolean} [enforcePdsbDomain=true]
+ * During development/testing, any Google account is permitted so you can test before school domain setup.
+ * @param {boolean} [enforcePdsbDomain=false]
  * @returns {Promise<object>} Combined user profile
  */
-export async function signInWithGoogle(enforcePdsbDomain = true) {
+export async function signInWithGoogle(enforcePdsbDomain = false) {
   assertFirebaseReady();
   const result = await signInWithPopup(auth, googleProvider);
   const user = result.user;
@@ -192,12 +191,25 @@ export async function signOutUser() {
  */
 export async function getCurrentUserProfile() {
   if (!auth || !auth.currentUser) return null;
-  const userRef = doc(db, "users", auth.currentUser.uid);
-  const snap = await getDoc(userRef);
-  if (snap.exists()) {
-    return { uid: auth.currentUser.uid, ...snap.data() };
+  const u = auth.currentUser;
+  const fallback = {
+    uid: u.uid,
+    email: u.email || "",
+    displayName: u.displayName || "User",
+    role: isWhitelistedTeacher(u.email) ? "teacher" : "student",
+    studentNumber: extractStudentNumberFromEmail(u.email)
+  };
+
+  try {
+    const userRef = doc(db, "users", u.uid);
+    const snap = await getDoc(userRef);
+    if (snap.exists()) {
+      return { uid: u.uid, ...snap.data() };
+    }
+  } catch (err) {
+    console.warn("[CEIT] Could not read user profile from Firestore:", err.message);
   }
-  return null;
+  return fallback;
 }
 
 /**
