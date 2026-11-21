@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Computer Engineering Item Tracker (CEIT)</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #2563eb;
+      --success: #10b981;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+    header {
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 24px;
+    }
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+    }
+    header p {
+      color: var(--text-muted);
+      margin-top: 8px;
+      font-size: 1.1rem;
+    }
+    .badge-bar {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+    .tag {
+      background: #1e293b;
+      border: 1px solid var(--border);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: #475569;
+    }
+    .card h3 {
+      font-size: 1.2rem;
+      color: #f1f5f9;
+    }
+    .card p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+    .btn {
+      display: inline-block;
+      text-align: center;
+      background: var(--primary);
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #334155;
+    }
+    .btn-secondary:hover { background: #475569; }
+    .btn-success {
+      background: var(--success);
+    }
+    .btn-success:hover { background: #059669; }
+
+    .status-box {
+      background: #1e293b;
+      border-left: 4px solid var(--primary);
+      padding: 16px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Computer Engineering Item Tracker</h1>
+    <p>Peel District School Board &bull; Mr. Kidston (p0161177@pdsb.net)</p>
+    <div class="badge-bar">
+      <span class="tag">Team: Ahmed Salem & Yousuf Yaghmour</span>
+      <span class="tag">Vanilla HTML/CSS/JS</span>
+      <span class="tag">Firebase v11 CDN</span>
+    </div>
+  </header>
+
+  <div class="status-box">
+    <strong>Backend Status:</strong> The Firebase modular services, authentication pipeline, atomic checkout transactions, and security rules are ready.
+    To test the live backend, open the <a href="test-backend.html" style="color: #60a5fa; font-weight: 600;">Diagnostic Test Console</a>.
+  </div>
+
+  <div class="grid">
+    <div class="card" style="border-color: var(--primary);">
+      <div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--primary); font-weight: 700; margin-bottom: 6px;">Developer Tool</div>
+        <h3>Backend Test Console</h3>
+        <p>Interactive testing suite for Firebase Auth (Google & Email), Firestore inventory CRUD, QR code lookup, and atomic sign-outs/returns.</p>
+      </div>
+      <a href="test-backend.html" class="btn">Open Test Console &rarr;</a>
+    </div>
+
+    <div class="card">
+      <div>
+        <div style="font-size: 0.75rem; text-transform: uppercase; color: #10b981; font-weight: 700; margin-bottom: 6px;">Setup Documentation</div>
+        <h3>Firebase Setup Guide</h3>
+        <p>Complete instructions for creating the Firebase project, activating Google/Email Auth, deploying Firestore rules, and setting teacher whitelists.</p>
+      </div>
+      <a href="FIREBASE_SETUP.md" target="_blank" class="btn btn-secondary">Read Setup Guide &rarr;</a>
+    </div>
+  </div>
+
+  <div class="card" style="background: rgba(30, 41, 59, 0.5);">
+    <h3 style="font-size: 1.1rem;">CEIT Application Roadmap</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+      Next scheduled implementation milestones for Ahmed and Yousuf:
+    </p>
+    <ul style="padding-left: 20px; font-size: 0.9rem; color: #cbd5e1; display: flex; flex-direction: column; gap: 6px;">
+      <li><strong>Backend setup (Nov 18 - Complete):</strong> Firebase config, Auth service, Item service, Checkout service, Security rules, Test console.</li>
+      <li><strong>Log in system (Nov 19 - Ahmed):</strong> Sign-in / sign-up page UI connected to <code>auth-service.js</code> with role-based routing.</li>
+      <li><strong>Student dashboard (Nov 23 - Ahmed):</strong> List of active student checkouts via <code>subscribeToStudentActiveCheckouts</code>.</li>
+      <li><strong>Teacher panel (Nov 24 - Yousuf):</strong> Item creator, live inventory, and active checkouts monitor with return action.</li>
+      <li><strong>Check out page (Nov 25 - Ahmed):</strong> QR camera scan / text code entry with <code>checkOutItem</code>.</li>
+    </ul>
+  </div>
+</div>
+
+</body>
+</html>
