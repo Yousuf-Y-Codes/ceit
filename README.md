@@ -6,7 +6,7 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 - **Course / Stakeholder:** Computer Engineering — Mr. Kidston (`p0161177@pdsb.net`)
 - **Team:** Yousuf Yaghmour & Ahmed Salem
 - **Tech Stack:** Pure Vanilla HTML5, CSS3, ES Module JavaScript (zero frameworks, zero build step) + Firebase v11 CDN (Auth & Cloud Firestore)
-- **Visual Style:** Classic 2009–2013 blue & glossy-green brick-builder web UI (zero red, zero third-party logos)
+- **Visual Style:** Clean Minimal UI × Engineering Blueprint design system with a deterministic live Canvas workflow showcase (`js/hero-motion.js`)
 
 ---
 
@@ -60,10 +60,11 @@ ceit/
 ├── docs.html                    # In-app User Documentation for students & teachers
 ├── test-backend.html            # Live Firebase backend diagnostic console
 ├── css/
-│   └── style.css                # Shared classic OG theme + print stylesheet
+│   └── style.css                # Minimal UI × Blueprint design system + print stylesheet
 ├── js/
 │   ├── firebase-config.js       # Firebase v11 initialization & teacher email whitelist
-│   ├── utils.js                 # XSS escaping, date formatting, QR URL/code parser, CSV export, toasts
+│   ├── hero-motion.js           # Deterministic Canvas spring workflow preview on index.html
+│   ├── utils.js                 # XSS escaping, relative due countdowns, QR parser, CSV export, toasts
 │   ├── lib/
 │   │   └── qrcode.js            # Zero-dependency pure-JS ISO/IEC 18004 QR code generator
 │   └── services/

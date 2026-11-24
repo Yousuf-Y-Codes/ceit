@@ -61,6 +61,27 @@ export function formatDateTime(ts) {
 }
 
 /**
+ * Formats a human-friendly relative due countdown (e.g., "Due in 5 days", "Due tomorrow", "2 days overdue").
+ * @param {*} ts
+ * @returns {string}
+ */
+export function formatRelativeDue(ts) {
+  const d = toDateObj(ts);
+  if (!d || isNaN(d.getTime())) return "";
+  const diffMs = d.getTime() - Date.now();
+  const absHours = Math.abs(diffMs) / (1000 * 60 * 60);
+  const absDays = Math.ceil(absHours / 24);
+
+  if (diffMs < 0) {
+    if (absHours < 24) return "Overdue today";
+    return absDays === 1 ? "1 day overdue" : `${absDays} days overdue`;
+  }
+  if (absHours <= 12) return "Due today";
+  if (absHours <= 36) return "Due tomorrow";
+  return `Due in ${Math.round(absHours / 24)} days`;
+}
+
+/**
  * Translates Firebase Auth error codes into clear, helpful messages.
  * @param {Error} err
  * @returns {string}

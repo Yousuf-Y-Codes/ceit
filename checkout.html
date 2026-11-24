@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Check Out Component — CEIT</title>
   <link rel="stylesheet" href="css/style.css">
-  <!-- Lightweight pure-JS QR decoder for webcam & image scanning -->
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" defer></script>
 </head>
 <body>
@@ -14,79 +13,82 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="dashboard.html" class="brand-wordmark">
-        <span class="brand-cube">C</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2"/>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+          </svg>
+        </span>
         <span>CEIT</span>
       </a>
-      <span class="brand-subtitle">Computer Engineering Item Tracker</span>
+      <span class="brand-tag">Check Out</span>
     </div>
+
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="dashboard.html">Dashboard</a>
-      <a href="checkout.html" class="active">Check Out Item</a>
+      <a href="checkout.html" class="active">Check Out</a>
       <a href="teacher.html" id="nav-teacher-link" style="display: none;">Teacher Panel</a>
-      <a href="docs.html">Documentation</a>
+      <a href="docs.html">Docs</a>
     </nav>
+
+    <div class="header-user">
+      <div class="user-chip">
+        <span class="user-avatar" id="user-avatar">S</span>
+        <strong id="student-name">Loading...</strong>
+        <span class="user-chip-id" id="student-number-pill">#—</span>
+      </div>
+      <button type="button" id="btn-logout" class="btn btn-ghost btn-sm">Sign Out</button>
+    </div>
   </div>
 </header>
 
-<div class="site-subnav">
-  <div class="subnav-inner">
-    <div class="subnav-user">
-      <span>Hi, <strong id="student-name">Loading...</strong></span>
-      <span class="subnav-pill" id="student-number-pill">Student #—</span>
-    </div>
-    <div class="subnav-actions">
-      <a href="dashboard.html" class="subnav-link">&larr; Back to Dashboard</a>
-      <button type="button" id="btn-logout" class="subnav-link">Sign Out</button>
-    </div>
-  </div>
-</div>
-
 <main class="page-wrapper">
-  <div class="page-title-bar">
+  <div class="page-header">
     <div>
       <h1>Check Out a Component</h1>
-      <p>Scan a bin QR code with your camera or type the component code to sign it out.</p>
+      <p>Scan a bin QR code or enter the component code, choose a return date, and confirm.</p>
     </div>
-    <a href="dashboard.html" class="btn btn-silver">&larr; My Dashboard</a>
+    <a href="dashboard.html" class="btn btn-ghost">&larr; Back to Dashboard</a>
   </div>
 
-  <div id="alert-box" class="alert alert-warn" style="display: none;"></div>
+  <div id="alert-box" class="alert alert-danger" style="display: none;"></div>
   <div id="success-box" class="alert alert-success" style="display: none;"></div>
 
   <div class="grid-2">
 
-    <!-- Left Column: Input Method (Manual Code or QR Scanner) -->
-    <div>
-      <div class="tab-bar" role="tablist">
-        <button type="button" class="tab-btn active" data-tab="pane-manual" role="tab" aria-selected="true">
-          Type Component Code
-        </button>
-        <button type="button" class="tab-btn" data-tab="pane-qr" role="tab" aria-selected="false">
-          Scan QR Code
-        </button>
+    <!-- Step 1: Locate Component -->
+    <section class="card">
+      <div class="card-header">
+        <h2>1. Locate Component</h2>
+        <div class="segmented-tabs" role="tablist" style="margin-bottom: 0;">
+          <button type="button" class="tab-btn active" data-tab="pane-manual" role="tab" aria-selected="true">
+            Type Code
+          </button>
+          <button type="button" class="tab-btn" data-tab="pane-qr" role="tab" aria-selected="false">
+            Scan QR
+          </button>
+        </div>
       </div>
 
-      <div class="tab-content-panel">
-
-        <!-- Pane 1: Manual Code Entry -->
+      <div class="card-body">
+        <!-- Pane 1: Manual Code & Quick Pick -->
         <div id="pane-manual" class="tab-pane active">
           <div class="form-group">
             <label for="code-input">Component Code</label>
             <div class="input-inline">
-              <input type="text" id="code-input" placeholder="e.g. ARD-UNO-01" autocomplete="off" autofocus>
-              <button type="button" id="btn-lookup" class="btn">Find</button>
+              <input type="text" id="code-input" placeholder="e.g. MCU-ARDUN-01" autocomplete="off" autofocus>
+              <button type="button" id="btn-lookup" class="btn btn-primary">Find</button>
             </div>
-            <div class="form-hint">Codes are not case-sensitive. Press Enter or click Find.</div>
+            <div class="form-hint">Not case-sensitive. Press Enter or click Find.</div>
           </div>
 
-          <div class="divider"><span>or choose from available stock</span></div>
+          <div class="divider"><span>or pick from in-stock inventory</span></div>
 
           <div class="form-group" style="margin-bottom: 0;">
-            <label for="quick-select">Quick Select Available Component</label>
+            <label for="quick-select">Browse Available Components</label>
             <select id="quick-select">
-              <option value="">-- Select an in-stock component --</option>
+              <option value="">-- Choose an in-stock component --</option>
             </select>
-            <div class="form-hint">Lists all lab components currently available for sign-out.</div>
           </div>
         </div>
 
@@ -96,56 +98,60 @@
             <video id="qr-video" playsinline muted style="display: none;"></video>
             <div class="scanner-reticle" aria-hidden="true"></div>
             <div id="scanner-placeholder" class="scanner-placeholder">
-              <p class="fw-bold mb-8">Camera QR Scanner Ready</p>
-              <p class="text-small">Click <strong>Start Camera</strong> below and hold a component QR label inside the green frame.</p>
+              <svg class="icon icon-lg" viewBox="0 0 24 24" style="width: 34px; height: 34px; margin-bottom: 10px; color: #93c5fd;" aria-hidden="true">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <rect x="8" y="8" width="8" height="8" rx="1"/>
+              </svg>
+              <p class="fw-bold mb-8">Camera Scanner Ready</p>
+              <p class="text-small">Tap <strong>Start Camera</strong> and center the bin QR label inside the green box.</p>
             </div>
           </div>
           <canvas id="qr-canvas" style="display: none;"></canvas>
 
-          <div class="btn-row mb-12">
-            <button type="button" id="btn-start-cam" class="btn btn-green">Start Camera</button>
-            <button type="button" id="btn-stop-cam" class="btn btn-silver" disabled>Stop Camera</button>
-            <button type="button" id="btn-flip-cam" class="btn btn-silver" style="display: none;">Flip Camera</button>
+          <div class="btn-row mb-8">
+            <button type="button" id="btn-start-cam" class="btn btn-primary">Start Camera</button>
+            <button type="button" id="btn-stop-cam" class="btn btn-ghost" disabled>Stop</button>
+            <button type="button" id="btn-flip-cam" class="btn btn-ghost" style="display: none;">Flip Camera</button>
           </div>
 
           <div id="scanner-status" class="text-small text-muted mb-12">Camera is currently off.</div>
 
-          <div class="divider"><span>no camera on this device?</span></div>
+          <div class="divider"><span>no webcam on this computer?</span></div>
 
           <div class="form-group" style="margin-bottom: 0;">
-            <label for="qr-file-input">Scan QR Code from Saved Image</label>
+            <label for="qr-file-input">Scan QR Code from Image File</label>
             <input type="file" id="qr-file-input" accept="image/*">
-            <div class="form-hint">Upload or snap a picture of a component QR label to decode it automatically.</div>
           </div>
         </div>
-
       </div>
-    </div>
+    </section>
 
-    <!-- Right Column: Item Preview & Checkout Confirmation -->
-    <section class="panel">
-      <div class="panel-header panel-header-blue">
-        <h2>Sign-Out Details</h2>
-        <span class="badge badge-green" id="preview-badge" style="display: none;">READY</span>
+    <!-- Step 2: Confirm Details -->
+    <section class="card">
+      <div class="card-header">
+        <h2>2. Confirm Sign-Out</h2>
+        <span class="badge badge-success" id="preview-badge" style="display: none;">In Stock</span>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
 
         <div id="no-item-hint" class="alert alert-info">
-          Look up a component code or scan a QR label on the left to inspect stock and confirm your sign-out.
+          Look up a code or scan a QR label on the left to inspect stock and sign out the component.
         </div>
 
-        <div id="preview-box" class="item-preview-card" style="display: none;">
-          <div class="item-preview-title" id="prev-name">—</div>
-          <div class="text-small text-muted mt-8">
-            Code: <code id="prev-code">—</code> &bull;
-            Category: <strong id="prev-category">—</strong>
-          </div>
-          <div class="text-small text-muted mt-8">
-            Bin / Location: <strong id="prev-location">—</strong>
+        <div id="preview-box" class="component-preview" style="display: none;">
+          <div class="component-preview-head">
+            <div>
+              <div class="component-preview-title" id="prev-name">—</div>
+              <div class="component-meta-row">
+                <span>Code: <code id="prev-code">—</code></span>
+                <span>Category: <strong id="prev-category">—</strong></span>
+                <span>Bin: <strong id="prev-location">—</strong></span>
+              </div>
+            </div>
           </div>
           <div id="prev-notes" class="text-small text-muted mt-8" style="display: none;"></div>
           <div class="mt-12">
-            Availability: <span id="prev-avail-badge" class="badge badge-green">—</span>
+            <span id="prev-avail-badge" class="badge badge-success">—</span>
           </div>
         </div>
 
@@ -153,38 +159,37 @@
           <div class="form-group">
             <label for="checkout-student-num">PDSB ID / Student Number</label>
             <input type="text" id="checkout-student-num" readonly>
-            <div class="form-hint">Automatically derived from your <code>@pdsb.net</code> school email.</div>
+            <div class="form-hint">Automatically linked from your <code>@pdsb.net</code> account.</div>
           </div>
 
           <div class="form-group">
-            <label for="duration-select">Loan Duration</label>
-            <select id="duration-select">
-              <option value="1">1 Day (Single Class / Today)</option>
-              <option value="3">3 Days</option>
-              <option value="7" selected>1 Week (7 Days — Default)</option>
-              <option value="14">2 Weeks (14 Days)</option>
-              <option value="custom">Custom Number of Days...</option>
-            </select>
+            <label>Loan Duration</label>
+            <div class="chip-group" id="duration-chips" role="radiogroup" aria-label="Loan Duration">
+              <button type="button" class="chip-btn" data-days="1">1 Day</button>
+              <button type="button" class="chip-btn" data-days="3">3 Days</button>
+              <button type="button" class="chip-btn active" data-days="7">1 Week</button>
+              <button type="button" class="chip-btn" data-days="14">2 Weeks</button>
+              <button type="button" class="chip-btn" data-days="custom">Custom</button>
+            </div>
           </div>
 
           <div class="form-group" id="custom-days-group" style="display: none;">
-            <label for="custom-days-input">Custom Duration (1–30 Days)</label>
+            <label for="custom-days-input">Custom Days (1–30)</label>
             <input type="number" id="custom-days-input" min="1" max="30" value="5">
           </div>
 
-          <div class="alert alert-info" style="padding: 7px 10px; margin-bottom: 12px;">
-            Estimated Due Date: <strong id="due-date-preview">—</strong>
+          <div class="alert alert-info" style="padding: 9px 12px;">
+            Return due by: <strong id="due-date-preview" class="tabular">—</strong>
           </div>
 
           <div class="form-group">
-            <label for="checkout-notes">Notes (Optional)</label>
-            <input type="text" id="checkout-notes" placeholder="e.g. Traffic light circuit lab">
+            <label for="checkout-notes">Lab / Project Note (Optional)</label>
+            <input type="text" id="checkout-notes" placeholder="e.g. Traffic light lab">
           </div>
 
-          <button type="submit" id="btn-confirm" class="btn btn-green btn-block btn-lg" disabled>
+          <button type="submit" id="btn-confirm" class="btn btn-success btn-block btn-lg" disabled>
             Confirm Sign Out
           </button>
-          <a href="dashboard.html" class="btn btn-silver btn-block mt-8">Cancel &amp; Return to Dashboard</a>
         </form>
       </div>
     </section>
@@ -194,7 +199,7 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
     <div class="footer-links">
       <a href="dashboard.html">Student Dashboard</a>
       <a href="docs.html">User Documentation</a>
@@ -222,6 +227,7 @@
   let mediaStream = null;
   let scanRafId = null;
   let facingMode = "environment";
+  let selectedDurationMode = "7";
 
   const alertBox = document.getElementById("alert-box");
   const successBox = document.getElementById("success-box");
@@ -231,7 +237,6 @@
   const noItemHint = document.getElementById("no-item-hint");
   const previewBadge = document.getElementById("preview-badge");
   const confirmBtn = document.getElementById("btn-confirm");
-  const durationSelect = document.getElementById("duration-select");
   const customDaysGroup = document.getElementById("custom-days-group");
   const customDaysInput = document.getElementById("custom-days-input");
   const studentNumInput = document.getElementById("checkout-student-num");
@@ -263,11 +268,11 @@
   }
 
   function getSelectedDurationDays() {
-    if (durationSelect.value === "custom") {
+    if (selectedDurationMode === "custom") {
       const val = parseInt(customDaysInput.value, 10);
       return isNaN(val) ? 7 : Math.min(30, Math.max(1, val));
     }
-    return parseInt(durationSelect.value, 10) || 7;
+    return parseInt(selectedDurationMode, 10) || 7;
   }
 
   function updateDueDatePreview() {
@@ -277,9 +282,15 @@
       `${formatDate(due)} (${days} ${days === 1 ? "day" : "days"})`;
   }
 
-  durationSelect.addEventListener("change", () => {
-    customDaysGroup.style.display = durationSelect.value === "custom" ? "block" : "none";
-    updateDueDatePreview();
+  // 1-Tap Duration Chips
+  document.querySelectorAll("#duration-chips .chip-btn").forEach((chip) => {
+    chip.addEventListener("click", () => {
+      document.querySelectorAll("#duration-chips .chip-btn").forEach((c) => c.classList.remove("active"));
+      chip.classList.add("active");
+      selectedDurationMode = chip.dataset.days;
+      customDaysGroup.style.display = selectedDurationMode === "custom" ? "block" : "none";
+      updateDueDatePreview();
+    });
   });
   customDaysInput.addEventListener("input", updateDueDatePreview);
   updateDueDatePreview();
@@ -303,7 +314,7 @@
     btn.addEventListener("click", () => switchTab(btn.dataset.tab));
   });
 
-  // Look up component by code
+  // Lookup
   async function lookupCode(rawValue) {
     showAlert("");
     const code = extractCodeFromScan(rawValue ?? codeInput.value);
@@ -322,7 +333,7 @@
         noItemHint.style.display = "block";
         previewBadge.style.display = "none";
         confirmBtn.disabled = true;
-        showAlert(`No lab component found with code "${code}". Check the label spelling and try again.`);
+        showAlert(`No component found with code "${code}". Check the label spelling and try again.`);
         return;
       }
 
@@ -333,11 +344,11 @@
       document.getElementById("prev-name").textContent = item.name;
       document.getElementById("prev-code").textContent = item.code;
       document.getElementById("prev-category").textContent = item.category || "General";
-      document.getElementById("prev-location").textContent = item.location || "Main Lab Storage";
+      document.getElementById("prev-location").textContent = item.location || "Main Lab";
 
       const notesEl = document.getElementById("prev-notes");
       if (item.notes) {
-        notesEl.textContent = `Notes: ${item.notes}`;
+        notesEl.textContent = `Note: ${item.notes}`;
         notesEl.style.display = "block";
       } else {
         notesEl.style.display = "none";
@@ -345,20 +356,20 @@
 
       const availBadge = document.getElementById("prev-avail-badge");
       if (item.availableQuantity > 0) {
-        availBadge.className = "badge badge-green";
+        availBadge.className = "badge badge-success";
         availBadge.textContent = `${item.availableQuantity} of ${item.totalQuantity} Available`;
-        previewBadge.className = "badge badge-green";
-        previewBadge.textContent = "IN STOCK";
-        previewBadge.style.display = "inline-block";
+        previewBadge.className = "badge badge-success";
+        previewBadge.textContent = "In Stock";
+        previewBadge.style.display = "inline-flex";
         confirmBtn.disabled = false;
       } else {
-        availBadge.className = "badge badge-amber";
-        availBadge.textContent = `0 of ${item.totalQuantity} Available (Out of Stock)`;
-        previewBadge.className = "badge badge-amber";
-        previewBadge.textContent = "OUT OF STOCK";
-        previewBadge.style.display = "inline-block";
+        availBadge.className = "badge badge-danger";
+        availBadge.textContent = `0 of ${item.totalQuantity} Available`;
+        previewBadge.className = "badge badge-danger";
+        previewBadge.textContent = "Out of Stock";
+        previewBadge.style.display = "inline-flex";
         confirmBtn.disabled = true;
-        showAlert(`"${item.name}" (${item.code}) is currently out of stock. Check with Mr. Kidston.`);
+        showAlert(`"${item.name}" (${item.code}) is currently out of stock.`);
       }
     } catch (err) {
       showAlert("Lookup error: " + err.message);
@@ -374,20 +385,16 @@
   });
 
   quickSelect.addEventListener("change", () => {
-    if (quickSelect.value) {
-      lookupCode(quickSelect.value);
-    }
+    if (quickSelect.value) lookupCode(quickSelect.value);
   });
 
-  // QR Scanning Helpers
+  // QR Scanning
   function decodeImageData(imageData) {
     if (typeof window.jsQR === "function") {
       const result = window.jsQR(imageData.data, imageData.width, imageData.height, {
         inversionAttempts: "dontInvert"
       });
-      if (result && result.data) {
-        return result.data;
-      }
+      if (result && result.data) return result.data;
     }
     return null;
   }
@@ -396,8 +403,8 @@
     const code = extractCodeFromScan(rawText);
     if (!code) return;
     stopCamera();
-    scannerStatus.textContent = `QR code scanned: ${code}`;
-    showToast(`Scanned code: ${code}`, "success");
+    scannerStatus.textContent = `Scanned: ${code}`;
+    showToast(`Scanned component ${code}`, "success");
     lookupCode(code);
   }
 
@@ -417,18 +424,18 @@
     btnStartCam.disabled = false;
     btnStopCam.disabled = true;
     btnFlipCam.style.display = "none";
-    scannerStatus.textContent = "Camera stopped.";
+    scannerStatus.textContent = "Camera is off.";
   }
 
   async function startCamera() {
     showAlert("");
     if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      showAlert("Camera access is not supported in this browser. Type the item code or upload a QR image instead.");
+      showAlert("Camera access is not supported in this browser. Enter the text code or upload a QR image instead.");
       return;
     }
 
     stopCamera();
-    scannerStatus.textContent = "Requesting camera access...";
+    scannerStatus.textContent = "Starting camera...";
     btnStartCam.disabled = true;
 
     try {
@@ -445,12 +452,11 @@
       scannerBox.classList.add("active");
       btnStopCam.disabled = false;
       btnFlipCam.style.display = "inline-flex";
-      scannerStatus.textContent = "Scanning... Hold the QR label steady inside the green box.";
+      scannerStatus.textContent = "Scanning — center the QR code inside the green frame.";
 
       const ctx = canvasEl.getContext("2d", { willReadFrequently: true });
       const nativeDetector =
         "BarcodeDetector" in window ? new window.BarcodeDetector({ formats: ["qr_code"] }) : null;
-
       let scanningNative = false;
 
       const tick = () => {
@@ -467,7 +473,6 @@
             return;
           }
 
-          // Fallback to native BarcodeDetector if jsQR didn't load
           if (nativeDetector && !scanningNative && typeof window.jsQR !== "function") {
             scanningNative = true;
             nativeDetector
@@ -487,12 +492,10 @@
       };
 
       scanRafId = requestAnimationFrame(tick);
-    } catch (err) {
+    } catch {
       btnStartCam.disabled = false;
-      scannerStatus.textContent = "Unable to open camera.";
-      showAlert(
-        "Camera permission denied or no camera found. Allow camera access in your browser, or enter the text code / upload a QR photo."
-      );
+      scannerStatus.textContent = "Unable to access camera.";
+      showAlert("Camera permission was denied or no camera is attached. Use Type Code or upload a QR image instead.");
     }
   }
 
@@ -504,7 +507,7 @@
   });
   window.addEventListener("beforeunload", stopCamera);
 
-  // Upload QR Image Fallback
+  // Image File QR Fallback
   document.getElementById("qr-file-input").addEventListener("change", (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -534,7 +537,7 @@
         if (decoded) {
           handleQrDetected(decoded);
         } else {
-          showAlert("Could not detect a QR code in that image. Try a clearer photo or enter the text code manually.");
+          showAlert("No QR code detected in that image. Try a clearer photo or enter the text code.");
         }
       };
       img.src = reader.result;
@@ -542,7 +545,7 @@
     reader.readAsDataURL(file);
   });
 
-  // Confirm Sign Out Form Submit
+  // Confirm Sign Out Submit
   document.getElementById("checkout-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!foundItem || !currentUser) return;
@@ -567,12 +570,12 @@
         notes
       });
 
-      showSuccess(`Signed out "${foundItem.name}" (${foundItem.code})! Redirecting to your dashboard...`);
-      showToast(`Checked out ${foundItem.name}!`, "success");
+      showSuccess(`Signed out "${foundItem.name}" (${foundItem.code})! Returning to your dashboard...`);
+      showToast(`Checked out ${foundItem.name}`, "success");
 
       setTimeout(() => {
         window.location.href = "dashboard.html";
-      }, 900);
+      }, 850);
     } catch (err) {
       showAlert(err.message);
       confirmBtn.disabled = false;
@@ -580,7 +583,7 @@
     }
   });
 
-  // Auth Guard & Deep Link (?code=...) Handling
+  // Auth Guard & Deep Link (?code=...)
   requireAuth({
     redirectUrl: "index.html",
     preserveTarget: true,
@@ -591,20 +594,18 @@
       const pdsbId = sNum || (user.email ? user.email.split("@")[0] : "N/A");
 
       document.getElementById("student-name").textContent = name;
-      document.getElementById("student-number-pill").textContent = sNum
-        ? `Student #${sNum}`
-        : `Teacher (${pdsbId})`;
+      document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
+      document.getElementById("student-number-pill").textContent = sNum ? `#${sNum}` : pdsbId;
       studentNumInput.value = pdsbId;
 
       if (user.profile?.role === "teacher") {
-        document.getElementById("nav-teacher-link").style.display = "inline-block";
+        document.getElementById("nav-teacher-link").style.display = "inline-flex";
       }
 
-      // Populate Quick Select dropdown
       if (unsubItems) unsubItems();
       unsubItems = subscribeToItems((items) => {
-        const currentVal = quickSelect.value;
-        quickSelect.innerHTML = '<option value="">-- Select an in-stock component --</option>';
+        const prev = quickSelect.value;
+        quickSelect.innerHTML = '<option value="">-- Choose an in-stock component --</option>';
         items.forEach((item) => {
           const opt = document.createElement("option");
           opt.value = item.code;
@@ -612,10 +613,9 @@
           if (item.availableQuantity <= 0) opt.disabled = true;
           quickSelect.appendChild(opt);
         });
-        quickSelect.value = currentVal;
+        quickSelect.value = prev;
       });
 
-      // Auto-lookup ?code=... from QR code deep-link or Catalog "Check Out" button
       const urlCode = new URLSearchParams(window.location.search).get("code");
       if (urlCode && !foundItem) {
         lookupCode(urlCode);

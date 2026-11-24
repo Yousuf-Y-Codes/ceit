@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Backend Diagnostic Console — CEIT</title>
+  <title>Backend Diagnostics — CEIT</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -12,52 +12,52 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="index.html" class="brand-wordmark">
-        <span class="brand-cube">C</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2"/>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+          </svg>
+        </span>
         <span>CEIT</span>
       </a>
-      <span class="brand-subtitle">Firebase Diagnostic Console</span>
+      <span class="brand-tag">Diagnostics</span>
     </div>
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="index.html">Sign In</a>
       <a href="dashboard.html">Dashboard</a>
       <a href="teacher.html">Teacher Panel</a>
-      <a href="docs.html">Documentation</a>
+      <a href="docs.html">Docs</a>
     </nav>
   </div>
 </header>
 
 <main class="page-wrapper">
-  <div class="page-title-bar">
+  <div class="page-header">
     <div>
-      <h1>Firebase Backend Diagnostic Console</h1>
-      <p>Developer utility to test live authentication, inventory CRUD, and atomic checkout transactions.</p>
+      <h1>Firebase Backend Diagnostics</h1>
+      <p>Developer tool to verify live authentication, inventory CRUD, and atomic checkout transactions.</p>
     </div>
     <div id="config-status-badge">
-      <span class="badge badge-amber">Checking Config...</span>
+      <span class="badge badge-warn">Checking Config...</span>
     </div>
   </div>
 
   <div id="config-alert" class="alert alert-warn" style="display: none;">
     <strong>Firebase Not Configured:</strong> Placeholder credentials detected in <code>js/firebase-config.js</code>.
-    See <a href="FIREBASE_SETUP.md">FIREBASE_SETUP.md</a> to add your project credentials.
   </div>
 
   <div class="grid-2">
-    <!-- Card 1: Authentication -->
-    <section class="panel">
-      <div class="panel-header panel-header-blue">
-        <h2>1. Authentication</h2>
+    <section class="card">
+      <div class="card-header">
+        <h2>1. Authentication (@pdsb.net)</h2>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div id="auth-signed-out">
-          <p class="text-muted mb-12">Sign in to test inventory checkouts and role permissions.</p>
-          <button id="btn-google-sign-in" type="button" class="btn btn-google">Sign In with Google</button>
-
+          <button id="btn-google-sign-in" type="button" class="btn btn-google">Sign In with PDSB Google</button>
           <div class="divider"><span>or email / password</span></div>
-
           <div class="form-group">
-            <label for="auth-email">School Email</label>
-            <input type="email" id="auth-email" placeholder="123456@pdsb.net or teacher@pdsb.net">
+            <label for="auth-email">PDSB Email</label>
+            <input type="email" id="auth-email" placeholder="123456@pdsb.net or p100@pdsb.net">
           </div>
           <div class="form-group">
             <label for="auth-password">Password</label>
@@ -67,17 +67,16 @@
             <label for="auth-name">Display Name (Sign Up only)</label>
             <input type="text" id="auth-name" placeholder="Jordan Patel">
           </div>
-
           <div class="btn-row mt-8">
-            <button id="btn-email-sign-in" type="button" class="btn btn-green">Sign In</button>
-            <button id="btn-email-sign-up" type="button" class="btn btn-silver">Create Account</button>
+            <button id="btn-email-sign-in" type="button" class="btn btn-primary">Sign In</button>
+            <button id="btn-email-sign-up" type="button" class="btn btn-ghost">Create Account</button>
           </div>
         </div>
 
         <div id="auth-signed-in" style="display: none;">
           <div class="btn-row mb-12" style="justify-content: space-between;">
-            <span id="user-role-badge" class="badge badge-blue">STUDENT</span>
-            <button id="btn-sign-out" type="button" class="btn btn-amber btn-xs">Sign Out</button>
+            <span id="user-role-badge" class="badge badge-accent">STUDENT</span>
+            <button id="btn-sign-out" type="button" class="btn btn-danger-soft btn-xs">Sign Out</button>
           </div>
           <div class="table-wrap">
             <table>
@@ -86,7 +85,7 @@
                 <tr><th>Email</th><td id="user-email">—</td></tr>
                 <tr><th>Student #</th><td id="user-student-number">—</td></tr>
                 <tr><th>Role</th><td id="user-role-text">—</td></tr>
-                <tr><th>UID</th><td id="user-uid" style="font-family: monospace; font-size: 11px;">—</td></tr>
+                <tr><th>UID</th><td id="user-uid" style="font-family: var(--font-mono); font-size: 11.5px;">—</td></tr>
               </tbody>
             </table>
           </div>
@@ -94,19 +93,18 @@
       </div>
     </section>
 
-    <!-- Card 2: Inventory Management -->
-    <section class="panel">
-      <div class="panel-header panel-header-blue">
-        <h2>2. Inventory Management (Teacher)</h2>
+    <section class="card">
+      <div class="card-header">
+        <h2>2. Quick Inventory Test</h2>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="form-group">
           <label for="item-name">Item Name</label>
           <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3">
         </div>
-        <div class="grid-2" style="gap: 8px;">
+        <div class="grid-2" style="gap: 10px;">
           <div class="form-group">
-            <label for="item-code">Item Code (QR)</label>
+            <label for="item-code">Item Code</label>
             <input type="text" id="item-code" placeholder="e.g. ARD-UNO-01">
           </div>
           <div class="form-group">
@@ -121,27 +119,26 @@
             </select>
           </div>
         </div>
-        <div class="grid-2" style="gap: 8px;">
+        <div class="grid-2" style="gap: 10px;">
           <div class="form-group">
             <label for="item-quantity">Total Quantity</label>
             <input type="number" id="item-quantity" value="10" min="1">
           </div>
           <div class="form-group">
-            <label for="item-location">Storage Location</label>
-            <input type="text" id="item-location" placeholder="e.g. Cabinet B, Bin 3">
+            <label for="item-location">Location</label>
+            <input type="text" id="item-location" placeholder="Cabinet B, Bin 3">
           </div>
         </div>
-        <button id="btn-create-item" type="button" class="btn btn-green btn-block mt-8">Add Item to Inventory</button>
+        <button id="btn-create-item" type="button" class="btn btn-success btn-block mt-8">Add Item</button>
       </div>
     </section>
   </div>
 
-  <!-- Card 3: Checkout Test -->
-  <section class="panel">
-    <div class="panel-header">
-      <h2>3. Sign Out Component (Atomic Transaction Test)</h2>
+  <section class="card">
+    <div class="card-header">
+      <h2>3. Atomic Checkout Test</h2>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <div class="grid-2" style="gap: 10px;">
         <div class="form-group">
           <label for="checkout-item-select">Select Item</label>
@@ -158,67 +155,61 @@
         <div style="width: 140px;">
           <input type="number" id="checkout-duration" value="7" min="1" max="30" aria-label="Duration Days">
         </div>
-        <button id="btn-checkout-item" type="button" class="btn btn-green">Sign Out Item</button>
+        <button id="btn-checkout-item" type="button" class="btn btn-primary">Sign Out Item</button>
       </div>
     </div>
   </section>
 
-  <!-- Card 4: Live Tables -->
   <div class="grid-2">
-    <section class="panel">
-      <div class="panel-header">
+    <section class="card">
+      <div class="card-header">
         <h2>Live Inventory (<span id="inventory-count">0</span>)</h2>
       </div>
-      <div class="panel-body" style="padding: 0;">
-        <div class="table-wrap" style="border: none;">
-          <table>
-            <thead>
-              <tr>
-                <th>Code</th>
-                <th>Name</th>
-                <th>Stock</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="inventory-table-body">
-              <tr><td colspan="4" class="empty-cell">No items yet.</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Name</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="inventory-table-body">
+            <tr><td colspan="4" class="empty-state">No items yet.</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
 
-    <section class="panel">
-      <div class="panel-header">
+    <section class="card">
+      <div class="card-header">
         <h2>Active Checkouts (<span id="active-checkout-count">0</span>)</h2>
       </div>
-      <div class="panel-body" style="padding: 0;">
-        <div class="table-wrap" style="border: none;">
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Student</th>
-                <th>Due</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody id="checkouts-table-body">
-              <tr><td colspan="4" class="empty-cell">No active checkouts.</td></tr>
-            </tbody>
-          </table>
-        </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th>Student</th>
+              <th>Due</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="checkouts-table-body">
+            <tr><td colspan="4" class="empty-state">No active checkouts.</td></tr>
+          </tbody>
+        </table>
       </div>
     </section>
   </div>
 
-  <!-- Card 5: Activity Log -->
-  <section class="panel">
-    <div class="panel-header">
+  <section class="card">
+    <div class="card-header">
       <h2>System Activity Log</h2>
-      <button id="btn-clear-log" type="button" class="btn btn-silver btn-xs">Clear</button>
+      <button id="btn-clear-log" type="button" class="btn btn-ghost btn-xs">Clear</button>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
       <div id="log-box" class="log-box"></div>
     </div>
   </section>
@@ -226,7 +217,7 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span><strong>CEIT</strong> — Backend Diagnostic Console</span>
+    <span><strong>CEIT</strong> — Backend Diagnostics</span>
     <div class="footer-links">
       <a href="index.html">Portal</a>
       <a href="docs.html">Documentation</a>
@@ -277,12 +268,12 @@
   });
 
   if (isFirebaseConfigured()) {
-    configStatusBadge.innerHTML = '<span class="badge badge-green">Firebase Ready</span>';
+    configStatusBadge.innerHTML = '<span class="badge badge-success">Firebase Ready</span>';
     log("Firebase configuration verified.", "success");
   } else {
-    configStatusBadge.innerHTML = '<span class="badge badge-amber">Config Missing</span>';
+    configStatusBadge.innerHTML = '<span class="badge badge-warn">Config Missing</span>';
     configAlert.style.display = "block";
-    log("Firebase is using placeholder credentials in js/firebase-config.js.", "warn");
+    log("Firebase is using placeholder credentials.", "warn");
   }
 
   observeAuthState((user) => {
@@ -297,7 +288,7 @@
       const role = user.profile?.role || "student";
       const roleBadge = document.getElementById("user-role-badge");
       roleBadge.textContent = role.toUpperCase();
-      roleBadge.className = role === "teacher" ? "badge badge-green" : "badge badge-blue";
+      roleBadge.className = role === "teacher" ? "badge badge-success" : "badge badge-accent";
 
       document.getElementById("user-display-name").textContent = user.displayName || user.profile?.displayName || "N/A";
       document.getElementById("user-email").textContent = user.email || "N/A";
@@ -305,7 +296,7 @@
       document.getElementById("user-role-text").textContent = role;
       document.getElementById("user-uid").textContent = user.uid;
 
-      log(`User authenticated: ${user.email} (${role})`, "success");
+      log(`Authenticated: ${user.email} (${role})`, "success");
     } else {
       signedOutView.style.display = "block";
       signedInView.style.display = "none";
@@ -315,9 +306,9 @@
 
   document.getElementById("btn-google-sign-in").addEventListener("click", async () => {
     try {
-      log("Launching Google Sign-In popup (@pdsb.net only)...", "info");
+      log("Launching Google Sign-In (@pdsb.net)...", "info");
       const res = await signInWithGoogle(true);
-      log(`Signed in via Google as ${res.user.email}`, "success");
+      log(`Signed in as ${res.user.email}`, "success");
     } catch (err) {
       log(`Google Sign-In error: ${err.message}`, "error");
     }
@@ -328,7 +319,6 @@
     const password = document.getElementById("auth-password").value;
     try {
       if (!email || !password) throw new Error("Please enter email and password.");
-      log(`Signing in with email ${email}...`, "info");
       await signInWithEmail(email, password);
       log("Email sign in successful.", "success");
     } catch (err) {
@@ -342,7 +332,6 @@
     const name = document.getElementById("auth-name").value;
     try {
       if (!email || !password) throw new Error("Please enter email and password.");
-      log(`Creating account for ${email}...`, "info");
       await signUpWithEmail(email, password, name);
       log("Account created successfully.", "success");
     } catch (err) {
@@ -353,7 +342,7 @@
   document.getElementById("btn-sign-out").addEventListener("click", async () => {
     try {
       await signOutUser();
-      log("Signed out successfully.", "info");
+      log("Signed out.", "info");
     } catch (err) {
       log(`Sign out error: ${err.message}`, "error");
     }
@@ -367,12 +356,11 @@
       const totalQuantity = document.getElementById("item-quantity").value;
       const location = document.getElementById("item-location").value;
 
-      log(`Adding item "${name}" (${code})...`, "info");
       const id = await createItem(
         { name, code, category, totalQuantity, location },
         currentUser ? currentUser.uid : "test"
       );
-      log(`Item created with ID: ${id}`, "success");
+      log(`Created item ID: ${id}`, "success");
       document.getElementById("item-name").value = "";
       document.getElementById("item-code").value = "";
       document.getElementById("item-location").value = "";
@@ -394,7 +382,7 @@
 
     const tbody = document.getElementById("inventory-table-body");
     if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">No items yet.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No items yet.</td></tr>';
       return;
     }
 
@@ -405,12 +393,12 @@
             <td><code>${escapeHtml(item.code)}</code></td>
             <td><strong>${escapeHtml(item.name)}</strong></td>
             <td>
-              <span class="badge ${item.availableQuantity > 0 ? "badge-green" : "badge-amber"}">
+              <span class="badge ${item.availableQuantity > 0 ? "badge-success" : "badge-danger"}">
                 ${item.availableQuantity} / ${item.totalQuantity}
               </span>
             </td>
             <td>
-              <button type="button" class="btn btn-amber btn-xs btn-delete-item" data-id="${escapeHtml(item.id)}">Delete</button>
+              <button type="button" class="btn btn-danger-soft btn-xs btn-delete-item" data-id="${escapeHtml(item.id)}">Delete</button>
             </td>
           </tr>
         `
@@ -419,12 +407,11 @@
 
     tbody.querySelectorAll(".btn-delete-item").forEach((btn) => {
       btn.addEventListener("click", async () => {
-        const id = btn.dataset.id;
         try {
-          await deleteItem(id);
-          log(`Deleted item ${id}`, "info");
+          await deleteItem(btn.dataset.id);
+          log(`Deleted item ${btn.dataset.id}`, "info");
         } catch (err) {
-          log(`Failed to delete item: ${err.message}`, "error");
+          log(`Delete failed: ${err.message}`, "error");
         }
       });
     });
@@ -432,20 +419,20 @@
 
   document.getElementById("btn-checkout-item").addEventListener("click", async () => {
     try {
-      if (!currentUser) throw new Error("You must be signed in to check out an item.");
+      if (!currentUser) throw new Error("Sign in first to check out an item.");
       let itemId = document.getElementById("checkout-item-select").value;
       const codeLookup = document.getElementById("checkout-code-lookup").value.trim();
       const durationDays = parseInt(document.getElementById("checkout-duration").value, 10) || 7;
 
       if (!itemId && codeLookup) {
         const found = await getItemByCode(codeLookup);
-        if (!found) throw new Error(`Item code "${codeLookup}" not found.`);
+        if (!found) throw new Error(`Code "${codeLookup}" not found.`);
         itemId = found.id;
       }
-      if (!itemId) throw new Error("Please select an item or enter a valid item code.");
+      if (!itemId) throw new Error("Select an item or enter a valid code.");
 
       const res = await checkOutItem({ itemId, user: currentUser, durationDays });
-      log(`Checked out "${res.item.name}"! Checkout ID: ${res.checkoutId}`, "success");
+      log(`Checked out "${res.item.name}" (${res.checkoutId})`, "success");
       document.getElementById("checkout-code-lookup").value = "";
     } catch (err) {
       log(`Checkout failed: ${err.message}`, "error");
@@ -456,21 +443,21 @@
     document.getElementById("active-checkout-count").textContent = checkouts.length;
     const tbody = document.getElementById("checkouts-table-body");
     if (checkouts.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">No active checkouts.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No active checkouts.</td></tr>';
       return;
     }
 
     tbody.innerHTML = checkouts
       .map((co) => {
         const status = getCheckoutDisplayStatus(co);
-        const badge = status === "overdue" ? ' <span class="badge badge-overdue">OVERDUE</span>' : "";
+        const badge = status === "overdue" ? ' <span class="badge badge-danger">Overdue</span>' : "";
         return `
           <tr>
             <td><strong>${escapeHtml(co.itemName)}</strong><br><code>${escapeHtml(co.itemCode)}</code></td>
             <td>${escapeHtml(co.studentName)}<br><small class="text-muted">${escapeHtml(co.studentNumber || "N/A")}</small></td>
-            <td>${escapeHtml(formatDate(co.dueDate))}${badge}</td>
+            <td class="tabular">${escapeHtml(formatDate(co.dueDate))}${badge}</td>
             <td>
-              <button type="button" class="btn btn-green btn-xs btn-return-item" data-id="${escapeHtml(co.id)}">Check In</button>
+              <button type="button" class="btn btn-success btn-xs btn-return-item" data-id="${escapeHtml(co.id)}">Check In</button>
             </td>
           </tr>
         `;

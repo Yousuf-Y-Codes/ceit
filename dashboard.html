@@ -12,79 +12,98 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="dashboard.html" class="brand-wordmark">
-        <span class="brand-cube">C</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2"/>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+          </svg>
+        </span>
         <span>CEIT</span>
       </a>
-      <span class="brand-subtitle">Computer Engineering Item Tracker</span>
+      <span class="brand-tag">Student</span>
     </div>
+
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="checkout.html">Check Out Item</a>
+      <a href="checkout.html">Check Out</a>
       <a href="teacher.html" id="nav-teacher-link" style="display: none;">Teacher Panel</a>
-      <a href="docs.html">Documentation</a>
+      <a href="docs.html">Docs</a>
     </nav>
+
+    <div class="header-user">
+      <div class="user-chip">
+        <span class="user-avatar" id="user-avatar">S</span>
+        <strong id="student-name">Loading...</strong>
+        <span class="user-chip-id" id="student-number-pill">#—</span>
+      </div>
+      <button type="button" id="btn-logout" class="btn btn-ghost btn-sm">Sign Out</button>
+    </div>
   </div>
 </header>
 
-<div class="site-subnav">
-  <div class="subnav-inner">
-    <div class="subnav-user">
-      <span>Hi, <strong id="student-name">Loading...</strong></span>
-      <span class="subnav-pill" id="student-number-pill">Student #—</span>
-      <span class="subnav-pill" id="student-email-pill">...</span>
-    </div>
-    <div class="subnav-actions">
-      <button type="button" id="btn-logout" class="subnav-link">Sign Out</button>
-    </div>
-  </div>
-</div>
-
 <main class="page-wrapper">
-  <div class="page-title-bar">
+  <div class="page-header">
     <div>
-      <h1>Student Dashboard</h1>
-      <p>View your borrowed components, due dates, return history, and available lab inventory.</p>
+      <h1>My Lab Components</h1>
+      <p>Track what you have signed out, watch due dates, or grab a new component.</p>
     </div>
-    <a href="checkout.html" class="btn btn-green btn-lg">+ Check Out New Component</a>
+    <a href="checkout.html" class="btn btn-primary btn-lg">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
+        <rect x="7" y="7" width="10" height="10" rx="1.5"/>
+      </svg>
+      Scan QR or Check Out
+    </a>
   </div>
 
-  <!-- Stats Strip -->
-  <section class="stats-strip" aria-label="Checkout Summary">
-    <div class="stat-box">
-      <div class="stat-value" id="stat-active">0</div>
-      <div class="stat-label">Checked Out Now</div>
+  <!-- Instant Quick Code Check-Out Bar -->
+  <section class="action-banner" aria-label="Quick Code Check Out">
+    <div>
+      <strong style="font-size: 14px;">Have a component code in front of you?</strong>
+      <div class="text-small text-muted">Type the bin code to jump straight into checking it out.</div>
     </div>
-    <div class="stat-box">
-      <div class="stat-value stat-amber" id="stat-due-soon">0</div>
-      <div class="stat-label">Due Within 24h</div>
+    <form id="quick-code-form" class="action-banner-form">
+      <input type="text" id="quick-code-input" placeholder="e.g. MCU-ARDUN-01" autocomplete="off">
+      <button type="submit" class="btn btn-primary">Look Up</button>
+    </form>
+  </section>
+
+  <!-- KPI Stats Strip -->
+  <section class="stats-grid" aria-label="Checkout Summary">
+    <div class="stat-card">
+      <span class="stat-label">Checked Out Now</span>
+      <span class="stat-value is-accent" id="stat-active">0</span>
     </div>
-    <div class="stat-box">
-      <div class="stat-value stat-amber" id="stat-overdue">0</div>
-      <div class="stat-label">Overdue Items</div>
+    <div class="stat-card">
+      <span class="stat-label">Due Within 24h</span>
+      <span class="stat-value is-warn" id="stat-due-soon">0</span>
     </div>
-    <div class="stat-box">
-      <div class="stat-value stat-green" id="stat-returned">0</div>
-      <div class="stat-label">Total Returned</div>
+    <div class="stat-card">
+      <span class="stat-label">Overdue</span>
+      <span class="stat-value is-danger" id="stat-overdue">0</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-label">Total Returned</span>
+      <span class="stat-value is-success" id="stat-returned">0</span>
     </div>
   </section>
 
-  <!-- Classic Tabs -->
-  <div class="tab-bar" role="tablist">
+  <!-- Segmented Tabs -->
+  <div class="segmented-tabs" role="tablist">
     <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
-      My Checked Out Items (<span id="tab-active-count">0</span>)
+      Active Loans <span class="tab-count" id="tab-active-count">0</span>
     </button>
     <button type="button" class="tab-btn" data-tab="tab-history" role="tab" aria-selected="false">
-      My Return History (<span id="tab-history-count">0</span>)
+      Return History <span class="tab-count" id="tab-history-count">0</span>
     </button>
     <button type="button" class="tab-btn" data-tab="tab-catalog" role="tab" aria-selected="false">
-      Available Lab Inventory (<span id="tab-catalog-count">0</span>)
+      Lab Catalog <span class="tab-count" id="tab-catalog-count">0</span>
     </button>
   </div>
 
-  <div class="tab-content-panel">
-
-    <!-- Tab 1: Active Checkouts -->
-    <section id="tab-active" class="tab-pane active">
+  <!-- Tab 1: Active Loans -->
+  <section id="tab-active" class="tab-pane active">
+    <div class="card">
       <div class="table-wrap">
         <table>
           <thead>
@@ -94,18 +113,20 @@
               <th>Checked Out</th>
               <th>Due Date</th>
               <th>Status</th>
-              <th>Action</th>
+              <th style="text-align: right;">Action</th>
             </tr>
           </thead>
           <tbody id="checkouts-list">
-            <tr><td colspan="6" class="empty-cell">Loading your checked-out components...</td></tr>
+            <tr><td colspan="6" class="empty-state">Loading your checked-out components...</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Tab 2: Return History -->
-    <section id="tab-history" class="tab-pane">
+  <!-- Tab 2: Return History -->
+  <section id="tab-history" class="tab-pane">
+    <div class="card">
       <div class="table-wrap">
         <table>
           <thead>
@@ -113,31 +134,40 @@
               <th>Component</th>
               <th>Code</th>
               <th>Checked Out</th>
-              <th>Returned On</th>
+              <th>Returned</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="history-list">
-            <tr><td colspan="5" class="empty-cell">No returned items yet.</td></tr>
+            <tr><td colspan="5" class="empty-state">No returned components yet.</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
+    </div>
+  </section>
 
-    <!-- Tab 3: Available Lab Inventory -->
-    <section id="tab-catalog" class="tab-pane">
-      <div class="filter-bar">
-        <input type="search" id="catalog-search" placeholder="Search components by name, code, or bin...">
-        <select id="catalog-category">
-          <option value="">All Categories</option>
-          <option value="Microcontrollers">Microcontrollers</option>
-          <option value="Sensors">Sensors</option>
-          <option value="Components">Components</option>
-          <option value="Cables & Tools">Cables &amp; Tools</option>
-          <option value="Cables & Power">Cables &amp; Power</option>
-          <option value="Tools & Meters">Tools &amp; Meters</option>
-          <option value="General">General</option>
-        </select>
+  <!-- Tab 3: Available Lab Inventory -->
+  <section id="tab-catalog" class="tab-pane">
+    <div class="card">
+      <div class="card-body" style="padding-bottom: 12px;">
+        <div class="toolbar" style="margin-bottom: 0;">
+          <div class="search-box">
+            <svg class="icon icon-sm search-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
+            </svg>
+            <input type="search" id="catalog-search" placeholder="Search by component name, code, or bin...">
+          </div>
+          <select id="catalog-category" style="width: auto; min-width: 170px;">
+            <option value="">All Categories</option>
+            <option value="Microcontrollers">Microcontrollers</option>
+            <option value="Sensors">Sensors</option>
+            <option value="Components">Components</option>
+            <option value="Cables & Tools">Cables &amp; Tools</option>
+            <option value="Cables & Power">Cables &amp; Power</option>
+            <option value="Tools & Meters">Tools &amp; Meters</option>
+            <option value="General">General</option>
+          </select>
+        </div>
       </div>
       <div class="table-wrap">
         <table>
@@ -146,19 +176,18 @@
               <th>Code</th>
               <th>Component</th>
               <th>Category</th>
-              <th>Location</th>
-              <th>Stock</th>
-              <th>Action</th>
+              <th>Bin / Location</th>
+              <th>Availability</th>
+              <th style="text-align: right;">Action</th>
             </tr>
           </thead>
           <tbody id="catalog-list">
-            <tr><td colspan="6" class="empty-cell">Loading lab inventory...</td></tr>
+            <tr><td colspan="6" class="empty-state">Loading lab catalog...</td></tr>
           </tbody>
         </table>
       </div>
-    </section>
-
-  </div>
+    </div>
+  </section>
 </main>
 
 <!-- Modal: Confirm Return -->
@@ -166,24 +195,24 @@
   <div class="modal-dialog">
     <div class="modal-header">
       <h3 id="modal-return-title">Return Component to Lab</h3>
-      <button type="button" class="modal-close" data-close-modal="return-modal">&times;</button>
+      <button type="button" class="modal-close" data-close-modal="return-modal" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
-      <p id="return-modal-desc">Are you sure you want to mark this component as returned?</p>
+      <p id="return-modal-desc" style="font-size: 14px;"></p>
       <div class="alert alert-info mt-12" style="margin-bottom: 0;">
-        Make sure you physically place the component back into its labeled lab bin after clicking Confirm Return.
+        Please place the component back into its labeled storage bin after confirming your return.
       </div>
     </div>
     <div class="modal-footer">
-      <button type="button" class="btn btn-silver" data-close-modal="return-modal">Cancel</button>
-      <button type="button" class="btn btn-green" id="btn-confirm-return">Confirm Return</button>
+      <button type="button" class="btn btn-ghost" data-close-modal="return-modal">Cancel</button>
+      <button type="button" class="btn btn-success" id="btn-confirm-return">Confirm Return</button>
     </div>
   </div>
 </div>
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
     <div class="footer-links">
       <a href="checkout.html">Check Out Component</a>
       <a href="docs.html">User Documentation</a>
@@ -203,13 +232,30 @@
     getCheckoutDisplayStatus
   } from "./js/services/checkout-service.js";
   import { subscribeToItems } from "./js/services/item-service.js";
-  import { escapeHtml, formatDate, formatDateTime, showToast } from "./js/utils.js";
+  import {
+    escapeHtml,
+    formatDate,
+    formatDateTime,
+    formatRelativeDue,
+    showToast
+  } from "./js/utils.js";
 
   let currentUser = null;
   let unsubCheckouts = null;
   let unsubItems = null;
   let allItems = [];
   let pendingReturnId = null;
+
+  // Quick Code Jump
+  document.getElementById("quick-code-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const code = document.getElementById("quick-code-input").value.trim().toUpperCase();
+    if (code) {
+      window.location.href = `checkout.html?code=${encodeURIComponent(code)}`;
+    } else {
+      window.location.href = "checkout.html";
+    }
+  });
 
   // Tab switching
   document.querySelectorAll(".tab-btn").forEach((btn) => {
@@ -225,7 +271,7 @@
     });
   });
 
-  // Modal helpers
+  // Modals
   function openModal(id) {
     document.getElementById(id).classList.add("open");
   }
@@ -246,19 +292,19 @@
     const sNum = extractStudentNumberFromEmail(currentUser.email) || currentUser.profile?.studentNumber || "";
     const isTeacher = currentUser.profile?.role === "teacher";
     document.getElementById("student-name").textContent = name;
-    document.getElementById("student-email-pill").textContent = currentUser.email || "";
+    document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
     document.getElementById("student-number-pill").textContent = sNum
-      ? `Student #${sNum}`
+      ? `#${sNum}`
       : isTeacher
-        ? `Teacher (${(currentUser.email || "").split("@")[0]})`
-        : "PDSB Account";
+        ? (currentUser.email || "").split("@")[0]
+        : "PDSB";
   }
 
   function renderStatusBadge(status) {
-    if (status === "overdue") return '<span class="badge badge-overdue">OVERDUE</span>';
-    if (status === "due-soon") return '<span class="badge badge-amber">DUE SOON</span>';
-    if (status === "returned") return '<span class="badge badge-green">RETURNED</span>';
-    return '<span class="badge badge-blue">ACTIVE</span>';
+    if (status === "overdue") return '<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>';
+    if (status === "due-soon") return '<span class="badge badge-warn"><span class="badge-dot"></span>Due Soon</span>';
+    if (status === "returned") return '<span class="badge badge-success"><span class="badge-dot"></span>Returned</span>';
+    return '<span class="badge badge-accent"><span class="badge-dot"></span>Active</span>';
   }
 
   function renderActiveCheckouts(active) {
@@ -277,14 +323,20 @@
     document.getElementById("stat-due-soon").textContent = dueSoonCount;
 
     if (active.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="6" class="empty-cell">You have no checked-out components right now. Click "+ Check Out New Component" above to sign one out.</td></tr>';
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="6" class="empty-state">
+            <strong>No active component loans</strong>
+            Scan a bin QR code or enter a component code above whenever you need lab hardware.
+          </td>
+        </tr>`;
       return;
     }
 
     tbody.innerHTML = active
       .map((co) => {
         const status = getCheckoutDisplayStatus(co);
+        const relDue = formatRelativeDue(co.dueDate);
         const notesHtml = co.notes
           ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>`
           : "";
@@ -296,15 +348,18 @@
               ${notesHtml}
             </td>
             <td><code>${escapeHtml(co.itemCode)}</code></td>
-            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
-            <td><strong>${escapeHtml(formatDate(co.dueDate))}</strong></td>
+            <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td class="tabular">
+              <strong>${escapeHtml(formatDate(co.dueDate))}</strong>
+              <div class="text-small text-muted">${escapeHtml(relDue)}</div>
+            </td>
             <td>${renderStatusBadge(status)}</td>
-            <td>
-              <button type="button" class="btn btn-silver btn-sm btn-open-return"
+            <td style="text-align: right;">
+              <button type="button" class="btn btn-ghost btn-sm btn-open-return"
                 data-id="${escapeHtml(co.id)}"
                 data-name="${escapeHtml(co.itemName)}"
                 data-code="${escapeHtml(co.itemCode)}">
-                Return Item
+                Return
               </button>
             </td>
           </tr>
@@ -316,7 +371,7 @@
       btn.addEventListener("click", () => {
         pendingReturnId = btn.dataset.id;
         document.getElementById("return-modal-desc").textContent =
-          `Return "${btn.dataset.name}" (${btn.dataset.code}) back into lab inventory?`;
+          `Mark "${btn.dataset.name}" (${btn.dataset.code}) as returned to lab inventory?`;
         openModal("return-modal");
       });
     });
@@ -328,7 +383,13 @@
     document.getElementById("stat-returned").textContent = returned.length;
 
     if (returned.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">No returned components in your history yet.</td></tr>';
+      tbody.innerHTML = `
+        <tr>
+          <td colspan="5" class="empty-state">
+            <strong>No return history yet</strong>
+            Components you return will be logged here automatically.
+          </td>
+        </tr>`;
       return;
     }
 
@@ -338,8 +399,8 @@
           <tr>
             <td><strong>${escapeHtml(co.itemName)}</strong></td>
             <td><code>${escapeHtml(co.itemCode)}</code></td>
-            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
-            <td>${escapeHtml(formatDateTime(co.returnedAt))}</td>
+            <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.returnedAt))}</td>
             <td>${renderStatusBadge("returned")}</td>
           </tr>
         `
@@ -365,19 +426,19 @@
     const tbody = document.getElementById("catalog-list");
 
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">No matching lab components found.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No matching components</strong>Try clearing your search or category filter.</td></tr>';
       return;
     }
 
     tbody.innerHTML = filtered
       .map((item) => {
-        const inStock = item.availableQuantity > 0;
-        const stockBadge = inStock
-          ? `<span class="badge badge-green">${item.availableQuantity} / ${item.totalQuantity} IN STOCK</span>`
-          : `<span class="badge badge-slate">0 / ${item.totalQuantity} OUT</span>`;
-        const actionHtml = inStock
-          ? `<a href="checkout.html?code=${encodeURIComponent(item.code)}" class="btn btn-green btn-sm">Check Out</a>`
-          : `<span class="text-small text-muted">Unavailable</span>`;
+        const avail = Number(item.availableQuantity) || 0;
+        const total = Math.max(1, Number(item.totalQuantity) || 1);
+        const pct = Math.min(100, Math.round((avail / total) * 100));
+        const fillClass = avail === 0 ? "is-empty" : pct <= 30 ? "is-low" : "";
+        const actionHtml = avail > 0
+          ? `<a href="checkout.html?code=${encodeURIComponent(item.code)}" class="btn btn-primary btn-sm">Check Out</a>`
+          : `<span class="badge badge-neutral">Out of Stock</span>`;
 
         return `
           <tr>
@@ -386,10 +447,15 @@
               <strong>${escapeHtml(item.name)}</strong>
               ${item.notes ? `<div class="text-small text-muted">${escapeHtml(item.notes)}</div>` : ""}
             </td>
-            <td>${escapeHtml(item.category || "General")}</td>
-            <td>${escapeHtml(item.location || "—")}</td>
-            <td>${stockBadge}</td>
-            <td>${actionHtml}</td>
+            <td class="text-secondary">${escapeHtml(item.category || "General")}</td>
+            <td class="text-secondary">${escapeHtml(item.location || "Main Lab")}</td>
+            <td>
+              <div class="stock-meter">
+                <span class="tabular text-small fw-bold">${avail} / ${total} available</span>
+                <div class="stock-bar"><div class="stock-bar-fill ${fillClass}" style="width: ${pct}%;"></div></div>
+              </div>
+            </td>
+            <td style="text-align: right;">${actionHtml}</td>
           </tr>
         `;
       })
@@ -427,7 +493,7 @@
       renderStudentHeader();
 
       if (user.profile?.role === "teacher") {
-        document.getElementById("nav-teacher-link").style.display = "inline-block";
+        document.getElementById("nav-teacher-link").style.display = "inline-flex";
       }
 
       if (unsubCheckouts) unsubCheckouts();
@@ -437,9 +503,7 @@
           renderActiveCheckouts(active);
           renderHistory(returned);
         },
-        (err) => {
-          showToast("Error loading checkouts: " + err.message, "warn");
-        }
+        (err) => showToast("Error loading checkouts: " + err.message, "warn")
       );
 
       if (unsubItems) unsubItems();
@@ -448,9 +512,7 @@
           allItems = items;
           renderCatalog();
         },
-        (err) => {
-          console.error("[CEIT] Catalog load error:", err);
-        }
+        (err) => console.error("[CEIT] Catalog load error:", err)
       );
     }
   });

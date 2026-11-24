@@ -12,10 +12,15 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="index.html" class="brand-wordmark">
-        <span class="brand-cube">C</span>
+        <span class="brand-mark" aria-hidden="true">
+          <svg class="icon" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2"/>
+            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
+          </svg>
+        </span>
         <span>CEIT</span>
       </a>
-      <span class="brand-subtitle">PDSB Computer Engineering Lab</span>
+      <span class="brand-tag">PDSB · Mr. Kidston</span>
     </div>
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="index.html" class="active">Sign In</a>
@@ -24,75 +29,80 @@
   </div>
 </header>
 
-<div class="notice-strip" id="redirect-notice" style="display: none;">
-  <span><strong>Component Link Detected:</strong> Sign in below to continue directly to your component check-out.</span>
-</div>
-
 <main class="page-wrapper">
+  <div id="redirect-notice" class="alert alert-info" style="display: none;">
+    <strong>QR Component Link Detected:</strong> Sign in with your <code>@pdsb.net</code> account below to continue straight to your component check-out.
+  </div>
+
   <div class="grid-login">
 
-    <!-- Left Column: Classic Lab Portal Overview -->
-    <section class="panel">
-      <div class="panel-header">
-        <h2>Welcome to the Computer Engineering Item Tracker</h2>
-        <span class="badge badge-blue">Mr. Kidston's Lab</span>
-      </div>
-      <div class="panel-body">
-        <p class="mb-12">
-          <strong>CEIT</strong> is a digital sign-out library for the Peel District School Board
-          Computer Engineering lab. Sign in with your school account to borrow microcontrollers,
-          sensors, cables, and tools — and track due dates in real time.
+    <!-- Left Column: Live Deterministic Blueprint × Minimal UI Showcase -->
+    <section>
+      <div class="mb-16">
+        <span class="badge badge-accent mb-8">Computer Engineering Lab Library</span>
+        <h1 style="font-size: 32px; font-weight: 800; letter-spacing: -0.035em; line-height: 1.15; margin-top: 6px;">
+          Sign out lab hardware in seconds.
+        </h1>
+        <p class="text-secondary mt-8" style="font-size: 15px; max-width: 540px;">
+          Scan a bin QR code or enter a component code to borrow Arduinos, sensors, and tools — with automatic due dates and live inventory tracking for teachers and students.
         </p>
+      </div>
 
-        <ul class="feature-list mb-12">
-          <li>
-            <strong>1. Scan a QR Code or Type an Item Code</strong>
-            Use your phone camera, lab webcam, or type the printed bin code (e.g. <code>ARD-UNO-01</code>)
-            to check out hardware in seconds.
-          </li>
-          <li>
-            <strong>2. Track Your Borrowed Components &amp; Due Dates</strong>
-            View every item currently signed out to your student number, check due dates, and return
-            parts back to inventory when your lab is complete.
-          </li>
-          <li>
-            <strong>3. Built-In Teacher Admin Panel</strong>
-            Teachers can monitor all active sign-outs across the class, add new hardware components,
-            and print cut-out QR code bin labels directly from the browser.
-          </li>
-        </ul>
+      <div class="hero-canvas-frame">
+        <div class="hero-canvas-topbar">
+          <span>CEIT · LAB WORKFLOW PREVIEW</span>
+          <span class="hero-canvas-status">
+            <span class="pulse-dot" aria-hidden="true"></span>
+            LIVE SYNC
+          </span>
+        </div>
+        <div class="hero-canvas-wrap">
+          <canvas id="hero-motion-canvas" aria-label="Animated preview of scanning a component QR code and checking out an Arduino Uno"></canvas>
+        </div>
+      </div>
 
-        <div class="alert alert-info" style="margin-bottom: 0;">
-          <strong>PDSB Account Tip:</strong> Click <em>Sign In with School Google Account</em> to log in
-          with your <code>@pdsb.net</code> address. If Google OAuth is restricted on your school network,
-          use the <strong>Email &amp; Password</strong> login or sign-up form on the right.
+      <div class="hero-steps">
+        <div class="hero-step">
+          <div class="hero-step-num">01 · SCAN OR TYPE</div>
+          <h3>Instant Lookup</h3>
+          <p>Scan a printed bin QR label with any camera or type the short code.</p>
+        </div>
+        <div class="hero-step">
+          <div class="hero-step-num">02 · ONE-TAP LOAN</div>
+          <h3>Clear Due Dates</h3>
+          <p>Pick a loan duration and track live return countdowns on your dashboard.</p>
+        </div>
+        <div class="hero-step">
+          <div class="hero-step-num">03 · TEACHER PANEL</div>
+          <h3>Print &amp; Monitor</h3>
+          <p>Teachers manage stock, print QR bin sheets, and export audit CSVs.</p>
         </div>
       </div>
     </section>
 
-    <!-- Right Column: Classic Blue-Headed Login / Sign-Up Box -->
-    <section class="panel">
-      <div class="panel-header panel-header-blue">
-        <h2 id="auth-panel-title">Member Sign In</h2>
-        <span class="badge badge-green" id="auth-mode-badge">Portal</span>
+    <!-- Right Column: Clean Minimal Sign-In Card -->
+    <section class="card" style="margin-bottom: 0;">
+      <div class="card-header">
+        <h2 id="auth-panel-title">Sign In to CEIT</h2>
+        <span class="badge badge-neutral">@pdsb.net only</span>
       </div>
-      <div class="panel-body">
-        <div id="error-box" class="alert alert-warn" style="display: none;"></div>
+      <div class="card-body">
+        <div id="error-box" class="alert alert-danger" style="display: none;"></div>
         <div id="status-box" class="alert alert-info" style="display: none;"></div>
 
         <!-- Signed Out View -->
         <div id="auth-forms">
           <button id="btn-google" class="btn btn-google" type="button">
-            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-              <path fill="#5C6B73" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+              <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            Sign In with School Google Account
+            Continue with School Google Account
           </button>
 
-          <div class="divider"><span>or with email &amp; password</span></div>
+          <div class="divider"><span>or use email &amp; password</span></div>
 
           <form id="email-form" novalidate>
             <div id="signup-fields" style="display: none;">
@@ -103,9 +113,9 @@
             </div>
 
             <div class="form-group">
-              <label for="email-input">PDSB School Email (<code>@pdsb.net</code> only)</label>
+              <label for="email-input">PDSB Email</label>
               <input type="email" id="email-input" placeholder="123456@pdsb.net or p0161177@pdsb.net" autocomplete="email" required>
-              <div class="form-hint" id="email-detect-hint">Student number and teacher role are detected automatically from your <code>@pdsb.net</code> email.</div>
+              <div class="form-hint" id="email-detect-hint">Student number and teacher role are detected automatically from your <code>@pdsb.net</code> address.</div>
             </div>
 
             <div class="form-group">
@@ -113,23 +123,23 @@
               <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password" required>
             </div>
 
-            <button type="submit" id="submit-btn" class="btn btn-green btn-block btn-lg mt-8">
+            <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg mt-8">
               Sign In
             </button>
           </form>
 
-          <div style="text-align: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #d5dce6;">
-            <span id="toggle-text" class="text-muted">Need a password account?</span>
-            <a href="#" id="toggle-btn" class="fw-bold" style="margin-left: 4px;">Create Account</a>
+          <div style="text-align: center; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--border-light); font-size: 13px;">
+            <span id="toggle-text" class="text-muted">Google sign-in blocked on this PC?</span>
+            <a href="#" id="toggle-btn" class="fw-bold" style="margin-left: 4px;">Create a password login</a>
           </div>
         </div>
 
-        <!-- Redirecting View (shown briefly while routing after sign-in) -->
-        <div id="auth-redirecting" style="display: none; text-align: center; padding: 18px 8px;">
-          <p class="fw-bold mb-8" id="redirect-msg">Signed in! Loading your workspace...</p>
+        <!-- Redirecting View -->
+        <div id="auth-redirecting" style="display: none; text-align: center; padding: 20px 8px;">
+          <p class="fw-bold mb-12" id="redirect-msg">Signed in! Opening your workspace...</p>
           <div class="btn-row" style="justify-content: center;">
-            <button id="btn-continue" class="btn btn-green" type="button">Continue Now</button>
-            <button id="btn-logout" class="btn btn-silver" type="button">Sign Out</button>
+            <button id="btn-continue" class="btn btn-primary" type="button">Continue Now</button>
+            <button id="btn-logout" class="btn btn-ghost" type="button">Sign Out</button>
           </div>
         </div>
       </div>
@@ -140,7 +150,7 @@
 
 <footer class="site-footer">
   <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
     <div class="footer-links">
       <a href="docs.html">User Documentation</a>
       <a href="test-backend.html">Backend Diagnostics</a>
@@ -160,6 +170,9 @@
     extractStudentNumberFromEmail
   } from "./js/services/auth-service.js";
   import { getFriendlyAuthError, sanitizeRedirectUrl } from "./js/utils.js";
+  import { mountHeroMotion } from "./js/hero-motion.js";
+
+  mountHeroMotion(document.getElementById("hero-motion-canvas"));
 
   let isSignUpMode = false;
   let currentUser = null;
@@ -168,7 +181,7 @@
   const redirectTarget = sanitizeRedirectUrl(params.get("redirect"));
 
   if (redirectTarget) {
-    document.getElementById("redirect-notice").style.display = "flex";
+    document.getElementById("redirect-notice").style.display = "block";
   }
 
   const errorBox = document.getElementById("error-box");
@@ -217,12 +230,12 @@
     return role === "teacher" ? "teacher.html" : "dashboard.html";
   }
 
-  // Live indicator of detected student number or teacher account from @pdsb.net email
+  // Live email account type detection
   emailInput.addEventListener("input", () => {
     const val = emailInput.value.trim().toLowerCase();
     if (!val) {
       emailDetectHint.innerHTML =
-        "Student number and teacher role are detected automatically from your <code>@pdsb.net</code> email.";
+        "Student number and teacher role are detected automatically from your <code>@pdsb.net</code> address.";
       return;
     }
     if (!isPdsbEmail(val)) {
@@ -234,11 +247,9 @@
       return;
     }
     const sNum = extractStudentNumberFromEmail(val);
-    if (sNum) {
-      emailDetectHint.textContent = `Detected PDSB Student #${sNum}.`;
-    } else {
-      emailDetectHint.textContent = "Valid @pdsb.net account.";
-    }
+    emailDetectHint.textContent = sNum
+      ? `Detected PDSB Student #${sNum}.`
+      : "Valid @pdsb.net account.";
   });
 
   // Toggle Sign In / Create Account mode
@@ -256,11 +267,11 @@
       toggleBtn.textContent = "Sign In";
     } else {
       signupFields.style.display = "none";
-      panelTitle.textContent = "Member Sign In";
+      panelTitle.textContent = "Sign In to CEIT";
       submitBtn.textContent = "Sign In";
       passwordInput.setAttribute("autocomplete", "current-password");
-      toggleText.textContent = "Need a password account?";
-      toggleBtn.textContent = "Create Account";
+      toggleText.textContent = "Google sign-in blocked on this PC?";
+      toggleBtn.textContent = "Create a password login";
     }
   });
 
@@ -272,7 +283,7 @@
       authRedirecting.style.display = "block";
       const dest = resolveDestination(user);
       document.getElementById("redirect-msg").textContent =
-        `Welcome, ${user.displayName || user.profile?.displayName || user.email}! Redirecting...`;
+        `Welcome, ${user.displayName || user.profile?.displayName || user.email}! Opening your workspace...`;
       window.location.href = dest;
     } else {
       authForms.style.display = "block";
@@ -280,7 +291,7 @@
     }
   });
 
-  // Google Sign-In (strictly @pdsb.net only)
+  // Google Sign-In (strictly @pdsb.net)
   document.getElementById("btn-google").addEventListener("click", async () => {
     showError("");
     showStatus("Opening Google Sign-In...");
@@ -288,7 +299,7 @@
     btn.disabled = true;
     try {
       const res = await signInWithGoogle(true);
-      showStatus("Signed in! Redirecting to your workspace...");
+      showStatus("Signed in! Redirecting...");
       window.location.href = resolveDestination({
         uid: res.user.uid,
         email: res.user.email,
@@ -301,7 +312,7 @@
     }
   });
 
-  // Email / Password Sign-In or Sign-Up (strictly @pdsb.net only)
+  // Email / Password Sign-In or Sign-Up (strictly @pdsb.net)
   document.getElementById("email-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     showError("");
@@ -339,7 +350,7 @@
         showStatus("Signing you in...");
         res = await signInWithEmail(email, password);
       }
-      showStatus("Signed in! Redirecting to your workspace...");
+      showStatus("Signed in! Redirecting...");
       window.location.href = resolveDestination({
         uid: res.user.uid,
         email: res.user.email,
