@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>CEIT — Sign In</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -26,8 +28,11 @@
 
 <main class="page-wrapper">
   <div class="auth-wrap">
+    <div id="timeout-notice" class="alert alert-warn" style="display: none;">
+      You were signed out due to inactivity on this device. Sign in with your <code>@pdsb.net</code> Google account to continue.
+    </div>
     <div id="redirect-notice" class="alert alert-info" style="display: none;">
-      Sign in with your <code>@pdsb.net</code> account to continue.
+      Sign in with your <code>@pdsb.net</code> Google account to continue.
     </div>
 
     <section class="card" style="margin-bottom: 0;">
@@ -40,6 +45,9 @@
         <div id="status-box" class="alert alert-info" style="display: none;"></div>
 
         <div id="auth-forms">
+          <p class="text-secondary text-small mb-12">
+            Use your verified Peel District School Board Google account (<code>@pdsb.net</code>) to access CEIT.
+          </p>
           <button id="btn-google" class="btn btn-google" type="button">
             <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -49,37 +57,6 @@
             </svg>
             Sign In with Google
           </button>
-
-          <div class="divider"><span>or</span></div>
-
-          <form id="email-form" novalidate>
-            <div id="signup-fields" style="display: none;">
-              <div class="form-group">
-                <label for="name-input">Full Name</label>
-                <input type="text" id="name-input" placeholder="Full name" autocomplete="name">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="email-input">PDSB Email</label>
-              <input type="email" id="email-input" placeholder="123456@pdsb.net" autocomplete="email" required>
-              <div class="form-hint" id="email-detect-hint" style="display: none;"></div>
-            </div>
-
-            <div class="form-group">
-              <label for="password-input">Password</label>
-              <input type="password" id="password-input" placeholder="Password" autocomplete="current-password" required>
-            </div>
-
-            <button type="submit" id="submit-btn" class="btn btn-primary btn-block btn-lg mt-8">
-              Sign In
-            </button>
-          </form>
-
-          <div style="text-align: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px;">
-            <span id="toggle-text" class="text-muted">No password account?</span>
-            <a href="#" id="toggle-btn" class="fw-bold" style="margin-left: 4px;">Create Account</a>
-          </div>
         </div>
 
         <div id="auth-redirecting" style="display: none; text-align: center; padding: 16px 8px;">
@@ -94,209 +71,7 @@
   </div>
 </main>
 
-<script type="module">
-  import {
-    signInWithGoogle,
-    signInWithEmail,
-    signUpWithEmail,
-    signOutUser,
-    observeAuthState,
-    isPdsbEmail,
-    isTeacherEmail,
-    extractStudentNumberFromEmail
-  } from "./js/services/auth-service.js";
-  import { getFriendlyAuthError, sanitizeRedirectUrl } from "./js/utils.js";
-
-  let isSignUpMode = false;
-  let currentUser = null;
-
-  const params = new URLSearchParams(window.location.search);
-  const redirectTarget = sanitizeRedirectUrl(params.get("redirect"));
-
-  if (redirectTarget) {
-    document.getElementById("redirect-notice").style.display = "block";
-  }
-
-  const errorBox = document.getElementById("error-box");
-  const statusBox = document.getElementById("status-box");
-  const authForms = document.getElementById("auth-forms");
-  const authRedirecting = document.getElementById("auth-redirecting");
-  const signupFields = document.getElementById("signup-fields");
-  const panelTitle = document.getElementById("auth-panel-title");
-  const submitBtn = document.getElementById("submit-btn");
-  const toggleBtn = document.getElementById("toggle-btn");
-  const toggleText = document.getElementById("toggle-text");
-  const emailInput = document.getElementById("email-input");
-  const passwordInput = document.getElementById("password-input");
-  const emailDetectHint = document.getElementById("email-detect-hint");
-
-  function showError(msg) {
-    if (!msg) {
-      errorBox.style.display = "none";
-      errorBox.textContent = "";
-      return;
-    }
-    statusBox.style.display = "none";
-    errorBox.textContent = msg;
-    errorBox.style.display = "block";
-  }
-
-  function showStatus(msg) {
-    if (!msg) {
-      statusBox.style.display = "none";
-      statusBox.textContent = "";
-      return;
-    }
-    errorBox.style.display = "none";
-    statusBox.textContent = msg;
-    statusBox.style.display = "block";
-  }
-
-  function resolveDestination(user) {
-    const role = user.profile?.role || "student";
-    if (redirectTarget) {
-      if (redirectTarget.startsWith("teacher.html") && role !== "teacher") {
-        return "dashboard.html";
-      }
-      return redirectTarget;
-    }
-    return role === "teacher" ? "teacher.html" : "dashboard.html";
-  }
-
-  emailInput.addEventListener("input", () => {
-    const val = emailInput.value.trim().toLowerCase();
-    if (!val) {
-      emailDetectHint.style.display = "none";
-      emailDetectHint.textContent = "";
-      return;
-    }
-    emailDetectHint.style.display = "block";
-    if (!isPdsbEmail(val)) {
-      emailDetectHint.textContent = "Must be an @pdsb.net email.";
-      return;
-    }
-    if (isTeacherEmail(val)) {
-      emailDetectHint.textContent = `Teacher (${val.split("@")[0]})`;
-      return;
-    }
-    const sNum = extractStudentNumberFromEmail(val);
-    emailDetectHint.textContent = sNum ? `Student #${sNum}` : "@pdsb.net";
-  });
-
-  toggleBtn.addEventListener("click", (e) => {
-    e.preventDefault();
-    isSignUpMode = !isSignUpMode;
-    showError("");
-    showStatus("");
-    if (isSignUpMode) {
-      signupFields.style.display = "block";
-      panelTitle.textContent = "Create Account";
-      submitBtn.textContent = "Create Account";
-      passwordInput.setAttribute("autocomplete", "new-password");
-      toggleText.textContent = "Have an account?";
-      toggleBtn.textContent = "Sign In";
-    } else {
-      signupFields.style.display = "none";
-      panelTitle.textContent = "Sign In";
-      submitBtn.textContent = "Sign In";
-      passwordInput.setAttribute("autocomplete", "current-password");
-      toggleText.textContent = "No password account?";
-      toggleBtn.textContent = "Create Account";
-    }
-  });
-
-  observeAuthState((user) => {
-    currentUser = user;
-    if (user) {
-      authForms.style.display = "none";
-      authRedirecting.style.display = "block";
-      const dest = resolveDestination(user);
-      document.getElementById("redirect-msg").textContent = "Redirecting...";
-      window.location.href = dest;
-    } else {
-      authForms.style.display = "block";
-      authRedirecting.style.display = "none";
-    }
-  });
-
-  document.getElementById("btn-google").addEventListener("click", async () => {
-    showError("");
-    showStatus("Opening Google Sign-In...");
-    const btn = document.getElementById("btn-google");
-    btn.disabled = true;
-    try {
-      const res = await signInWithGoogle(true);
-      showStatus("Redirecting...");
-      window.location.href = resolveDestination({
-        uid: res.user.uid,
-        email: res.user.email,
-        displayName: res.user.displayName,
-        profile: res.profile
-      });
-    } catch (err) {
-      showError(getFriendlyAuthError(err));
-      btn.disabled = false;
-    }
-  });
-
-  document.getElementById("email-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    showError("");
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value;
-
-    if (!email || !password) {
-      showError("Enter your PDSB email and password.");
-      return;
-    }
-    if (!isPdsbEmail(email)) {
-      showError("Only @pdsb.net emails are allowed.");
-      return;
-    }
-
-    submitBtn.disabled = true;
-    try {
-      let res;
-      if (isSignUpMode) {
-        const name = document.getElementById("name-input").value.trim();
-        if (!name) {
-          showError("Enter your full name.");
-          submitBtn.disabled = false;
-          return;
-        }
-        if (password.length < 6) {
-          showError("Password must be at least 6 characters.");
-          submitBtn.disabled = false;
-          return;
-        }
-        showStatus("Creating account...");
-        res = await signUpWithEmail(email, password, name);
-      } else {
-        showStatus("Signing in...");
-        res = await signInWithEmail(email, password);
-      }
-      showStatus("Redirecting...");
-      window.location.href = resolveDestination({
-        uid: res.user.uid,
-        email: res.user.email,
-        displayName: res.user.displayName,
-        profile: res.profile
-      });
-    } catch (err) {
-      showError(getFriendlyAuthError(err));
-      submitBtn.disabled = false;
-    }
-  });
-
-  document.getElementById("btn-continue").addEventListener("click", () => {
-    if (!currentUser) return;
-    window.location.href = resolveDestination(currentUser);
-  });
-
-  document.getElementById("btn-logout").addEventListener("click", async () => {
-    await signOutUser();
-  });
-</script>
+<script type="module" src="./js/pages/index.js"></script>
 
 </body>
 </html>

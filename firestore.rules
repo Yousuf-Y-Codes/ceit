@@ -2,20 +2,29 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper functions — strictly allow only @pdsb.net accounts
+    // =========================================================================
+    // Authentication & Identity Helpers
+    // Strictly require verified Google OAuth sessions on @pdsb.net ONLY.
+    // Blocks unverified emails and Email/Password accounts at the database layer.
+    // =========================================================================
     function isAuthenticated() {
       return request.auth != null &&
         request.auth.token.email != null &&
-        request.auth.token.email.lower().matches('.*@pdsb\\.net$');
+        request.auth.token.email_verified == true &&
+        request.auth.token.firebase.sign_in_provider == 'google.com' &&
+        request.auth.token.email.lower().matches('^[a-z0-9._+-]+@pdsb\\.net$');
+    }
+
+    function isTeacherEmail() {
+      return isAuthenticated() &&
+        request.auth.token.email.lower().matches('^p[0-9]+@pdsb\\.net$');
     }
 
     function isTeacher() {
-      return isAuthenticated() && (
-        request.auth.token.email.lower().matches('^p[0-9]+@pdsb\\.net$') ||
-        (
-          exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher'
-        )
+      return isTeacherEmail() || (
+        isAuthenticated() &&
+        exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'teacher'
       );
     }
 
@@ -23,36 +32,266 @@ service cloud.firestore {
       return isAuthenticated() && request.auth.uid == userId;
     }
 
-    // User profiles
+    function isValidPeriod(period) {
+      return period in ['Period 1', 'Period 2', 'Period 3', 'Period 4'];
+    }
+
+    function isNumericStudentEmail() {
+      return isAuthenticated() &&
+        request.auth.token.email.lower().matches('^[0-9]+@pdsb\\.net$');
+    }
+
+    function emailPrefix() {
+      return request.auth.token.email.lower().split('@')[0];
+    }
+
+    // =========================================================================
+    // User Profiles (/users/{userId})
+    // - Students can ONLY read their own profile (prevents scraping other users)
+    // - Students can NEVER self-promote to role == 'teacher' or spoof email/ID
+    // =========================================================================
+    function validSelfUserCreate() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'uid', 'email', 'displayName', 'role', 'studentNumber', 'createdAt', 'lastLoginAt'
+        ]) &&
+        data.uid == request.auth.uid &&
+        data.email is string &&
+        data.email == request.auth.token.email.lower() &&
+        data.displayName is string &&
+        data.displayName.size() >= 1 &&
+        data.displayName.size() <= 120 &&
+        data.role == (isTeacherEmail() ? 'teacher' : 'student') &&
+        data.studentNumber is string &&
+        data.studentNumber.size() <= 32 &&
+        (!isNumericStudentEmail() || data.studentNumber == emailPrefix()) &&
+        data.createdAt == request.time &&
+        data.lastLoginAt == request.time;
+    }
+
+    function validSelfUserUpdate() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return changed.hasOnly(['lastLoginAt', 'displayName', 'studentNumber', 'role']) &&
+        data.uid == resource.data.uid &&
+        data.email == resource.data.email &&
+        data.lastLoginAt == request.time &&
+        data.displayName is string &&
+        data.displayName.size() >= 1 &&
+        data.displayName.size() <= 120 &&
+        data.studentNumber is string &&
+        data.studentNumber.size() <= 32 &&
+        (
+          data.studentNumber == resource.data.studentNumber ||
+          (isNumericStudentEmail() && data.studentNumber == emailPrefix())
+        ) &&
+        (
+          data.role == resource.data.role ||
+          (isTeacherEmail() && data.role == 'teacher')
+        );
+    }
+
+    function validTeacherUserUpdate() {
+      let data = request.resource.data;
+      return data.role in ['student', 'teacher'] &&
+        data.uid == resource.data.uid &&
+        data.email == resource.data.email;
+    }
+
     match /users/{userId} {
-      allow read: if isAuthenticated();
-      // Allow users to create/update their own profile, or teachers to manage profiles
-      allow create, update: if isOwner(userId) || isTeacher();
-      allow delete: if isTeacher();
+      allow read: if isOwner(userId) || isTeacher();
+      allow create: if isOwner(userId) && validSelfUserCreate();
+      allow update: if (isOwner(userId) && validSelfUserUpdate()) ||
+                       (isTeacher() && validTeacherUserUpdate());
+      allow delete: if false;
     }
 
-    // Inventory items
+    // =========================================================================
+    // Inventory Items (/items/{itemId})
+    // - Any verified @pdsb.net user can read inventory
+    // - Only teachers can create, edit metadata/totals, or delete items
+    // - Students can ONLY adjust availableQuantity by exactly +/- 1 within [0, totalQuantity]
+    // =========================================================================
+    function validItemCreate() {
+      let data = request.resource.data;
+      return data.keys().hasOnly([
+          'name', 'code', 'category', 'totalQuantity', 'availableQuantity',
+          'location', 'notes', 'createdBy', 'createdAt', 'updatedAt'
+        ]) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+        data.code is string && data.code.matches('^[A-Z0-9][A-Z0-9._-]{0,31}$') &&
+        data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+        data.location is string && data.location.size() <= 100 &&
+        data.notes is string && data.notes.size() <= 300 &&
+        data.totalQuantity is int && data.totalQuantity >= 1 && data.totalQuantity <= 9999 &&
+        data.availableQuantity is int && data.availableQuantity == data.totalQuantity &&
+        data.createdBy == request.auth.uid &&
+        data.createdAt == request.time &&
+        data.updatedAt == request.time;
+    }
+
+    function validTeacherItemUpdate() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return changed.hasOnly([
+          'name', 'category', 'totalQuantity', 'availableQuantity',
+          'location', 'notes', 'updatedAt'
+        ]) &&
+        data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
+        data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
+        data.location is string && data.location.size() <= 100 &&
+        data.notes is string && data.notes.size() <= 300 &&
+        data.totalQuantity is int && data.totalQuantity >= 0 && data.totalQuantity <= 9999 &&
+        data.availableQuantity is int &&
+        data.availableQuantity >= 0 &&
+        data.availableQuantity <= data.totalQuantity &&
+        data.updatedAt == request.time;
+    }
+
+    function validStudentItemStockStep() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return changed.hasOnly(['availableQuantity', 'updatedAt']) &&
+        data.availableQuantity is int &&
+        data.availableQuantity >= 0 &&
+        data.availableQuantity <= resource.data.totalQuantity &&
+        (
+          data.availableQuantity == resource.data.availableQuantity - 1 ||
+          data.availableQuantity == resource.data.availableQuantity + 1
+        ) &&
+        data.updatedAt == request.time;
+    }
+
     match /items/{itemId} {
-      // Any logged-in student or teacher can read items
       allow read: if isAuthenticated();
-      // Only teachers can create or delete items
-      allow create, delete: if isTeacher();
-      // Teachers can update any field; students can only update availableQuantity during checkouts/returns
-      allow update: if isTeacher() || (
-        isAuthenticated() &&
-        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['availableQuantity', 'updatedAt'])
-      );
+      allow create: if isTeacher() && validItemCreate();
+      allow update: if (isTeacher() && validTeacherItemUpdate()) ||
+                       (isAuthenticated() && validStudentItemStockStep());
+      allow delete: if isTeacher();
     }
 
-    // Checkouts & Sign-outs
+    // =========================================================================
+    // Checkouts & Sign-Outs (/checkouts/{checkoutId})
+    // - Students can read only their own checkouts; teachers can read all
+    // - Student creates are strictly validated against identity, item metadata,
+    //   period, duration (1-30 days), and atomic item stock decrement via getAfter()
+    // - Student updates can ONLY transition active -> returned (no tampering)
+    // - Deletions are disabled to maintain an immutable audit trail
+    // =========================================================================
+    function validStudentCheckoutCreate(checkoutId) {
+      let data = request.resource.data;
+      let itemPath = /databases/$(database)/documents/items/$(data.itemId);
+      let itemBefore = get(itemPath).data;
+      let itemAfter = getAfter(itemPath).data;
+      return data.keys().hasOnly([
+          'id', 'itemId', 'itemCode', 'itemName', 'category',
+          'userId', 'studentEmail', 'studentName', 'studentNumber',
+          'period', 'durationDays', 'checkedOutAt', 'dueDate',
+          'returnedAt', 'status', 'notes'
+        ]) &&
+        data.id == checkoutId &&
+        data.userId == request.auth.uid &&
+        data.studentEmail is string &&
+        data.studentEmail.lower() == request.auth.token.email.lower() &&
+        data.studentName is string && data.studentName.size() >= 1 && data.studentName.size() <= 120 &&
+        data.studentNumber is string && data.studentNumber.size() >= 1 && data.studentNumber.size() <= 32 &&
+        (!isNumericStudentEmail() || data.studentNumber == emailPrefix()) &&
+        isValidPeriod(data.period) &&
+        data.durationDays is int && data.durationDays >= 1 && data.durationDays <= 30 &&
+        data.status == 'active' &&
+        data.returnedAt == null &&
+        data.checkedOutAt == request.time &&
+        data.dueDate is timestamp &&
+        data.dueDate > request.time &&
+        data.dueDate <= request.time + duration.value(31, 'd') &&
+        data.notes is string && data.notes.size() <= 300 &&
+        data.itemId is string &&
+        exists(itemPath) &&
+        data.itemCode == itemBefore.code &&
+        data.itemName == itemBefore.name &&
+        data.category is string && data.category.size() <= 60 &&
+        itemAfter.availableQuantity == itemBefore.availableQuantity - 1;
+    }
+
+    function validTeacherCheckoutCreate(checkoutId) {
+      let data = request.resource.data;
+      let itemPath = /databases/$(database)/documents/items/$(data.itemId);
+      let itemBefore = get(itemPath).data;
+      let itemAfter = getAfter(itemPath).data;
+      return data.keys().hasOnly([
+          'id', 'itemId', 'itemCode', 'itemName', 'category',
+          'userId', 'isGuest', 'checkedOutByTeacher',
+          'studentEmail', 'studentName', 'studentNumber',
+          'period', 'durationDays', 'checkedOutAt', 'dueDate',
+          'returnedAt', 'status', 'notes'
+        ]) &&
+        data.id == checkoutId &&
+        data.userId == request.auth.uid &&
+        data.studentEmail is string && data.studentEmail.size() <= 120 &&
+        data.studentName is string && data.studentName.size() >= 1 && data.studentName.size() <= 120 &&
+        data.studentNumber is string && data.studentNumber.size() >= 1 && data.studentNumber.size() <= 32 &&
+        isValidPeriod(data.period) &&
+        data.durationDays is int && data.durationDays >= 1 && data.durationDays <= 30 &&
+        data.status == 'active' &&
+        data.returnedAt == null &&
+        data.checkedOutAt == request.time &&
+        data.dueDate is timestamp &&
+        data.dueDate > request.time &&
+        data.dueDate <= request.time + duration.value(31, 'd') &&
+        data.notes is string && data.notes.size() <= 300 &&
+        data.itemId is string &&
+        exists(itemPath) &&
+        data.itemCode == itemBefore.code &&
+        data.itemName == itemBefore.name &&
+        itemAfter.availableQuantity == itemBefore.availableQuantity - 1;
+    }
+
+    function validReturnStockIncrement(itemId) {
+      let itemPath = /databases/$(database)/documents/items/$(itemId);
+      return !exists(itemPath) ||
+        get(itemPath).data.availableQuantity >= get(itemPath).data.totalQuantity ||
+        getAfter(itemPath).data.availableQuantity == get(itemPath).data.availableQuantity + 1;
+    }
+
+    function validStudentCheckoutReturn() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return resource.data.userId == request.auth.uid &&
+        resource.data.get('isGuest', false) == false &&
+        resource.data.status == 'active' &&
+        changed.hasOnly(['status', 'returnedAt', 'returnedBy']) &&
+        data.status == 'returned' &&
+        data.returnedAt == request.time &&
+        data.returnedBy is string &&
+        data.returnedBy.lower() == request.auth.token.email.lower() &&
+        validReturnStockIncrement(resource.data.itemId);
+    }
+
+    function validTeacherCheckoutReturn() {
+      let data = request.resource.data;
+      let changed = data.diff(resource.data).affectedKeys();
+      return resource.data.status == 'active' &&
+        changed.hasOnly(['status', 'returnedAt', 'returnedBy']) &&
+        data.status == 'returned' &&
+        data.returnedAt == request.time &&
+        data.returnedBy is string &&
+        data.returnedBy.size() >= 1 &&
+        data.returnedBy.size() <= 120 &&
+        validReturnStockIncrement(resource.data.itemId);
+    }
+
     match /checkouts/{checkoutId} {
-      // Teachers can read all checkouts; students can read their own
       allow read: if isTeacher() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      // Students can create a checkout under their own UID; teachers can also create guest checkouts
-      allow create: if isTeacher() || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
-      // Teachers or the student who checked it out can mark it as returned
-      allow update: if isTeacher() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      allow delete: if isTeacher();
+      allow create: if (isTeacher() && validTeacherCheckoutCreate(checkoutId)) ||
+                       (isAuthenticated() && validStudentCheckoutCreate(checkoutId));
+      allow update: if (isTeacher() && validTeacherCheckoutReturn()) ||
+                       (isAuthenticated() && validStudentCheckoutReturn());
+      allow delete: if false;
+    }
+
+    // Default deny for any other collection or document path
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

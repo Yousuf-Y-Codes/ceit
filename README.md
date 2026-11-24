@@ -1,6 +1,6 @@
 # Computer Engineering Item Tracker (CEIT)
 
-A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineering Lab (Mr. Kidston)** allowing students to sign out and return hardware components via QR codes or text codes, with a full admin panel for teachers to manage inventory and print QR bin labels.
+A lightweight, secure, pure HTML/CSS/JS web application for the **PDSB Computer Engineering Lab (Mr. Kidston)** allowing students to sign out and return hardware components via QR codes or text codes, with a full admin panel for teachers to manage inventory and print QR bin labels.
 
 - **Live Site:** [https://ceit.site](https://ceit.site) / [https://yousuf-y-codes.github.io/ceit/](https://yousuf-y-codes.github.io/ceit/)
 - **Course / Stakeholder:** Computer Engineering — Mr. Kidston (`p0161177@pdsb.net`)
@@ -10,21 +10,25 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 
 ---
 
-## Features
+## Features & Security Architecture
 
-### 1. Authentication & Role Routing (`index.html`)
-- **Strict `@pdsb.net` access control** enforced in Google Sign-In, Email/Password auth, session observer, and Cloud Firestore security rules.
-- **Email & Password Sign-In / Sign-Up fallback** in case PDSB IT restricts third-party Google OAuth on school computers.
-- **Automatic Student Number & Teacher Role detection** from PDSB emails (variable number of digits):
+### 1. Verified Google OAuth Only (`index.html`)
+- **Google Sign-In ONLY (`@pdsb.net`):** Email/Password authentication has been removed to eliminate unverified email impersonation.
+- **Multi-layer verification:** Both `auth-service.js` (ID token claim + provider check) and `firestore.rules` (`sign_in_provider == 'google.com'` + `email_verified == true`) enforce verified `@pdsb.net` Google sessions.
+- **Shared Lab PC Protection:** Uses `browserSessionPersistence` (closing the browser tab ends the session) plus a 30-minute inactivity auto-sign-out timer.
+- **Automatic Role & Student Number Detection:**
   - `<digits>@pdsb.net` -> **Student** role, student number = `<digits>`
   - `p<digits>@pdsb.net` -> **Teacher** role (routed to `teacher.html`)
-- Deep-link redirect preservation: scanning a printed QR code (`checkout.html?code=...`) while logged out redirects back to that exact component after signing in.
+- **Defense-in-Depth Hardening:**
+  - Strict Content Security Policy (CSP) on every page with zero inline scripts (`js/pages/*`).
+  - Anti-privilege-escalation and atomic `getAfter()` validation in `firestore.rules`, plus immutable checkout audit logs.
+  - CSV formula-injection neutralization, allowlisted redirect sanitization, clickjacking protection, and auth-pending DOM guards.
 
 ### 2. Student Dashboard (`dashboard.html`)
 - Live summary counters: **Checked Out Now**, **Due Within 24h**, **Overdue**, and **Total Returned**.
-- **My Checked Out Items:** View component names, codes, checkout timestamps, due dates, status badges, and return items back to inventory.
-- **My Return History:** Full personal record of returned hardware.
-- **Available Lab Inventory:** Searchable read-only catalog with one-click check-out links.
+- **Active Loans:** View component names, codes, checkout timestamps, due dates, status badges, and return items back to inventory.
+- **Return History:** Full personal record of returned hardware.
+- **Lab Catalog:** Searchable read-only catalog with one-click check-out links.
 
 ### 3. Single-Screen Check Out Form (`checkout.html`)
 - **Step 1 — Component Code or Inline QR Scan:** Type an item code, pick from the in-stock dropdown, or open the inline camera QR scanner (`getUserMedia` + `jsQR` / `BarcodeDetector`) with an image upload fallback.
@@ -36,14 +40,14 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 - **Active Sign-Outs:** Real-time monitor with **Class Period filter (`Period 1`–`Period 4`)**, search, overdue/due-soon/guest filters, one-click **Check In**, and pre-filled `mailto:` **Email Reminders**.
 - **Inventory & Printable QR Labels:**
   - Create new components with auto-generated unique codes (e.g., `MCU-ARDUN-01`).
-  - Edit item details/quantities (with safety checks against currently checked-out units) or delete items.
+  - Transactional stock editing (prevents concurrency desync and reducing stock below checked-out units) or deleting items.
   - Generate crisp offline QR code labels (Canvas + SVG via `js/lib/qrcode.js`), download PNGs, or print a 3-column cut-out **Print All QR Labels** sheet.
 - **Guest Sign-Out Mode:** Sign out components on behalf of students (with Period 1–4 assignment) without requiring them to log in.
-- **Audit History & CSV Export:** Complete chronological log with Period filter and one-click CSV download (includes `Period`).
+- **Audit History & CSV Export:** Complete chronological log with Period filter and one-click CSV download (includes `Period` and formula-injection protection).
 
-### 5. Documentation (`docs.html`) & Diagnostics (`test-backend.html`)
-- In-app **User Documentation** (`docs.html`) covering every feature for both students and teachers.
-- **Backend Diagnostic Console** (`test-backend.html`) for verifying live Firebase Auth and Firestore operations.
+### 5. Documentation (`docs.html`) & Teacher Diagnostics (`test-backend.html`)
+- In-app **User Documentation** (`docs.html`) covering every feature for students and teachers.
+- **Backend Diagnostic Console** (`test-backend.html`), restricted to verified teachers only.
 
 ---
 
@@ -51,26 +55,34 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 
 ```text
 ceit/
-├── index.html                   # Login / Sign-Up portal (auto-routes by role)
+├── index.html                   # Google OAuth sign-in portal (auto-routes by role)
 ├── login.html                   # Redirect stub -> index.html
 ├── dashboard.html               # Student Dashboard (active loans, history, catalog)
 ├── checkout.html                # Component Check-Out (text code + QR camera/image scanner)
 ├── teacher.html                 # Teacher Admin Panel (active loans, inventory, QR print, guest mode, CSV)
 ├── docs.html                    # In-app User Documentation for students & teachers
-├── test-backend.html            # Live Firebase backend diagnostic console
+├── test-backend.html            # Teacher-only Firebase backend diagnostic console
 ├── css/
-│   └── style.css                # Classic Flat Blueprint Lab theme + print stylesheet (zero animations, 100% system fonts)
+│   └── style.css                # Classic Flat Blueprint Lab theme + print stylesheet
 ├── js/
 │   ├── firebase-config.js       # Firebase v11 initialization & teacher email whitelist
-│   ├── utils.js                 # XSS escaping, relative due countdowns, QR parser, CSV export, toasts
+│   ├── utils.js                 # XSS escaping, CSV neutralization, QR parser, allowlisted redirects, toasts
 │   ├── lib/
 │   │   └── qrcode.js            # Zero-dependency pure-JS ISO/IEC 18004 QR code generator
+│   ├── pages/                   # External ES module scripts (enables strict CSP with no inline scripts)
+│   │   ├── index.js
+│   │   ├── dashboard.js
+│   │   ├── checkout.js
+│   │   ├── teacher.js
+│   │   ├── docs.js
+│   │   ├── test-backend.js
+│   │   └── login-redirect.js
 │   └── services/
-│       ├── auth-service.js      # Google OAuth, Email/Password, profile sync, route guards
-│       ├── item-service.js      # Inventory CRUD, code lookup, real-time listener
+│       ├── auth-service.js      # Verified Google OAuth, session persistence, idle timeout, route guards
+│       ├── item-service.js      # Validated inventory CRUD, transactional stock updates, live listener
 │       └── checkout-service.js  # Atomic checkout/return transactions, guest mode, audit streams
-├── firestore.rules              # Cloud Firestore security rules
-├── FIREBASE_SETUP.md            # Step-by-step Firebase setup reference
+├── firestore.rules              # Hardened Cloud Firestore security rules
+├── FIREBASE_SETUP.md            # Step-by-step Firebase setup & security deployment guide
 ├── CNAME                        # Custom GitHub Pages domain (ceit.site)
 └── .nojekyll                    # Static GitHub Pages serving
 ```
@@ -84,13 +96,5 @@ ceit/
    python3 -m http.server 8000
    ```
 2. Visit `http://localhost:8000/`.
-3. For Firebase configuration, Firestore security rules, and adding additional teacher emails, see [`FIREBASE_SETUP.md`](./FIREBASE_SETUP.md) and [`firestore.rules`](./firestore.rules).
+3. Publish [`firestore.rules`](./firestore.rules) in Firebase Console and ensure **Email/Password** sign-in is disabled under **Authentication -> Sign-in method** (see [`FIREBASE_SETUP.md`](./FIREBASE_SETUP.md)).
 4. Deployed automatically via **GitHub Pages** from the `main` branch.
-
----
-
-## Out of Scope (By Design)
-- Native iOS/Android/Desktop apps (runs directly in any web browser)
-- Custom physical barcode/QR scanner hardware
-- Component photo/image uploads
-- Item holds / advance reservations

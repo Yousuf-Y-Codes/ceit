@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>Documentation — CEIT</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -11,20 +13,28 @@
 <header class="site-header">
   <div class="header-inner">
     <div class="brand-group">
-      <a href="index.html" class="brand-wordmark">
+      <a href="index.html" id="brand-home-link" class="brand-wordmark">
         <span class="brand-mark">CE</span>
         <span>CEIT</span>
       </a>
-      <span class="brand-tag">Documentation</span>
+      <span class="brand-tag">PDSB</span>
     </div>
 
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="index.html" id="nav-home">Sign In</a>
+      <a href="teacher.html" id="nav-teacher-link" style="display: none;">Teacher Panel</a>
       <a href="dashboard.html" id="nav-dash" style="display: none;">Dashboard</a>
       <a href="checkout.html" id="nav-checkout" style="display: none;">Check Out</a>
-      <a href="teacher.html" id="nav-teacher" style="display: none;">Teacher Panel</a>
       <a href="docs.html" class="active">Docs</a>
     </nav>
+
+    <div class="header-user" id="docs-header-user" style="display: none;">
+      <span class="user-pill">
+        <strong id="docs-user-name">User</strong>
+        <span class="user-pill-id" id="docs-user-id">PDSB</span>
+      </span>
+      <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
+    </div>
   </div>
 </header>
 
@@ -51,7 +61,7 @@
         <li><a href="#teacher-panel">5. Teacher Active Loans</a></li>
         <li><a href="#teacher-inventory">6. Inventory &amp; QR Labels</a></li>
         <li><a href="#teacher-guest-audit">7. Guest Mode &amp; Audit CSV</a></li>
-        <li><a href="#troubleshooting">8. Troubleshooting</a></li>
+        <li><a href="#troubleshooting">8. Security &amp; Troubleshooting</a></li>
       </ul>
     </aside>
 
@@ -69,7 +79,7 @@
             JavaScript, and Firebase with zero external frameworks or animations.
           </p>
           <ul>
-            <li><strong>Students</strong> sign in with their <code>@pdsb.net</code> account, scan a QR label or type a code, choose their class period (Period 1–4), and track due dates.</li>
+            <li><strong>Students</strong> sign in with their verified <code>@pdsb.net</code> Google account, scan a QR label or type a code, choose their class period (Period 1–4), and track due dates.</li>
             <li><strong>Teachers</strong> filter active loans by Period 1–4 or overdue status, manage stock, print QR bin label sheets, record guest loans, and export audit CSVs.</li>
           </ul>
         </div>
@@ -80,17 +90,18 @@
           <h2>2. Signing In &amp; Role Routing (<code>index.html</code>)</h2>
         </div>
         <div class="card-body">
-          <h3>Google Sign-In &amp; Password Fallback</h3>
+          <h3>Google OAuth Only (@pdsb.net)</h3>
           <p>
-            Click <strong>Sign In with School Google Account</strong> to log in with your <code>@pdsb.net</code> address.
-            If third-party Google OAuth is blocked on a lab PC, use <strong>Create Account</strong> to register with your
-            <code>@pdsb.net</code> email and a password.
+            Click <strong>Sign In with Google</strong> and select your verified Peel District School Board
+            (<code>@pdsb.net</code>) Google account. Password-based sign-in is disabled to prevent unverified email
+            impersonation. If a student cannot sign in on a lab computer, teachers can record the loan using
+            <strong>Guest Sign-Out</strong> in the Teacher Panel.
           </p>
           <h3>Automatic Role &amp; Student Number Detection</h3>
           <ul>
-            <li><strong>Students (<code>&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>student</code> role with their student number extracted from the email and sent to <code>dashboard.html</code>.</li>
-            <li><strong>Teachers (<code>p&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>teacher</code> role (e.g. <code>p0161177@pdsb.net</code>) and sent to <code>teacher.html</code>.</li>
-            <li>Accounts outside <code>@pdsb.net</code> are blocked both in the app and in Firestore security rules.</li>
+            <li><strong>Students (<code>&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>student</code> role with their student number extracted from the verified Google email and routed to <code>dashboard.html</code>.</li>
+            <li><strong>Teachers (<code>p&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>teacher</code> role (e.g. <code>p0161177@pdsb.net</code>) and routed to <code>teacher.html</code>.</li>
+            <li>Non-<code>@pdsb.net</code> accounts and non-Google sessions are strictly blocked in both the app and Cloud Firestore security rules.</li>
           </ul>
         </div>
       </section>
@@ -118,7 +129,7 @@
         </div>
         <div class="card-body">
           <ol>
-            <li><strong>Step 1 — Select Component:</strong> Type the bin code and click <strong>Find</strong>, pick from the in-stock dropdown, or click <strong>Scan QR Code</strong> to open the inline camera scanner (or upload a QR image if your PC has no webcam).</li>
+            <li><strong>Step 1 — Select Component:</strong> Type the bin code and click <strong>Find</strong>, pick from the in-stock dropdown, or click <strong>Scan QR</strong> to open the inline camera scanner (or upload a QR image if your PC has no webcam).</li>
             <li><strong>Step 2 — Class Period (Required):</strong> Explicitly pick <strong>Period 1</strong>, <strong>Period 2</strong>, <strong>Period 3</strong>, or <strong>Period 4</strong>. No period is pre-selected by default so loans stay accurately grouped.</li>
             <li><strong>Step 3 — Loan Details &amp; Confirm:</strong> Your PDSB ID is auto-filled and loan duration defaults to <strong>1 Week (7 Days)</strong> (adjustable to 1 Day, 3 Days, 2 Weeks, or Custom 1–30 days). Click <strong>Confirm Sign Out</strong> to decrement stock and return to your dashboard.</li>
           </ol>
@@ -175,13 +186,14 @@
 
       <section id="troubleshooting" class="card docs-section">
         <div class="card-header">
-          <h2>8. Troubleshooting</h2>
+          <h2>8. Security &amp; Troubleshooting</h2>
         </div>
         <div class="card-body">
           <ul>
-            <li><strong>Email rejected:</strong> Only <code>@pdsb.net</code> addresses are allowed.</li>
+            <li><strong>Shared Lab Computer Safety:</strong> Sessions automatically expire when the browser tab is closed or after 30 minutes of inactivity.</li>
+            <li><strong>Email rejected:</strong> Only verified <code>@pdsb.net</code> Google accounts are permitted.</li>
             <li><strong>Camera won't start:</strong> Open CEIT over HTTPS (<code>https://ceit.site</code>), grant browser camera permission, or type the code / upload a QR photo instead.</li>
-            <li><strong>Backend diagnostics:</strong> Visit <a href="test-backend.html">Backend Diagnostics</a> to test live Firebase auth and Firestore operations.</li>
+            <li><strong>Teacher backend diagnostics:</strong> Teachers can visit <a href="test-backend.html">Backend Diagnostics</a> to test live Firebase auth and Firestore operations.</li>
           </ul>
         </div>
       </section>
@@ -190,23 +202,7 @@
   </div>
 </main>
 
-<script type="module">
-  import { observeAuthState } from "./js/services/auth-service.js";
-
-  observeAuthState((user) => {
-    if (!user) return;
-    document.getElementById("nav-home").style.display = "none";
-    document.getElementById("nav-dash").style.display = "inline-block";
-    document.getElementById("nav-checkout").style.display = "inline-block";
-    const isTeacher = user.profile?.role === "teacher";
-    if (isTeacher) {
-      document.getElementById("nav-teacher").style.display = "inline-block";
-    }
-    const cta = document.getElementById("cta-portal");
-    cta.href = isTeacher ? "teacher.html" : "dashboard.html";
-    cta.textContent = isTeacher ? "Go to Teacher Panel →" : "Go to Student Dashboard →";
-  });
-</script>
+<script type="module" src="./js/pages/docs.js"></script>
 
 </body>
 </html>

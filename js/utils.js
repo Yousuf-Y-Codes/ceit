@@ -1,6 +1,14 @@
 // js/utils.js
 // Shared Vanilla JS utility helpers for CEIT (Computer Engineering Item Tracker)
 
+const ALLOWED_REDIRECT_PAGES = new Set([
+  "dashboard.html",
+  "checkout.html",
+  "teacher.html",
+  "docs.html",
+  "test-backend.html"
+]);
+
 /**
  * Escapes HTML special characters to prevent XSS when inserting strings into templates.
  * @param {*} value
@@ -13,6 +21,18 @@ export function escapeHtml(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+/**
+ * Validates a basic email format safely (bounded length, no control chars or whitespace).
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isValidEmail(email) {
+  if (typeof email !== "string") return false;
+  const trimmed = email.trim();
+  if (trimmed.length === 0 || trimmed.length > 120) return false;
+  return /^[a-z0-9._+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i.test(trimmed);
 }
 
 /**
@@ -82,7 +102,7 @@ export function formatRelativeDue(ts) {
 }
 
 /**
- * Translates Firebase Auth error codes into clear, helpful messages.
+ * Translates Firebase Auth error codes into clear, helpful messages (Google OAuth only).
  * @param {Error} err
  * @returns {string}
  */
@@ -90,64 +110,60 @@ export function getFriendlyAuthError(err) {
   const code = err?.code || "";
   switch (code) {
     case "auth/popup-closed-by-user":
-      return "Sign-in popup was closed before completing. Please try again.";
+    case "auth/cancelled-popup-request":
+      return "Google Sign-In popup was closed before completing. Please try again.";
     case "auth/popup-blocked":
-      return "Your browser blocked the Google Sign-In popup. Please allow popups for this site or use Email/Password below.";
+      return "Your browser blocked the Google Sign-In popup. Please allow popups for this site and try again.";
     case "auth/unauthorized-domain":
-      return "This domain is not yet authorized in Firebase Authentication settings. Use Email/Password or add this domain in Firebase Console.";
-    case "auth/invalid-credential":
-    case "auth/wrong-password":
-    case "auth/user-not-found":
-      return "Incorrect email or password. Double-check your credentials or create an account.";
-    case "auth/email-already-in-use":
-      return "An account with this email already exists. Switch to Sign In instead.";
-    case "auth/weak-password":
-      return "Password is too weak. Please choose at least 6 characters.";
-    case "auth/invalid-email":
-      return "Please enter a valid email address (e.g., 123456@pdsb.net).";
+      return "This domain is not authorized in Firebase Authentication settings. Contact your teacher.";
     case "auth/network-request-failed":
       return "Network error. Check your internet connection and try again.";
     case "auth/too-many-requests":
-      return "Too many failed attempts. Please wait a minute and try again.";
+      return "Too many sign-in attempts. Please wait a minute and try again.";
+    case "auth/user-disabled":
+      return "This account has been disabled. Contact your teacher for assistance.";
     default:
       return err?.message || "An unexpected authentication error occurred.";
   }
 }
 
 /**
- * Parses a scanned QR string or typed text into a normalized item code.
- * Supports both full checkout URLs (e.g., https://ceit.site/checkout.html?code=ARD-01)
+ * Parses a scanned QR string or typed text into a normalized, safe item code.
+ * Supports full checkout URLs (e.g., https://ceit.site/checkout.html?code=ARD-01)
  * and plain text item codes (e.g., ARD-01).
  * @param {string} raw
  * @returns {string}
  */
 export function extractCodeFromScan(raw) {
-  const trimmed = (raw || "").trim();
+  const trimmed = String(raw ?? "").trim().slice(0, 256);
   if (!trimmed) return "";
+
+  let candidate = trimmed;
 
   try {
     if (/^https?:\/\//i.test(trimmed)) {
       const url = new URL(trimmed);
       const codeParam = url.searchParams.get("code");
       if (codeParam) {
-        return codeParam.trim().toUpperCase();
+        candidate = codeParam.trim();
       }
     }
   } catch {
     // Not a valid URL; treat as raw code
   }
 
-  // Handle relative query strings like "checkout.html?code=ARD-01" or "code=ARD-01"
-  const match = trimmed.match(/(?:\?|&)code=([^&]+)/i) || trimmed.match(/^code=([^&]+)/i);
-  if (match && match[1]) {
-    try {
-      return decodeURIComponent(match[1]).trim().toUpperCase();
-    } catch {
-      return match[1].trim().toUpperCase();
+  if (candidate === trimmed) {
+    const match = trimmed.match(/(?:\?|&)code=([^&]+)/i) || trimmed.match(/^code=([^&]+)/i);
+    if (match && match[1]) {
+      try {
+        candidate = decodeURIComponent(match[1]).trim();
+      } catch {
+        candidate = match[1].trim();
+      }
     }
   }
 
-  return trimmed.toUpperCase();
+  return candidate.toUpperCase().slice(0, 32);
 }
 
 /**
@@ -157,7 +173,7 @@ export function extractCodeFromScan(raw) {
  * @returns {string}
  */
 export function buildCheckoutQrUrl(code) {
-  const normalized = (code || "").trim().toUpperCase();
+  const normalized = String(code ?? "").trim().toUpperCase().slice(0, 32);
   if (typeof window !== "undefined" && window.location && /^https?:/.test(window.location.origin)) {
     const basePath = window.location.pathname.replace(/[^/]*$/, "");
     return `${window.location.origin}${basePath}checkout.html?code=${encodeURIComponent(normalized)}`;
@@ -184,7 +200,7 @@ export function generateSuggestedCode(category, name, existingItems = []) {
   };
 
   const prefix = catMap[category] || "CEIT";
-  const words = (name || "")
+  const words = String(name ?? "")
     .toUpperCase()
     .replace(/[^A-Z0-9\s]/g, "")
     .trim()
@@ -199,7 +215,7 @@ export function generateSuggestedCode(category, name, existingItems = []) {
   }
 
   const existingCodes = new Set(
-    existingItems.map((i) => (i.code || "").trim().toUpperCase())
+    existingItems.map((i) => String(i.code ?? "").trim().toUpperCase())
   );
 
   for (let n = 1; n <= 999; n++) {
@@ -213,18 +229,23 @@ export function generateSuggestedCode(category, name, existingItems = []) {
 }
 
 /**
- * Validates that a redirect query parameter is a safe local relative page.
+ * Validates that a redirect query parameter targets an allowlisted local CEIT page.
+ * Prevents open redirects and path traversal.
  * @param {string|null} target
  * @returns {string|null}
  */
 export function sanitizeRedirectUrl(target) {
-  if (!target) return null;
+  if (typeof target !== "string") return null;
   const trimmed = target.trim();
-  // Allow only local relative html files in the same folder
-  if (/^[a-z0-9_-]+\.html(\?[a-z0-9_=&%-]*)?$/i.test(trimmed)) {
-    return trimmed;
-  }
-  return null;
+  if (!trimmed || trimmed.length > 200) return null;
+
+  const match = /^([a-z0-9_-]+\.html)(\?([a-z0-9_=&%.+-]*))?$/i.exec(trimmed);
+  if (!match) return null;
+
+  const page = match[1].toLowerCase();
+  if (!ALLOWED_REDIRECT_PAGES.has(page)) return null;
+
+  return match[2] ? `${page}${match[2]}` : page;
 }
 
 /**
@@ -241,14 +262,29 @@ export function showToast(message, type = "info", durationMs = 3500) {
     document.body.appendChild(container);
   }
 
+  const safeType = type === "success" || type === "warn" ? type : "info";
   const toast = document.createElement("div");
-  toast.className = `ceit-toast toast-${type}`;
-  toast.textContent = message;
+  toast.className = `ceit-toast toast-${safeType}`;
+  toast.textContent = String(message ?? "");
   container.appendChild(toast);
 
   setTimeout(() => {
     toast.remove();
   }, durationMs);
+}
+
+/**
+ * Escapes a single CSV cell and neutralizes spreadsheet formula injection (=, +, -, @, tab, CR).
+ * @param {*} val
+ * @returns {string}
+ */
+function escapeCsvCell(val) {
+  let str = String(val ?? "");
+  // Neutralize formula injection (DDE / Excel / Google Sheets)
+  if (/^[\s]*[=+\-@\t\r]/.test(str)) {
+    str = `'${str}`;
+  }
+  return `"${str.replace(/"/g, '""')}"`;
 }
 
 /**
@@ -275,11 +311,6 @@ export function exportCheckoutsToCsv(records, filename = "ceit-checkout-logs.csv
     "Notes"
   ];
 
-  const escapeCsv = (val) => {
-    const str = String(val ?? "").replace(/"/g, '""');
-    return `"${str}"`;
-  };
-
   const rows = records.map((r) => [
     r.id,
     r.itemName,
@@ -299,7 +330,7 @@ export function exportCheckoutsToCsv(records, filename = "ceit-checkout-logs.csv
   ]);
 
   const csvContent = [headers, ...rows]
-    .map((row) => row.map(escapeCsv).join(","))
+    .map((row) => row.map(escapeCsvCell).join(","))
     .join("\r\n");
 
   const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });

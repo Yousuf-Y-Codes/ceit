@@ -1,6 +1,6 @@
 // js/services/item-service.js
 // Item & Inventory Management Service for CEIT
-// Handles CRUD operations, QR/text code lookups, and real-time inventory synchronization.
+// Handles validated CRUD operations, atomic quantity updates, and real-time inventory sync.
 
 import {
   collection,
@@ -14,12 +14,25 @@ import {
   where,
   orderBy,
   onSnapshot,
+  runTransaction,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
-import { db, isFirebaseConfigured } from "../firebase-config.js";
+import { auth, db, isFirebaseConfigured } from "../firebase-config.js";
 
 const ITEMS_COLLECTION = "items";
+const ITEM_CODE_REGEX = /^[A-Z0-9][A-Z0-9._-]{0,31}$/;
+const MAX_QUANTITY = 9999;
+
+export const ALLOWED_CATEGORIES = [
+  "Microcontrollers",
+  "Sensors",
+  "Components",
+  "Cables & Tools",
+  "Cables & Power",
+  "Tools & Meters",
+  "General"
+];
 
 function assertDbReady() {
   if (!isFirebaseConfigured() || !db) {
@@ -33,33 +46,48 @@ function assertDbReady() {
  * @returns {string}
  */
 export function normalizeItemCode(code) {
-  return (code || "").trim().toUpperCase();
+  return String(code ?? "").trim().toUpperCase().slice(0, 32);
+}
+
+function validateCategory(category) {
+  const clean = String(category ?? "General").trim();
+  return ALLOWED_CATEGORIES.includes(clean) ? clean : "General";
 }
 
 /**
- * Creates a new inventory item.
- * Validates that the item code is unique.
+ * Creates a new inventory item with strict validation.
  * @param {object} itemData
- * @param {string} itemData.name
- * @param {string} itemData.code - Unique QR or text code (e.g. "ARD-01")
- * @param {string} [itemData.category="General"]
- * @param {number} itemData.totalQuantity
- * @param {string} [itemData.location=""]
- * @param {string} [itemData.notes=""]
  * @param {string} [teacherUid=""]
  * @returns {Promise<string>} The new item ID
  */
 export async function createItem(itemData, teacherUid = "") {
   assertDbReady();
 
+  const currentUid = auth?.currentUser?.uid || teacherUid;
+  if (!currentUid) throw new Error("Authentication required to create items.");
+
   const code = normalizeItemCode(itemData.code);
-  const name = (itemData.name || "").trim();
-  const total = parseInt(itemData.totalQuantity, 10);
+  const name = String(itemData.name ?? "").trim();
+  const location = String(itemData.location ?? "").trim();
+  const notes = String(itemData.notes ?? "").trim();
+  const category = validateCategory(itemData.category);
+  const total = Number.parseInt(String(itemData.totalQuantity), 10);
 
   if (!code) throw new Error("Item code is required.");
-  if (!name) throw new Error("Item name is required.");
-  if (isNaN(total) || total < 1) {
-    throw new Error("Total quantity must be at least 1.");
+  if (!ITEM_CODE_REGEX.test(code)) {
+    throw new Error("Item code must be 1–32 characters using letters, numbers, hyphens, underscores, or periods.");
+  }
+  if (!name || name.length > 120) {
+    throw new Error("Item name must be between 1 and 120 characters.");
+  }
+  if (location.length > 100) {
+    throw new Error("Bin / location must be 100 characters or fewer.");
+  }
+  if (notes.length > 300) {
+    throw new Error("Notes must be 300 characters or fewer.");
+  }
+  if (!Number.isInteger(total) || total < 1 || total > MAX_QUANTITY) {
+    throw new Error(`Total quantity must be a whole number between 1 and ${MAX_QUANTITY}.`);
   }
 
   // Check for duplicate code
@@ -71,12 +99,12 @@ export async function createItem(itemData, teacherUid = "") {
   const docData = {
     name,
     code,
-    category: (itemData.category || "General").trim(),
+    category,
     totalQuantity: total,
-    availableQuantity: total, // Initially all are available
-    location: (itemData.location || "").trim(),
-    notes: (itemData.notes || "").trim(),
-    createdBy: teacherUid,
+    availableQuantity: total,
+    location,
+    notes,
+    createdBy: currentUid,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp()
   };
@@ -88,12 +116,12 @@ export async function createItem(itemData, teacherUid = "") {
 /**
  * Finds an item by its unique QR code or text code.
  * @param {string} rawCode
- * @returns {Promise<object|null>} Item document or null if not found
+ * @returns {Promise<object|null>}
  */
 export async function getItemByCode(rawCode) {
   assertDbReady();
   const code = normalizeItemCode(rawCode);
-  if (!code) return null;
+  if (!code || !ITEM_CODE_REGEX.test(code)) return null;
 
   const q = query(collection(db, ITEMS_COLLECTION), where("code", "==", code));
   const snap = await getDocs(q);
@@ -113,6 +141,7 @@ export async function getItemByCode(rawCode) {
  */
 export async function getItemById(itemId) {
   assertDbReady();
+  if (!itemId) return null;
   const docRef = doc(db, ITEMS_COLLECTION, itemId);
   const snap = await getDoc(docRef);
   if (snap.exists()) {
@@ -123,43 +152,69 @@ export async function getItemById(itemId) {
 
 /**
  * Updates an item's details.
- * If totalQuantity is changed, adjusts availableQuantity accordingly.
+ * Uses a Firestore transaction when totalQuantity changes so concurrent checkouts never desync stock.
  * @param {string} itemId
  * @param {object} updates
  * @returns {Promise<void>}
  */
 export async function updateItem(itemId, updates) {
   assertDbReady();
+  if (!itemId) throw new Error("Item ID is required.");
   const docRef = doc(db, ITEMS_COLLECTION, itemId);
 
   const cleanUpdates = {
     updatedAt: serverTimestamp()
   };
 
-  if (updates.name !== undefined) cleanUpdates.name = updates.name.trim();
-  if (updates.category !== undefined) cleanUpdates.category = updates.category.trim();
-  if (updates.location !== undefined) cleanUpdates.location = updates.location.trim();
-  if (updates.notes !== undefined) cleanUpdates.notes = updates.notes.trim();
+  if (updates.name !== undefined) {
+    const name = String(updates.name).trim();
+    if (!name || name.length > 120) {
+      throw new Error("Item name must be between 1 and 120 characters.");
+    }
+    cleanUpdates.name = name;
+  }
+  if (updates.category !== undefined) {
+    cleanUpdates.category = validateCategory(updates.category);
+  }
+  if (updates.location !== undefined) {
+    const loc = String(updates.location).trim();
+    if (loc.length > 100) throw new Error("Location must be 100 characters or fewer.");
+    cleanUpdates.location = loc;
+  }
+  if (updates.notes !== undefined) {
+    const notes = String(updates.notes).trim();
+    if (notes.length > 300) throw new Error("Notes must be 300 characters or fewer.");
+    cleanUpdates.notes = notes;
+  }
 
   if (updates.totalQuantity !== undefined) {
-    const currentSnap = await getDoc(docRef);
-    if (!currentSnap.exists()) throw new Error("Item not found.");
-    const currentData = currentSnap.data();
-
-    const newTotal = parseInt(updates.totalQuantity, 10);
-    if (isNaN(newTotal) || newTotal < 0) {
-      throw new Error("Invalid total quantity.");
+    const newTotal = Number.parseInt(String(updates.totalQuantity), 10);
+    if (!Number.isInteger(newTotal) || newTotal < 0 || newTotal > MAX_QUANTITY) {
+      throw new Error(`Total quantity must be a whole number between 0 and ${MAX_QUANTITY}.`);
     }
 
-    const checkedOutCount = currentData.totalQuantity - currentData.availableQuantity;
-    if (newTotal < checkedOutCount) {
-      throw new Error(
-        `Cannot reduce total to ${newTotal}. There are currently ${checkedOutCount} units signed out.`
+    await runTransaction(db, async (transaction) => {
+      const currentSnap = await transaction.get(docRef);
+      if (!currentSnap.exists()) throw new Error("Item not found.");
+      const currentData = currentSnap.data();
+
+      const checkedOutCount = Math.max(
+        0,
+        (currentData.totalQuantity || 0) - (currentData.availableQuantity || 0)
       );
-    }
+      if (newTotal < checkedOutCount) {
+        throw new Error(
+          `Cannot reduce total to ${newTotal}. There are currently ${checkedOutCount} units signed out.`
+        );
+      }
 
-    cleanUpdates.totalQuantity = newTotal;
-    cleanUpdates.availableQuantity = newTotal - checkedOutCount;
+      transaction.update(docRef, {
+        ...cleanUpdates,
+        totalQuantity: newTotal,
+        availableQuantity: newTotal - checkedOutCount
+      });
+    });
+    return;
   }
 
   await updateDoc(docRef, cleanUpdates);
@@ -172,6 +227,7 @@ export async function updateItem(itemId, updates) {
  */
 export async function deleteItem(itemId) {
   assertDbReady();
+  if (!itemId) throw new Error("Item ID is required.");
   const docRef = doc(db, ITEMS_COLLECTION, itemId);
   await deleteDoc(docRef);
 }
@@ -189,7 +245,7 @@ export async function getAllItems() {
 
 /**
  * Subscribes to real-time updates for all items in the inventory.
- * @param {function(Array<object>): void} onUpdate Callback receiving array of items
+ * @param {function(Array<object>): void} onUpdate
  * @param {function(Error): void} [onError]
  * @returns {function(): void} Unsubscribe function
  */
