@@ -38,11 +38,8 @@
 
 <main class="page-wrapper" style="max-width: 780px;">
   <div class="page-header">
-    <div>
-      <h1>Check Out Component</h1>
-      <p>Single-screen sign-out form: enter or scan a code, choose your class period, and confirm.</p>
-    </div>
-    <a href="dashboard.html" class="btn btn-ghost">&larr; Back to Dashboard</a>
+    <h1>Check Out Component</h1>
+    <a href="dashboard.html" class="btn btn-ghost">&larr; Dashboard</a>
   </div>
 
   <div id="alert-box" class="alert alert-danger" style="display: none;"></div>
@@ -54,8 +51,8 @@
     <section class="step-block">
       <div class="step-block-header">
         <div>
-          <span class="step-num">STEP 1</span>
-          <strong>Select Component (Type Code or Scan QR)</strong>
+          <span class="step-num">1</span>
+          <strong>Component</strong>
         </div>
         <span class="badge badge-neutral" id="preview-badge">Not Selected</span>
       </div>
@@ -63,44 +60,42 @@
         <div class="form-group">
           <label for="code-input">Component Code</label>
           <div class="input-inline">
-            <input type="text" id="code-input" placeholder="e.g. MCU-ARDUN-01" autocomplete="off" autofocus>
+            <input type="text" id="code-input" placeholder="MCU-ARDUN-01" autocomplete="off" autofocus>
             <button type="button" id="btn-lookup" class="btn btn-primary">Find</button>
-            <button type="button" id="btn-toggle-qr" class="btn btn-ghost">Scan QR Code</button>
+            <button type="button" id="btn-toggle-qr" class="btn btn-ghost">Scan QR</button>
           </div>
-          <div class="form-hint">Type the printed code and press Enter, or click <strong>Scan QR Code</strong> to open your camera.</div>
         </div>
 
-        <!-- Inline QR Scanner Drawer (opens on demand right inside Step 1) -->
+        <!-- Inline QR Scanner Drawer -->
         <div id="scanner-drawer" class="scanner-drawer">
           <div id="scanner-box" class="scanner-box">
             <video id="qr-video" playsinline muted style="display: none;"></video>
             <div class="scanner-reticle" aria-hidden="true"></div>
             <div id="scanner-placeholder" class="scanner-placeholder">
-              <p class="fw-bold mb-8">Camera QR Scanner</p>
-              <p class="text-small">Click <strong>Start Camera</strong> and point at the bin QR label.</p>
+              <p class="fw-bold">Camera QR Scanner</p>
             </div>
           </div>
           <canvas id="qr-canvas" style="display: none;"></canvas>
 
           <div class="btn-row mb-8">
             <button type="button" id="btn-start-cam" class="btn btn-primary btn-sm">Start Camera</button>
-            <button type="button" id="btn-stop-cam" class="btn btn-ghost btn-sm" disabled>Stop Camera</button>
-            <button type="button" id="btn-flip-cam" class="btn btn-ghost btn-sm" style="display: none;">Flip Camera</button>
-            <button type="button" id="btn-close-qr" class="btn btn-ghost btn-sm" style="margin-left: auto;">Close Scanner</button>
+            <button type="button" id="btn-stop-cam" class="btn btn-ghost btn-sm" disabled>Stop</button>
+            <button type="button" id="btn-flip-cam" class="btn btn-ghost btn-sm" style="display: none;">Flip</button>
+            <button type="button" id="btn-close-qr" class="btn btn-ghost btn-sm" style="margin-left: auto;">Close</button>
           </div>
 
-          <div id="scanner-status" class="text-small text-muted mb-8">Camera is off.</div>
+          <div id="scanner-status" class="text-small text-muted mb-8">Camera off.</div>
 
           <div class="form-group" style="margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--border);">
-            <label for="qr-file-input">No webcam? Upload a QR photo instead:</label>
+            <label for="qr-file-input">QR Image File</label>
             <input type="file" id="qr-file-input" accept="image/*">
           </div>
         </div>
 
         <div class="form-group mt-12" style="margin-bottom: 0;">
-          <label for="quick-select">Or pick from in-stock lab inventory</label>
+          <label for="quick-select">In-Stock Inventory</label>
           <select id="quick-select">
-            <option value="">-- Choose an available component --</option>
+            <option value="">-- Select component --</option>
           </select>
         </div>
 
@@ -118,12 +113,12 @@
       </div>
     </section>
 
-    <!-- STEP 2: Explicit Class Period Selection (No Default!) -->
+    <!-- STEP 2: Explicit Class Period Selection (No Default) -->
     <section class="step-block">
       <div class="step-block-header">
         <div>
-          <span class="step-num">STEP 2</span>
-          <strong>Select Your Class Period</strong>
+          <span class="step-num">2</span>
+          <strong>Class Period</strong>
         </div>
         <span class="badge badge-warn" id="period-status-badge">Required</span>
       </div>
@@ -134,54 +129,48 @@
           <button type="button" class="chip-btn" data-period="Period 3">Period 3</button>
           <button type="button" class="chip-btn" data-period="Period 4">Period 4</button>
         </div>
-        <div class="form-hint">Choose your current Computer Engineering period (no default is pre-selected to prevent mistakes).</div>
       </div>
     </section>
 
-    <!-- STEP 3: Loan Defaults & Confirm -->
+    <!-- STEP 3: Loan Details & Confirm -->
     <section class="step-block">
       <div class="step-block-header">
         <div>
-          <span class="step-num">STEP 3</span>
-          <strong>Loan Details &amp; Confirm</strong>
+          <span class="step-num">3</span>
+          <strong>Loan Details</strong>
         </div>
-        <span class="badge badge-accent">Defaults Ready</span>
+        <span class="badge badge-accent" id="due-date-preview">—</span>
       </div>
       <div class="step-block-body">
         <div class="grid-2" style="gap: 12px;">
           <div class="form-group">
-            <label for="checkout-student-num">PDSB ID / Student Number</label>
+            <label for="checkout-student-num">PDSB ID</label>
             <input type="text" id="checkout-student-num" readonly>
-            <div class="form-hint">Auto-filled from your <code>@pdsb.net</code> email.</div>
           </div>
 
           <div class="form-group">
-            <label for="checkout-notes">Lab / Project Note (Optional)</label>
-            <input type="text" id="checkout-notes" placeholder="e.g. Traffic light lab">
+            <label for="checkout-notes">Note (Optional)</label>
+            <input type="text" id="checkout-notes" placeholder="Optional note">
           </div>
         </div>
 
         <div class="form-group">
-          <label>Loan Duration (Default: 1 Week)</label>
+          <label>Duration</label>
           <div class="chip-group" id="duration-chips" role="radiogroup" aria-label="Loan Duration">
             <button type="button" class="chip-btn" data-days="1">1 Day</button>
             <button type="button" class="chip-btn" data-days="3">3 Days</button>
-            <button type="button" class="chip-btn active" data-days="7">1 Week (Default)</button>
+            <button type="button" class="chip-btn active" data-days="7">1 Week</button>
             <button type="button" class="chip-btn" data-days="14">2 Weeks</button>
             <button type="button" class="chip-btn" data-days="custom">Custom</button>
           </div>
         </div>
 
-        <div class="form-group" id="custom-days-group" style="display: none; max-width: 220px;">
-          <label for="custom-days-input">Custom Days (1–30)</label>
+        <div class="form-group" id="custom-days-group" style="display: none; max-width: 200px;">
+          <label for="custom-days-input">Days (1–30)</label>
           <input type="number" id="custom-days-input" min="1" max="30" value="5">
         </div>
 
-        <div class="alert alert-info" style="margin-bottom: 14px;">
-          Estimated Return Due Date: <strong id="due-date-preview" class="tabular">—</strong>
-        </div>
-
-        <div class="btn-row">
+        <div class="btn-row mt-12">
           <button type="submit" id="btn-confirm" class="btn btn-success btn-lg" disabled>
             Confirm Sign Out
           </button>
@@ -192,16 +181,6 @@
 
   </form>
 </main>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
-    <div class="footer-links">
-      <a href="dashboard.html">Student Dashboard</a>
-      <a href="docs.html">User Documentation</a>
-    </div>
-  </div>
-</footer>
 
 <script type="module">
   import {
@@ -281,8 +260,7 @@
   function updateDueDatePreview() {
     const days = getSelectedDurationDays();
     const due = new Date(Date.now() + days * 24 * 60 * 60 * 1000);
-    document.getElementById("due-date-preview").textContent =
-      `${formatDate(due)} (${days} ${days === 1 ? "day" : "days"})`;
+    document.getElementById("due-date-preview").textContent = `Due ${formatDate(due)}`;
   }
 
   // Step 2: Explicit Period Selector

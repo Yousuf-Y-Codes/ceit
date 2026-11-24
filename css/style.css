@@ -369,11 +369,9 @@ code {
   gap: 16px;
 }
 
-.grid-login {
-  display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 410px);
-  gap: 20px;
-  align-items: start;
+.auth-wrap {
+  max-width: 420px;
+  margin: 28px auto 0;
 }
 
 .grid-teacher {
@@ -1244,34 +1242,6 @@ tbody tr:last-child td {
 .log-entry.error { color: #fca5a5; }
 
 /* ==========================================================================
-   Footer
-   ========================================================================== */
-.site-footer {
-  border-top: 1px solid var(--border);
-  background: #ffffff;
-  color: var(--ink-muted);
-  font-size: 12px;
-  padding: 12px 16px;
-  margin-top: auto;
-}
-
-.footer-inner {
-  max-width: 1040px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.footer-links {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-/* ==========================================================================
    Print Sheet (3-Column Cuttable QR Bin Labels)
    ========================================================================== */
 #print-sheet {
@@ -1285,7 +1255,6 @@ tbody tr:last-child td {
 
   .site-header,
   .page-wrapper,
-  .site-footer,
   .modal-backdrop,
   #ceit-toast-container {
     display: none !important;
@@ -1329,7 +1298,6 @@ tbody tr:last-child td {
    Responsive Breakpoints
    ========================================================================== */
 @media (max-width: 860px) {
-  .grid-login,
   .grid-teacher,
   .grid-sidebar,
   .grid-2 {

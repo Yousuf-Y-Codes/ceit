@@ -101,11 +101,12 @@
           <span class="badge badge-success">Student Guide</span>
         </div>
         <div class="card-body">
+          <h3>Active Loans, Returning Items &amp; Catalog</h3>
           <ul>
-            <li><strong>Quick Check-Out Bar:</strong> Type any component code and press Enter to open the pre-filled check-out form.</li>
-            <li><strong>Active Loans Tab:</strong> Shows every component currently signed out, its class period, due date countdown, and a <strong>Return</strong> button.</li>
-            <li><strong>Return History Tab:</strong> Logs all components you have previously returned.</li>
-            <li><strong>Lab Catalog Tab:</strong> Searchable inventory list showing stock levels and direct <strong>Check Out</strong> links.</li>
+            <li><strong>Code Lookup Bar:</strong> Type any printed component code (e.g. <code>MCU-ARDUN-01</code>) and click <strong>Go</strong> to jump straight into the pre-filled Check Out form.</li>
+            <li><strong>Active Loans Tab:</strong> Shows every component currently signed out under your student number, its class period, checkout timestamp, due date countdown, and a <strong>Return</strong> button. After clicking <strong>Confirm Return</strong>, place the physical component back into its labeled storage bin.</li>
+            <li><strong>Return History Tab:</strong> Timestamped log of all components you have previously returned.</li>
+            <li><strong>Lab Catalog Tab:</strong> Searchable view of all lab stock, bin locations, availability bars, and direct <strong>Check Out</strong> links.</li>
           </ul>
         </div>
       </section>
@@ -160,8 +161,10 @@
         </div>
         <div class="card-body">
           <p>
-            <strong>Guest Sign-Out:</strong> Record a checkout for a student who forgot their device by entering their name,
-            student number, class period (Period 1–4), component, and loan duration.
+            <strong>Guest Sign-Out:</strong> If a student forgot their device or cannot sign in during class, record a loan
+            under the <strong>Guest Sign-Out</strong> tab using their name, student number, class period (Period 1–4), component,
+            and duration. Entering a student's numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> so you can still
+            send one-click email reminders, and the loan appears in <em>Active Sign-Outs</em> with a <code>GUEST</code> badge.
           </p>
           <p>
             <strong>Audit History &amp; CSV Export:</strong> Filter complete sign-out/return logs by Period, status, or search
@@ -186,16 +189,6 @@
     </div>
   </div>
 </main>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
-    <div class="footer-links">
-      <a href="index.html">Sign In</a>
-      <a href="test-backend.html">Backend Diagnostics</a>
-    </div>
-  </div>
-</footer>
 
 <script type="module">
   import { observeAuthState } from "./js/services/auth-service.js";

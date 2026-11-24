@@ -37,22 +37,16 @@
 
 <main class="page-wrapper">
   <div class="page-header">
-    <div>
-      <h1>Student Dashboard</h1>
-      <p>View your active component loans, class periods, due dates, and available lab stock.</p>
-    </div>
-    <a href="checkout.html" class="btn btn-primary btn-lg">+ Check Out Component</a>
+    <h1>Student Dashboard</h1>
+    <a href="checkout.html" class="btn btn-primary btn-lg">+ Check Out</a>
   </div>
 
   <!-- Quick Code Lookup Bar -->
   <section class="action-banner" aria-label="Quick Code Lookup">
-    <div>
-      <strong>Quick Check-Out:</strong>
-      <span class="text-secondary">Type a component code to jump straight to the sign-out form.</span>
-    </div>
+    <strong>Code Lookup</strong>
     <form id="quick-code-form" class="action-banner-form">
-      <input type="text" id="quick-code-input" placeholder="e.g. MCU-ARDUN-01" autocomplete="off">
-      <button type="submit" class="btn btn-primary">Open Form</button>
+      <input type="text" id="quick-code-input" placeholder="MCU-ARDUN-01" autocomplete="off">
+      <button type="submit" class="btn btn-primary">Go</button>
     </form>
   </section>
 
@@ -182,9 +176,6 @@
     </div>
     <div class="modal-body">
       <p id="return-modal-desc"></p>
-      <div class="alert alert-info mt-12" style="margin-bottom: 0;">
-        Place the component back into its labeled storage bin after clicking Confirm Return.
-      </div>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" data-close-modal="return-modal">Cancel</button>
@@ -192,16 +183,6 @@
     </div>
   </div>
 </div>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
-    <div class="footer-links">
-      <a href="checkout.html">Check Out Component</a>
-      <a href="docs.html">User Documentation</a>
-    </div>
-  </div>
-</footer>
 
 <script type="module">
   import {
@@ -298,8 +279,7 @@
     document.getElementById("stat-due-soon").textContent = dueSoonCount;
 
     if (active.length === 0) {
-      tbody.innerHTML =
-        '<tr><td colspan="7" class="empty-state"><strong>No active loans</strong>Click "+ Check Out Component" above to sign out lab hardware.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No active loans.</td></tr>';
       return;
     }
 
@@ -356,7 +336,7 @@
     document.getElementById("stat-returned").textContent = returned.length;
 
     if (returned.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No return history yet</strong>Returned items will appear here.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No return history.</td></tr>';
       return;
     }
 
@@ -394,7 +374,7 @@
     const tbody = document.getElementById("catalog-list");
 
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No matching components</strong>Try clearing your filter.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No matching components.</td></tr>';
       return;
     }
 

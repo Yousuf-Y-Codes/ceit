@@ -37,10 +37,7 @@
 
 <main class="page-wrapper">
   <div class="page-header">
-    <div>
-      <h1>Teacher Admin Panel</h1>
-      <p>Monitor loans by class period, manage lab inventory, print QR bin sheets, and export logs.</p>
-    </div>
+    <h1>Teacher Admin Panel</h1>
     <div class="btn-row">
       <button type="button" id="btn-print-all-top" class="btn btn-primary">Print All QR Labels</button>
       <button type="button" id="btn-export-csv-top" class="btn btn-ghost">Export CSV</button>
@@ -164,12 +161,11 @@
             </div>
 
             <div class="form-group">
-              <label for="item-code">Item Code (QR &amp; Text)</label>
+              <label for="item-code">Item Code</label>
               <div class="input-inline">
-                <input type="text" id="item-code" placeholder="e.g. MCU-ARDUN-01" required>
+                <input type="text" id="item-code" placeholder="MCU-ARDUN-01" required>
                 <button type="button" id="btn-gen-code" class="btn btn-ghost btn-sm">Auto</button>
               </div>
-              <div class="form-hint">Must be unique. Click <strong>Auto</strong> to generate one.</div>
             </div>
 
             <div class="grid-2" style="gap: 8px;">
@@ -236,80 +232,56 @@
 
   <!-- TAB 3: Guest Sign-Out -->
   <section id="tab-guest" class="tab-pane">
-    <div class="grid-2">
-      <div class="card" style="margin-bottom: 0;">
-        <div class="card-header">
-          <h3>Guest Sign-Out (Teacher Records for Student)</h3>
-        </div>
-        <div class="card-body">
-          <form id="guest-checkout-form">
+    <div class="card" style="max-width: 560px; margin-bottom: 0;">
+      <div class="card-header">
+        <h3>Guest Sign-Out</h3>
+      </div>
+      <div class="card-body">
+        <form id="guest-checkout-form">
+          <div class="form-group">
+            <label for="guest-student-name">Student Full Name</label>
+            <input type="text" id="guest-student-name" placeholder="Full name" required>
+          </div>
+          <div class="grid-2" style="gap: 8px;">
             <div class="form-group">
-              <label for="guest-student-name">Student Full Name</label>
-              <input type="text" id="guest-student-name" placeholder="e.g. Samira Khan" required>
-            </div>
-            <div class="grid-2" style="gap: 8px;">
-              <div class="form-group">
-                <label for="guest-student-num">Student Number</label>
-                <input type="text" id="guest-student-num" placeholder="e.g. 882914" required>
-              </div>
-              <div class="form-group">
-                <label for="guest-student-email">Email (Auto-filled)</label>
-                <input type="email" id="guest-student-email" placeholder="Auto: <num>@pdsb.net">
-              </div>
-            </div>
-            <div class="grid-2" style="gap: 8px;">
-              <div class="form-group">
-                <label for="guest-period">Class Period (Required)</label>
-                <select id="guest-period" required>
-                  <option value="">-- Select Period --</option>
-                  <option value="Period 1">Period 1</option>
-                  <option value="Period 2">Period 2</option>
-                  <option value="Period 3">Period 3</option>
-                  <option value="Period 4">Period 4</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="guest-duration">Loan Duration (Days)</label>
-                <input type="number" id="guest-duration" value="7" min="1" max="30" required>
-              </div>
+              <label for="guest-student-num">Student Number</label>
+              <input type="text" id="guest-student-num" placeholder="882914" required>
             </div>
             <div class="form-group">
-              <label for="guest-item-select">Select Component</label>
-              <select id="guest-item-select" required>
-                <option value="">-- Choose an available component --</option>
+              <label for="guest-student-email">Email (Optional)</label>
+              <input type="email" id="guest-student-email" placeholder="Auto: <num>@pdsb.net">
+            </div>
+          </div>
+          <div class="grid-2" style="gap: 8px;">
+            <div class="form-group">
+              <label for="guest-period">Class Period</label>
+              <select id="guest-period" required>
+                <option value="">-- Select Period --</option>
+                <option value="Period 1">Period 1</option>
+                <option value="Period 2">Period 2</option>
+                <option value="Period 3">Period 3</option>
+                <option value="Period 4">Period 4</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="guest-notes">Notes (Optional)</label>
-              <input type="text" id="guest-notes" placeholder="e.g. Forgot laptop today">
+              <label for="guest-duration">Duration (Days)</label>
+              <input type="number" id="guest-duration" value="7" min="1" max="30" required>
             </div>
-            <button type="submit" id="btn-guest-submit" class="btn btn-success btn-block btn-lg">
-              Record Guest Sign-Out
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <div class="card" style="margin-bottom: 0;">
-        <div class="card-header">
-          <h3>How Guest Mode Works</h3>
-        </div>
-        <div class="card-body">
-          <ul class="info-list">
-            <li>
-              <strong>No Student Login Needed</strong>
-              Record a loan in seconds when a student cannot log in during class.
-            </li>
-            <li>
-              <strong>Grouped by Class Period</strong>
-              Guest sign-outs appear in <em>Active Sign-Outs</em> under their assigned Period with a <code>GUEST</code> badge.
-            </li>
-            <li>
-              <strong>Auto PDSB Email Link</strong>
-              Entering a student's numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> for one-click email reminders.
-            </li>
-          </ul>
-        </div>
+          </div>
+          <div class="form-group">
+            <label for="guest-item-select">Component</label>
+            <select id="guest-item-select" required>
+              <option value="">-- Select component --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="guest-notes">Note (Optional)</label>
+            <input type="text" id="guest-notes" placeholder="Optional note">
+          </div>
+          <button type="submit" id="btn-guest-submit" class="btn btn-success btn-block btn-lg">
+            Record Guest Sign-Out
+          </button>
+        </form>
       </div>
     </div>
   </section>
@@ -463,16 +435,6 @@
   </div>
   <div id="print-grid" class="print-grid"></div>
 </section>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span><strong>CEIT</strong> — Teacher Admin Panel · PDSB (Mr. Kidston)</span>
-    <div class="footer-links">
-      <a href="docs.html">User Documentation</a>
-      <a href="test-backend.html">Backend Diagnostics</a>
-    </div>
-  </div>
-</footer>
 
 <script type="module">
   import { requireAuth, signOutUser } from "./js/services/auth-service.js";
@@ -658,7 +620,7 @@
 
     const tbody = document.getElementById("active-list");
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><strong>No matching active sign-outs</strong>Try changing the Period or status filter.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No active sign-outs.</td></tr>';
       return;
     }
 
@@ -759,7 +721,7 @@
     const tbody = document.getElementById("inventory-list");
 
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><strong>No components found</strong>Add a component using the form on the left.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No components found.</td></tr>';
       return;
     }
 
@@ -861,7 +823,7 @@
 
     const tbody = document.getElementById("history-list");
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><strong>No audit logs match</strong>Adjust your search or Period filter.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No audit logs found.</td></tr>';
       return;
     }
 

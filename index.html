@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CEIT — Computer Engineering Item Tracker</title>
+  <title>CEIT — Sign In</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,62 +15,25 @@
         <span class="brand-mark">CE</span>
         <span>CEIT</span>
       </a>
-      <span class="brand-tag">PDSB Computer Engineering · Mr. Kidston</span>
+      <span class="brand-tag">PDSB</span>
     </div>
     <nav class="main-nav" aria-label="Main Navigation">
       <a href="index.html" class="active">Sign In</a>
-      <a href="docs.html">Documentation</a>
+      <a href="docs.html">Docs</a>
     </nav>
   </div>
 </header>
 
 <main class="page-wrapper">
-  <div id="redirect-notice" class="alert alert-info" style="display: none;">
-    <strong>Component QR Link Detected:</strong> Sign in with your <code>@pdsb.net</code> account to continue straight to check-out.
-  </div>
+  <div class="auth-wrap">
+    <div id="redirect-notice" class="alert alert-info" style="display: none;">
+      Sign in with your <code>@pdsb.net</code> account to continue.
+    </div>
 
-  <div class="grid-login">
-
-    <!-- Left Column: Plain Utility Overview -->
-    <section class="card" style="margin-bottom: 0;">
-      <div class="card-header">
-        <h2>Computer Engineering Item Tracker</h2>
-        <span class="badge badge-accent">Lab Library</span>
-      </div>
-      <div class="card-body">
-        <p class="text-secondary mb-12">
-          A fast, no-clutter web tool for Mr. Kidston's Computer Engineering lab. Sign out microcontrollers,
-          sensors, cables, and meters by scanning a bin QR code or entering its short code.
-        </p>
-
-        <ul class="info-list mb-12">
-          <li>
-            <strong>1. Single-Screen Check-Out</strong>
-            Scan a bin QR label or type the component code, select your class period (Period 1–4), and confirm with default due dates.
-          </li>
-          <li>
-            <strong>2. Live Student Dashboard</strong>
-            View every component currently checked out under your student number, check due countdowns, and return items when done.
-          </li>
-          <li>
-            <strong>3. Teacher Admin Panel</strong>
-            Filter active loans by Period 1–4 or overdue status, manage stock, print cut-out QR bin sheets, and export audit CSVs.
-          </li>
-        </ul>
-
-        <div class="alert alert-info" style="margin-bottom: 0;">
-          <strong>PDSB Access Only (<code>@pdsb.net</code>):</strong>
-          Student emails (<code>&lt;digits&gt;@pdsb.net</code>) automatically set your student number.
-          Teacher emails (<code>p&lt;digits&gt;@pdsb.net</code>) automatically open the Teacher Panel.
-        </div>
-      </div>
-    </section>
-
-    <!-- Right Column: Flat Sign-In Box -->
     <section class="card" style="margin-bottom: 0;">
       <div class="card-header">
         <h2 id="auth-panel-title">Sign In</h2>
-        <span class="badge badge-neutral">@pdsb.net only</span>
+        <span class="badge badge-neutral">@pdsb.net</span>
       </div>
       <div class="card-body">
         <div id="error-box" class="alert alert-danger" style="display: none;"></div>
@@ -84,23 +47,23 @@
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
               <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
             </svg>
-            Sign In with School Google Account
+            Sign In with Google
           </button>
 
-          <div class="divider"><span>or email &amp; password</span></div>
+          <div class="divider"><span>or</span></div>
 
           <form id="email-form" novalidate>
             <div id="signup-fields" style="display: none;">
               <div class="form-group">
                 <label for="name-input">Full Name</label>
-                <input type="text" id="name-input" placeholder="e.g. Jordan Patel" autocomplete="name">
+                <input type="text" id="name-input" placeholder="Full name" autocomplete="name">
               </div>
             </div>
 
             <div class="form-group">
               <label for="email-input">PDSB Email</label>
-              <input type="email" id="email-input" placeholder="123456@pdsb.net or p0161177@pdsb.net" autocomplete="email" required>
-              <div class="form-hint" id="email-detect-hint">Student number and teacher role are detected automatically from your <code>@pdsb.net</code> address.</div>
+              <input type="email" id="email-input" placeholder="123456@pdsb.net" autocomplete="email" required>
+              <div class="form-hint" id="email-detect-hint" style="display: none;"></div>
             </div>
 
             <div class="form-group">
@@ -114,33 +77,22 @@
           </form>
 
           <div style="text-align: center; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border); font-size: 13px;">
-            <span id="toggle-text" class="text-muted">Need a password account?</span>
+            <span id="toggle-text" class="text-muted">No password account?</span>
             <a href="#" id="toggle-btn" class="fw-bold" style="margin-left: 4px;">Create Account</a>
           </div>
         </div>
 
-        <div id="auth-redirecting" style="display: none; text-align: center; padding: 18px 8px;">
-          <p class="fw-bold mb-12" id="redirect-msg">Signed in! Opening your workspace...</p>
+        <div id="auth-redirecting" style="display: none; text-align: center; padding: 16px 8px;">
+          <p class="fw-bold mb-12" id="redirect-msg">Redirecting...</p>
           <div class="btn-row" style="justify-content: center;">
-            <button id="btn-continue" class="btn btn-primary" type="button">Continue Now</button>
+            <button id="btn-continue" class="btn btn-primary" type="button">Continue</button>
             <button id="btn-logout" class="btn btn-ghost" type="button">Sign Out</button>
           </div>
         </div>
       </div>
     </section>
-
   </div>
 </main>
-
-<footer class="site-footer">
-  <div class="footer-inner">
-    <span><strong>CEIT</strong> — Computer Engineering Item Tracker · PDSB (Mr. Kidston)</span>
-    <div class="footer-links">
-      <a href="docs.html">User Documentation</a>
-      <a href="test-backend.html">Backend Diagnostics</a>
-    </div>
-  </div>
-</footer>
 
 <script type="module">
   import {
@@ -214,20 +166,21 @@
   emailInput.addEventListener("input", () => {
     const val = emailInput.value.trim().toLowerCase();
     if (!val) {
-      emailDetectHint.innerHTML =
-        "Student number and teacher role are detected automatically from your <code>@pdsb.net</code> address.";
+      emailDetectHint.style.display = "none";
+      emailDetectHint.textContent = "";
       return;
     }
+    emailDetectHint.style.display = "block";
     if (!isPdsbEmail(val)) {
-      emailDetectHint.textContent = "Only @pdsb.net school email addresses are permitted.";
+      emailDetectHint.textContent = "Must be an @pdsb.net email.";
       return;
     }
     if (isTeacherEmail(val)) {
-      emailDetectHint.textContent = `Detected PDSB Teacher account (${val.split("@")[0]}).`;
+      emailDetectHint.textContent = `Teacher (${val.split("@")[0]})`;
       return;
     }
     const sNum = extractStudentNumberFromEmail(val);
-    emailDetectHint.textContent = sNum ? `Detected PDSB Student #${sNum}.` : "Valid @pdsb.net account.";
+    emailDetectHint.textContent = sNum ? `Student #${sNum}` : "@pdsb.net";
   });
 
   toggleBtn.addEventListener("click", (e) => {
@@ -240,14 +193,14 @@
       panelTitle.textContent = "Create Account";
       submitBtn.textContent = "Create Account";
       passwordInput.setAttribute("autocomplete", "new-password");
-      toggleText.textContent = "Already have an account?";
+      toggleText.textContent = "Have an account?";
       toggleBtn.textContent = "Sign In";
     } else {
       signupFields.style.display = "none";
       panelTitle.textContent = "Sign In";
       submitBtn.textContent = "Sign In";
       passwordInput.setAttribute("autocomplete", "current-password");
-      toggleText.textContent = "Need a password account?";
+      toggleText.textContent = "No password account?";
       toggleBtn.textContent = "Create Account";
     }
   });
@@ -258,8 +211,7 @@
       authForms.style.display = "none";
       authRedirecting.style.display = "block";
       const dest = resolveDestination(user);
-      document.getElementById("redirect-msg").textContent =
-        `Welcome, ${user.displayName || user.profile?.displayName || user.email}! Opening workspace...`;
+      document.getElementById("redirect-msg").textContent = "Redirecting...";
       window.location.href = dest;
     } else {
       authForms.style.display = "block";
@@ -274,7 +226,7 @@
     btn.disabled = true;
     try {
       const res = await signInWithGoogle(true);
-      showStatus("Signed in! Redirecting...");
+      showStatus("Redirecting...");
       window.location.href = resolveDestination({
         uid: res.user.uid,
         email: res.user.email,
@@ -294,11 +246,11 @@
     const password = passwordInput.value;
 
     if (!email || !password) {
-      showError("Please enter both your school email and password.");
+      showError("Enter your PDSB email and password.");
       return;
     }
     if (!isPdsbEmail(email)) {
-      showError("Access restricted: Only Peel District School Board (@pdsb.net) email addresses are allowed.");
+      showError("Only @pdsb.net emails are allowed.");
       return;
     }
 
@@ -308,22 +260,22 @@
       if (isSignUpMode) {
         const name = document.getElementById("name-input").value.trim();
         if (!name) {
-          showError("Please enter your full name to create an account.");
+          showError("Enter your full name.");
           submitBtn.disabled = false;
           return;
         }
         if (password.length < 6) {
-          showError("Password must be at least 6 characters long.");
+          showError("Password must be at least 6 characters.");
           submitBtn.disabled = false;
           return;
         }
-        showStatus("Creating your account...");
+        showStatus("Creating account...");
         res = await signUpWithEmail(email, password, name);
       } else {
         showStatus("Signing in...");
         res = await signInWithEmail(email, password);
       }
-      showStatus("Signed in! Redirecting...");
+      showStatus("Redirecting...");
       window.location.href = resolveDestination({
         uid: res.user.uid,
         email: res.user.email,
