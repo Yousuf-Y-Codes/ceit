@@ -12,12 +12,7 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="dashboard.html" class="brand-wordmark">
-        <span class="brand-mark" aria-hidden="true">
-          <svg class="icon" viewBox="0 0 24 24">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
-            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
-          </svg>
-        </span>
+        <span class="brand-mark">CE</span>
         <span>CEIT</span>
       </a>
       <span class="brand-tag">Student</span>
@@ -31,12 +26,11 @@
     </nav>
 
     <div class="header-user">
-      <div class="user-chip">
-        <span class="user-avatar" id="user-avatar">S</span>
+      <span class="user-pill">
         <strong id="student-name">Loading...</strong>
-        <span class="user-chip-id" id="student-number-pill">#—</span>
-      </div>
-      <button type="button" id="btn-logout" class="btn btn-ghost btn-sm">Sign Out</button>
+        <span class="user-pill-id" id="student-number-pill">#—</span>
+      </span>
+      <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
     </div>
   </div>
 </header>
@@ -44,31 +38,25 @@
 <main class="page-wrapper">
   <div class="page-header">
     <div>
-      <h1>My Lab Components</h1>
-      <p>Track what you have signed out, watch due dates, or grab a new component.</p>
+      <h1>Student Dashboard</h1>
+      <p>View your active component loans, class periods, due dates, and available lab stock.</p>
     </div>
-    <a href="checkout.html" class="btn btn-primary btn-lg">
-      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/>
-        <rect x="7" y="7" width="10" height="10" rx="1.5"/>
-      </svg>
-      Scan QR or Check Out
-    </a>
+    <a href="checkout.html" class="btn btn-primary btn-lg">+ Check Out Component</a>
   </div>
 
-  <!-- Instant Quick Code Check-Out Bar -->
-  <section class="action-banner" aria-label="Quick Code Check Out">
+  <!-- Quick Code Lookup Bar -->
+  <section class="action-banner" aria-label="Quick Code Lookup">
     <div>
-      <strong style="font-size: 14px;">Have a component code in front of you?</strong>
-      <div class="text-small text-muted">Type the bin code to jump straight into checking it out.</div>
+      <strong>Quick Check-Out:</strong>
+      <span class="text-secondary">Type a component code to jump straight to the sign-out form.</span>
     </div>
     <form id="quick-code-form" class="action-banner-form">
       <input type="text" id="quick-code-input" placeholder="e.g. MCU-ARDUN-01" autocomplete="off">
-      <button type="submit" class="btn btn-primary">Look Up</button>
+      <button type="submit" class="btn btn-primary">Open Form</button>
     </form>
   </section>
 
-  <!-- KPI Stats Strip -->
+  <!-- Flat Stats Strip -->
   <section class="stats-grid" aria-label="Checkout Summary">
     <div class="stat-card">
       <span class="stat-label">Checked Out Now</span>
@@ -88,8 +76,8 @@
     </div>
   </section>
 
-  <!-- Segmented Tabs -->
-  <div class="segmented-tabs" role="tablist">
+  <!-- Classic Flat Tabs -->
+  <div class="tab-bar" role="tablist">
     <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
       Active Loans <span class="tab-count" id="tab-active-count">0</span>
     </button>
@@ -110,6 +98,7 @@
             <tr>
               <th>Component</th>
               <th>Code</th>
+              <th>Period</th>
               <th>Checked Out</th>
               <th>Due Date</th>
               <th>Status</th>
@@ -117,7 +106,7 @@
             </tr>
           </thead>
           <tbody id="checkouts-list">
-            <tr><td colspan="6" class="empty-state">Loading your checked-out components...</td></tr>
+            <tr><td colspan="7" class="empty-state">Loading your checked-out components...</td></tr>
           </tbody>
         </table>
       </div>
@@ -133,41 +122,35 @@
             <tr>
               <th>Component</th>
               <th>Code</th>
+              <th>Period</th>
               <th>Checked Out</th>
               <th>Returned</th>
               <th>Status</th>
             </tr>
           </thead>
           <tbody id="history-list">
-            <tr><td colspan="5" class="empty-state">No returned components yet.</td></tr>
+            <tr><td colspan="6" class="empty-state">No returned components yet.</td></tr>
           </tbody>
         </table>
       </div>
     </div>
   </section>
 
-  <!-- Tab 3: Available Lab Inventory -->
+  <!-- Tab 3: Lab Catalog -->
   <section id="tab-catalog" class="tab-pane">
     <div class="card">
-      <div class="card-body" style="padding-bottom: 12px;">
-        <div class="toolbar" style="margin-bottom: 0;">
-          <div class="search-box">
-            <svg class="icon icon-sm search-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input type="search" id="catalog-search" placeholder="Search by component name, code, or bin...">
-          </div>
-          <select id="catalog-category" style="width: auto; min-width: 170px;">
-            <option value="">All Categories</option>
-            <option value="Microcontrollers">Microcontrollers</option>
-            <option value="Sensors">Sensors</option>
-            <option value="Components">Components</option>
-            <option value="Cables & Tools">Cables &amp; Tools</option>
-            <option value="Cables & Power">Cables &amp; Power</option>
-            <option value="Tools & Meters">Tools &amp; Meters</option>
-            <option value="General">General</option>
-          </select>
-        </div>
+      <div class="toolbar">
+        <input type="search" id="catalog-search" placeholder="Search by component name, code, or bin...">
+        <select id="catalog-category">
+          <option value="">All Categories</option>
+          <option value="Microcontrollers">Microcontrollers</option>
+          <option value="Sensors">Sensors</option>
+          <option value="Components">Components</option>
+          <option value="Cables & Tools">Cables &amp; Tools</option>
+          <option value="Cables & Power">Cables &amp; Power</option>
+          <option value="Tools & Meters">Tools &amp; Meters</option>
+          <option value="General">General</option>
+        </select>
       </div>
       <div class="table-wrap">
         <table>
@@ -194,13 +177,13 @@
 <div class="modal-backdrop" id="return-modal" role="dialog" aria-modal="true" aria-labelledby="modal-return-title">
   <div class="modal-dialog">
     <div class="modal-header">
-      <h3 id="modal-return-title">Return Component to Lab</h3>
+      <h3 id="modal-return-title">Return Component</h3>
       <button type="button" class="modal-close" data-close-modal="return-modal" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
-      <p id="return-modal-desc" style="font-size: 14px;"></p>
+      <p id="return-modal-desc"></p>
       <div class="alert alert-info mt-12" style="margin-bottom: 0;">
-        Please place the component back into its labeled storage bin after confirming your return.
+        Place the component back into its labeled storage bin after clicking Confirm Return.
       </div>
     </div>
     <div class="modal-footer">
@@ -246,18 +229,12 @@
   let allItems = [];
   let pendingReturnId = null;
 
-  // Quick Code Jump
   document.getElementById("quick-code-form").addEventListener("submit", (e) => {
     e.preventDefault();
     const code = document.getElementById("quick-code-input").value.trim().toUpperCase();
-    if (code) {
-      window.location.href = `checkout.html?code=${encodeURIComponent(code)}`;
-    } else {
-      window.location.href = "checkout.html";
-    }
+    window.location.href = code ? `checkout.html?code=${encodeURIComponent(code)}` : "checkout.html";
   });
 
-  // Tab switching
   document.querySelectorAll(".tab-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       document.querySelectorAll(".tab-btn").forEach((b) => {
@@ -271,7 +248,6 @@
     });
   });
 
-  // Modals
   function openModal(id) {
     document.getElementById(id).classList.add("open");
   }
@@ -292,7 +268,6 @@
     const sNum = extractStudentNumberFromEmail(currentUser.email) || currentUser.profile?.studentNumber || "";
     const isTeacher = currentUser.profile?.role === "teacher";
     document.getElementById("student-name").textContent = name;
-    document.getElementById("user-avatar").textContent = name.charAt(0).toUpperCase();
     document.getElementById("student-number-pill").textContent = sNum
       ? `#${sNum}`
       : isTeacher
@@ -301,10 +276,10 @@
   }
 
   function renderStatusBadge(status) {
-    if (status === "overdue") return '<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>';
-    if (status === "due-soon") return '<span class="badge badge-warn"><span class="badge-dot"></span>Due Soon</span>';
-    if (status === "returned") return '<span class="badge badge-success"><span class="badge-dot"></span>Returned</span>';
-    return '<span class="badge badge-accent"><span class="badge-dot"></span>Active</span>';
+    if (status === "overdue") return '<span class="badge badge-danger">Overdue</span>';
+    if (status === "due-soon") return '<span class="badge badge-warn">Due Soon</span>';
+    if (status === "returned") return '<span class="badge badge-success">Returned</span>';
+    return '<span class="badge badge-accent">Active</span>';
   }
 
   function renderActiveCheckouts(active) {
@@ -323,13 +298,8 @@
     document.getElementById("stat-due-soon").textContent = dueSoonCount;
 
     if (active.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="6" class="empty-state">
-            <strong>No active component loans</strong>
-            Scan a bin QR code or enter a component code above whenever you need lab hardware.
-          </td>
-        </tr>`;
+      tbody.innerHTML =
+        '<tr><td colspan="7" class="empty-state"><strong>No active loans</strong>Click "+ Check Out Component" above to sign out lab hardware.</td></tr>';
       return;
     }
 
@@ -337,9 +307,11 @@
       .map((co) => {
         const status = getCheckoutDisplayStatus(co);
         const relDue = formatRelativeDue(co.dueDate);
-        const notesHtml = co.notes
-          ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>`
-          : "";
+        const notesHtml = co.notes ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>` : "";
+        const periodHtml = co.period
+          ? `<span class="badge badge-neutral">${escapeHtml(co.period)}</span>`
+          : '<span class="text-muted">—</span>';
+
         return `
           <tr>
             <td>
@@ -348,6 +320,7 @@
               ${notesHtml}
             </td>
             <td><code>${escapeHtml(co.itemCode)}</code></td>
+            <td>${periodHtml}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
             <td class="tabular">
               <strong>${escapeHtml(formatDate(co.dueDate))}</strong>
@@ -371,7 +344,7 @@
       btn.addEventListener("click", () => {
         pendingReturnId = btn.dataset.id;
         document.getElementById("return-modal-desc").textContent =
-          `Mark "${btn.dataset.name}" (${btn.dataset.code}) as returned to lab inventory?`;
+          `Return "${btn.dataset.name}" (${btn.dataset.code}) back into lab inventory?`;
         openModal("return-modal");
       });
     });
@@ -383,13 +356,7 @@
     document.getElementById("stat-returned").textContent = returned.length;
 
     if (returned.length === 0) {
-      tbody.innerHTML = `
-        <tr>
-          <td colspan="5" class="empty-state">
-            <strong>No return history yet</strong>
-            Components you return will be logged here automatically.
-          </td>
-        </tr>`;
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No return history yet</strong>Returned items will appear here.</td></tr>';
       return;
     }
 
@@ -399,6 +366,7 @@
           <tr>
             <td><strong>${escapeHtml(co.itemName)}</strong></td>
             <td><code>${escapeHtml(co.itemCode)}</code></td>
+            <td>${co.period ? `<span class="badge badge-neutral">${escapeHtml(co.period)}</span>` : "—"}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.returnedAt))}</td>
             <td>${renderStatusBadge("returned")}</td>
@@ -426,7 +394,7 @@
     const tbody = document.getElementById("catalog-list");
 
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No matching components</strong>Try clearing your search or category filter.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><strong>No matching components</strong>Try clearing your filter.</td></tr>';
       return;
     }
 
@@ -451,7 +419,7 @@
             <td class="text-secondary">${escapeHtml(item.location || "Main Lab")}</td>
             <td>
               <div class="stock-meter">
-                <span class="tabular text-small fw-bold">${avail} / ${total} available</span>
+                <span class="tabular text-small fw-bold">${avail} / ${total}</span>
                 <div class="stock-bar"><div class="stock-bar-fill ${fillClass}" style="width: ${pct}%;"></div></div>
               </div>
             </td>
@@ -465,7 +433,6 @@
   document.getElementById("catalog-search").addEventListener("input", renderCatalog);
   document.getElementById("catalog-category").addEventListener("change", renderCatalog);
 
-  // Confirm return button
   document.getElementById("btn-confirm-return").addEventListener("click", async () => {
     if (!pendingReturnId || !currentUser) return;
     const btn = document.getElementById("btn-confirm-return");
@@ -474,7 +441,7 @@
     try {
       await returnItem(pendingReturnId, currentUser.email || "student");
       closeModal("return-modal");
-      showToast("Component returned to inventory!", "success");
+      showToast("Component returned to inventory.", "success");
     } catch (err) {
       showToast("Return failed: " + err.message, "warn");
     } finally {
@@ -484,7 +451,6 @@
     }
   });
 
-  // Auth Guard & Realtime Subscriptions
   requireAuth({
     redirectUrl: "index.html",
     preserveTarget: true,
@@ -493,7 +459,7 @@
       renderStudentHeader();
 
       if (user.profile?.role === "teacher") {
-        document.getElementById("nav-teacher-link").style.display = "inline-flex";
+        document.getElementById("nav-teacher-link").style.display = "inline-block";
       }
 
       if (unsubCheckouts) unsubCheckouts();

@@ -6,7 +6,7 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 - **Course / Stakeholder:** Computer Engineering — Mr. Kidston (`p0161177@pdsb.net`)
 - **Team:** Yousuf Yaghmour & Ahmed Salem
 - **Tech Stack:** Pure Vanilla HTML5, CSS3, ES Module JavaScript (zero frameworks, zero build step) + Firebase v11 CDN (Auth & Cloud Firestore)
-- **Visual Style:** Clean Minimal UI × Engineering Blueprint design system with a deterministic live Canvas workflow showcase (`js/hero-motion.js`)
+- **Visual Style:** Classic Flat Blueprint Lab (sharp corners, flat solid colors, 100% system fonts, zero animations for instant classroom load speed)
 
 ---
 
@@ -26,21 +26,20 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 - **My Return History:** Full personal record of returned hardware.
 - **Available Lab Inventory:** Searchable read-only catalog with one-click check-out links.
 
-### 3. Check Out Page (`checkout.html`)
-- **Manual Code Lookup:** Enter any item code (case-insensitive) or choose from the in-stock quick-select dropdown.
-- **Live Camera QR Scanner:** Uses browser camera (`getUserMedia` + `jsQR` / `BarcodeDetector`) with front/rear camera switching.
-- **QR Image Upload Fallback:** Decode QR labels from a photo/image file on desktop PCs without webcams.
-- **Loan Duration & Live Due Date Preview:** Choose 1 day, 3 days, 1 week, 2 weeks, or custom 1–30 days with atomic Firestore inventory transactions.
+### 3. Single-Screen Check Out Form (`checkout.html`)
+- **Step 1 — Component Code or Inline QR Scan:** Type an item code, pick from the in-stock dropdown, or open the inline camera QR scanner (`getUserMedia` + `jsQR` / `BarcodeDetector`) with an image upload fallback.
+- **Step 2 — Explicit Class Period (`Period 1`–`Period 4`):** No default pre-selected so every loan is accurately grouped by class period.
+- **Step 3 — Defaults & Confirm:** Auto-filled PDSB ID, default 1-week duration (adjustable 1–30 days) with live due-date preview, and atomic Firestore checkout.
 
 ### 4. Teacher Admin Panel (`teacher.html`)
 - Strict teacher role guard (`requireAuth({ requiredRole: "teacher" })`).
-- **Active Sign-Outs:** Real-time monitor of all signed-out items across the lab with search, overdue filter, one-click **Check In**, and pre-filled `mailto:` **Email Reminders**.
+- **Active Sign-Outs:** Real-time monitor with **Class Period filter (`Period 1`–`Period 4`)**, search, overdue/due-soon/guest filters, one-click **Check In**, and pre-filled `mailto:` **Email Reminders**.
 - **Inventory & Printable QR Labels:**
   - Create new components with auto-generated unique codes (e.g., `MCU-ARDUN-01`).
   - Edit item details/quantities (with safety checks against currently checked-out units) or delete items.
   - Generate crisp offline QR code labels (Canvas + SVG via `js/lib/qrcode.js`), download PNGs, or print a 3-column cut-out **Print All QR Labels** sheet.
-- **Guest Sign-Out Mode:** Sign out components on behalf of students without requiring them to log in.
-- **Audit History & CSV Export:** Complete chronological log of all sign-outs and returns with one-click CSV download.
+- **Guest Sign-Out Mode:** Sign out components on behalf of students (with Period 1–4 assignment) without requiring them to log in.
+- **Audit History & CSV Export:** Complete chronological log with Period filter and one-click CSV download (includes `Period`).
 
 ### 5. Documentation (`docs.html`) & Diagnostics (`test-backend.html`)
 - In-app **User Documentation** (`docs.html`) covering every feature for both students and teachers.
@@ -60,10 +59,9 @@ ceit/
 ├── docs.html                    # In-app User Documentation for students & teachers
 ├── test-backend.html            # Live Firebase backend diagnostic console
 ├── css/
-│   └── style.css                # Minimal UI × Blueprint design system + print stylesheet
+│   └── style.css                # Classic Flat Blueprint Lab theme + print stylesheet (zero animations, 100% system fonts)
 ├── js/
 │   ├── firebase-config.js       # Firebase v11 initialization & teacher email whitelist
-│   ├── hero-motion.js           # Deterministic Canvas spring workflow preview on index.html
 │   ├── utils.js                 # XSS escaping, relative due countdowns, QR parser, CSV export, toasts
 │   ├── lib/
 │   │   └── qrcode.js            # Zero-dependency pure-JS ISO/IEC 18004 QR code generator

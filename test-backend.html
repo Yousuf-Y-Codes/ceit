@@ -12,12 +12,7 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="index.html" class="brand-wordmark">
-        <span class="brand-mark" aria-hidden="true">
-          <svg class="icon" viewBox="0 0 24 24">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
-            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
-          </svg>
-        </span>
+        <span class="brand-mark">CE</span>
         <span>CEIT</span>
       </a>
       <span class="brand-tag">Diagnostics</span>
@@ -102,7 +97,7 @@
           <label for="item-name">Item Name</label>
           <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3">
         </div>
-        <div class="grid-2" style="gap: 10px;">
+        <div class="grid-2" style="gap: 8px;">
           <div class="form-group">
             <label for="item-code">Item Code</label>
             <input type="text" id="item-code" placeholder="e.g. ARD-UNO-01">
@@ -119,7 +114,7 @@
             </select>
           </div>
         </div>
-        <div class="grid-2" style="gap: 10px;">
+        <div class="grid-2" style="gap: 8px;">
           <div class="form-group">
             <label for="item-quantity">Total Quantity</label>
             <input type="number" id="item-quantity" value="10" min="1">
@@ -139,7 +134,7 @@
       <h2>3. Atomic Checkout Test</h2>
     </div>
     <div class="card-body">
-      <div class="grid-2" style="gap: 10px;">
+      <div class="grid-2" style="gap: 8px;">
         <div class="form-group">
           <label for="checkout-item-select">Select Item</label>
           <select id="checkout-item-select">
@@ -152,7 +147,13 @@
         </div>
       </div>
       <div class="btn-row">
-        <div style="width: 140px;">
+        <select id="checkout-period" style="width: 150px;" aria-label="Class Period">
+          <option value="Period 1">Period 1</option>
+          <option value="Period 2">Period 2</option>
+          <option value="Period 3">Period 3</option>
+          <option value="Period 4">Period 4</option>
+        </select>
+        <div style="width: 120px;">
           <input type="number" id="checkout-duration" value="7" min="1" max="30" aria-label="Duration Days">
         </div>
         <button id="btn-checkout-item" type="button" class="btn btn-primary">Sign Out Item</button>
@@ -422,6 +423,7 @@
       if (!currentUser) throw new Error("Sign in first to check out an item.");
       let itemId = document.getElementById("checkout-item-select").value;
       const codeLookup = document.getElementById("checkout-code-lookup").value.trim();
+      const period = document.getElementById("checkout-period").value;
       const durationDays = parseInt(document.getElementById("checkout-duration").value, 10) || 7;
 
       if (!itemId && codeLookup) {
@@ -431,8 +433,8 @@
       }
       if (!itemId) throw new Error("Select an item or enter a valid code.");
 
-      const res = await checkOutItem({ itemId, user: currentUser, durationDays });
-      log(`Checked out "${res.item.name}" (${res.checkoutId})`, "success");
+      const res = await checkOutItem({ itemId, user: currentUser, period, durationDays });
+      log(`Checked out "${res.item.name}" (${period}, ${res.checkoutId})`, "success");
       document.getElementById("checkout-code-lookup").value = "";
     } catch (err) {
       log(`Checkout failed: ${err.message}`, "error");
@@ -454,7 +456,7 @@
         return `
           <tr>
             <td><strong>${escapeHtml(co.itemName)}</strong><br><code>${escapeHtml(co.itemCode)}</code></td>
-            <td>${escapeHtml(co.studentName)}<br><small class="text-muted">${escapeHtml(co.studentNumber || "N/A")}</small></td>
+            <td>${escapeHtml(co.studentName)}<br><small class="text-muted">${escapeHtml(co.studentNumber || "N/A")}${co.period ? " · " + escapeHtml(co.period) : ""}</small></td>
             <td class="tabular">${escapeHtml(formatDate(co.dueDate))}${badge}</td>
             <td>
               <button type="button" class="btn btn-success btn-xs btn-return-item" data-id="${escapeHtml(co.id)}">Check In</button>

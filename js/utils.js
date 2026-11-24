@@ -247,9 +247,7 @@ export function showToast(message, type = "info", durationMs = 3500) {
   container.appendChild(toast);
 
   setTimeout(() => {
-    toast.style.transition = "opacity 0.25s ease";
-    toast.style.opacity = "0";
-    setTimeout(() => toast.remove(), 260);
+    toast.remove();
   }, durationMs);
 }
 
@@ -264,6 +262,7 @@ export function exportCheckoutsToCsv(records, filename = "ceit-checkout-logs.csv
     "Item Name",
     "Item Code",
     "Category",
+    "Period",
     "Student Name",
     "Student Number",
     "Student Email",
@@ -286,6 +285,7 @@ export function exportCheckoutsToCsv(records, filename = "ceit-checkout-logs.csv
     r.itemName,
     r.itemCode,
     r.category || "General",
+    r.period || "Unassigned",
     r.studentName,
     r.studentNumber || "N/A",
     r.studentEmail || "",

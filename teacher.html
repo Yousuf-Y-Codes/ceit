@@ -12,12 +12,7 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="teacher.html" class="brand-wordmark">
-        <span class="brand-mark" aria-hidden="true">
-          <svg class="icon" viewBox="0 0 24 24">
-            <rect x="6" y="6" width="12" height="12" rx="2"/>
-            <path d="M9 1v3M15 1v3M9 20v3M15 20v3M1 9h3M1 15h3M20 9h3M20 15h3"/>
-          </svg>
-        </span>
+        <span class="brand-mark">CE</span>
         <span>CEIT</span>
       </a>
       <span class="brand-tag">Teacher Admin</span>
@@ -31,12 +26,11 @@
     </nav>
 
     <div class="header-user">
-      <div class="user-chip">
-        <span class="user-avatar" id="teacher-avatar">T</span>
+      <span class="user-pill">
         <strong id="teacher-name">Teacher</strong>
-        <span class="user-chip-id" id="teacher-email">...</span>
-      </div>
-      <button type="button" id="btn-logout" class="btn btn-ghost btn-sm">Sign Out</button>
+        <span class="user-pill-id" id="teacher-email">...</span>
+      </span>
+      <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
     </div>
   </div>
 </header>
@@ -44,29 +38,22 @@
 <main class="page-wrapper">
   <div class="page-header">
     <div>
-      <h1>Lab Inventory &amp; Sign-Outs</h1>
-      <p>Monitor borrowed hardware, add components, print QR bin sheets, and export logs.</p>
+      <h1>Teacher Admin Panel</h1>
+      <p>Monitor loans by class period, manage lab inventory, print QR bin sheets, and export logs.</p>
     </div>
     <div class="btn-row">
-      <button type="button" id="btn-print-all-top" class="btn btn-primary">
-        <svg class="icon icon-sm" viewBox="0 0 24 24" aria-hidden="true">
-          <polyline points="6 9 6 2 18 2 18 9"/>
-          <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-          <rect x="6" y="14" width="12" height="8"/>
-        </svg>
-        Print All QR Labels
-      </button>
+      <button type="button" id="btn-print-all-top" class="btn btn-primary">Print All QR Labels</button>
       <button type="button" id="btn-export-csv-top" class="btn btn-ghost">Export CSV</button>
     </div>
   </div>
 
-  <!-- Automatic Overdue Alert Strip -->
+  <!-- Overdue Alert Strip -->
   <div id="overdue-attention" class="attention-banner" style="display: none;">
     <span id="overdue-attention-text">There are overdue items requiring follow-up.</span>
     <button type="button" id="btn-jump-overdue" class="btn btn-danger btn-xs">Show Overdue</button>
   </div>
 
-  <!-- KPI Stats Strip -->
+  <!-- Flat Stats Grid -->
   <section class="stats-grid" aria-label="Lab Overview">
     <div class="stat-card">
       <span class="stat-label">Component Types</span>
@@ -86,8 +73,8 @@
     </div>
   </section>
 
-  <!-- Segmented 4-Tab Bar -->
-  <div class="segmented-tabs" role="tablist">
+  <!-- Classic Flat 4-Tab Bar -->
+  <div class="tab-bar" role="tablist">
     <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
       Active Sign-Outs <span class="tab-count" id="count-active">0</span>
     </button>
@@ -105,20 +92,23 @@
   <!-- TAB 1: Active Sign-Outs -->
   <section id="tab-active" class="tab-pane active">
     <div class="card">
-      <div class="card-body" style="padding-bottom: 12px;">
-        <div class="toolbar" style="margin-bottom: 0;">
-          <div class="search-box">
-            <svg class="icon icon-sm search-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input type="search" id="active-search" placeholder="Search by student #, name, item, or code...">
-          </div>
-          <div class="chip-group" id="active-filter-chips">
-            <button type="button" class="chip-btn active" data-filter="all">All</button>
-            <button type="button" class="chip-btn" data-filter="overdue">Overdue</button>
-            <button type="button" class="chip-btn" data-filter="due-soon">Due Soon</button>
-            <button type="button" class="chip-btn" data-filter="guest">Guest Mode</button>
-          </div>
+      <div class="toolbar">
+        <div class="btn-row" style="flex: 1; min-width: 240px;">
+          <input type="search" id="active-search" placeholder="Search by student #, name, item, or code...">
+          <select id="active-period-filter" aria-label="Filter by Class Period">
+            <option value="all">All Periods</option>
+            <option value="Period 1">Period 1</option>
+            <option value="Period 2">Period 2</option>
+            <option value="Period 3">Period 3</option>
+            <option value="Period 4">Period 4</option>
+            <option value="unassigned">No Period Set</option>
+          </select>
+        </div>
+        <div class="chip-group" id="active-filter-chips">
+          <button type="button" class="chip-btn active" data-filter="all">All</button>
+          <button type="button" class="chip-btn" data-filter="overdue">Overdue</button>
+          <button type="button" class="chip-btn" data-filter="due-soon">Due Soon</button>
+          <button type="button" class="chip-btn" data-filter="guest">Guest</button>
         </div>
       </div>
 
@@ -129,6 +119,7 @@
               <th>Component</th>
               <th>Student</th>
               <th>Student #</th>
+              <th>Period</th>
               <th>Checked Out</th>
               <th>Due Date</th>
               <th>Status</th>
@@ -136,7 +127,7 @@
             </tr>
           </thead>
           <tbody id="active-list">
-            <tr><td colspan="7" class="empty-state">Loading active sign-outs...</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading active sign-outs...</td></tr>
           </tbody>
         </table>
       </div>
@@ -150,7 +141,7 @@
       <!-- Left: Add New Component -->
       <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
-          <h3>Add Component</h3>
+          <h3>Add New Component</h3>
         </div>
         <div class="card-body">
           <form id="add-item-form">
@@ -178,10 +169,10 @@
                 <input type="text" id="item-code" placeholder="e.g. MCU-ARDUN-01" required>
                 <button type="button" id="btn-gen-code" class="btn btn-ghost btn-sm">Auto</button>
               </div>
-              <div class="form-hint">Must be unique. Click <strong>Auto</strong> to suggest one.</div>
+              <div class="form-hint">Must be unique. Click <strong>Auto</strong> to generate one.</div>
             </div>
 
-            <div class="grid-2" style="gap: 10px;">
+            <div class="grid-2" style="gap: 8px;">
               <div class="form-group">
                 <label for="item-qty">Quantity</label>
                 <input type="number" id="item-qty" value="5" min="1" max="999" required>
@@ -206,27 +197,20 @@
 
       <!-- Right: Live Inventory Table -->
       <div class="card" style="margin-bottom: 0;">
-        <div class="card-body" style="padding-bottom: 12px;">
-          <div class="toolbar" style="margin-bottom: 0;">
-            <div class="search-box">
-              <svg class="icon icon-sm search-icon" viewBox="0 0 24 24" aria-hidden="true">
-                <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
-              </svg>
-              <input type="search" id="inv-search" placeholder="Search inventory by name, code, or bin...">
-            </div>
-            <div class="btn-row">
-              <select id="inv-cat-filter" style="width: auto; min-width: 155px;">
-                <option value="">All Categories</option>
-                <option value="Microcontrollers">Microcontrollers</option>
-                <option value="Sensors">Sensors</option>
-                <option value="Components">Components</option>
-                <option value="Cables & Tools">Cables &amp; Tools</option>
-                <option value="Cables & Power">Cables &amp; Power</option>
-                <option value="Tools & Meters">Tools &amp; Meters</option>
-                <option value="General">General</option>
-              </select>
-              <button type="button" id="btn-print-filtered" class="btn btn-ghost btn-sm">Print Visible QR</button>
-            </div>
+        <div class="toolbar">
+          <input type="search" id="inv-search" placeholder="Search inventory by name, code, or bin...">
+          <div class="btn-row">
+            <select id="inv-cat-filter">
+              <option value="">All Categories</option>
+              <option value="Microcontrollers">Microcontrollers</option>
+              <option value="Sensors">Sensors</option>
+              <option value="Components">Components</option>
+              <option value="Cables & Tools">Cables &amp; Tools</option>
+              <option value="Cables & Power">Cables &amp; Power</option>
+              <option value="Tools & Meters">Tools &amp; Meters</option>
+              <option value="General">General</option>
+            </select>
+            <button type="button" id="btn-print-filtered" class="btn btn-ghost btn-sm">Print Visible QR</button>
           </div>
         </div>
 
@@ -255,7 +239,7 @@
     <div class="grid-2">
       <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
-          <h3>Sign Out on Behalf of a Student</h3>
+          <h3>Guest Sign-Out (Teacher Records for Student)</h3>
         </div>
         <div class="card-body">
           <form id="guest-checkout-form">
@@ -263,7 +247,7 @@
               <label for="guest-student-name">Student Full Name</label>
               <input type="text" id="guest-student-name" placeholder="e.g. Samira Khan" required>
             </div>
-            <div class="grid-2" style="gap: 10px;">
+            <div class="grid-2" style="gap: 8px;">
               <div class="form-group">
                 <label for="guest-student-num">Student Number</label>
                 <input type="text" id="guest-student-num" placeholder="e.g. 882914" required>
@@ -273,21 +257,31 @@
                 <input type="email" id="guest-student-email" placeholder="Auto: <num>@pdsb.net">
               </div>
             </div>
+            <div class="grid-2" style="gap: 8px;">
+              <div class="form-group">
+                <label for="guest-period">Class Period (Required)</label>
+                <select id="guest-period" required>
+                  <option value="">-- Select Period --</option>
+                  <option value="Period 1">Period 1</option>
+                  <option value="Period 2">Period 2</option>
+                  <option value="Period 3">Period 3</option>
+                  <option value="Period 4">Period 4</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="guest-duration">Loan Duration (Days)</label>
+                <input type="number" id="guest-duration" value="7" min="1" max="30" required>
+              </div>
+            </div>
             <div class="form-group">
               <label for="guest-item-select">Select Component</label>
               <select id="guest-item-select" required>
                 <option value="">-- Choose an available component --</option>
               </select>
             </div>
-            <div class="grid-2" style="gap: 10px;">
-              <div class="form-group">
-                <label for="guest-duration">Loan Duration (Days)</label>
-                <input type="number" id="guest-duration" value="7" min="1" max="30" required>
-              </div>
-              <div class="form-group">
-                <label for="guest-notes">Notes (Optional)</label>
-                <input type="text" id="guest-notes" placeholder="e.g. Forgot laptop today">
-              </div>
+            <div class="form-group">
+              <label for="guest-notes">Notes (Optional)</label>
+              <input type="text" id="guest-notes" placeholder="e.g. Forgot laptop today">
             </div>
             <button type="submit" id="btn-guest-submit" class="btn btn-success btn-block btn-lg">
               Record Guest Sign-Out
@@ -298,20 +292,23 @@
 
       <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
-          <h3>When to Use Guest Mode</h3>
+          <h3>How Guest Mode Works</h3>
         </div>
         <div class="card-body">
-          <div class="alert alert-info">
-            Record a student's component loan in 5 seconds without needing them to log in.
-          </div>
-          <p class="text-secondary mb-12">
-            Guest sign-outs atomically decrement stock just like normal check-outs and appear in
-            <strong>Active Sign-Outs</strong> with a <code>Guest</code> tag.
-          </p>
-          <p class="text-secondary">
-            Entering a student's numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> so you
-            can still send one-click email reminders.
-          </p>
+          <ul class="info-list">
+            <li>
+              <strong>No Student Login Needed</strong>
+              Record a loan in seconds when a student cannot log in during class.
+            </li>
+            <li>
+              <strong>Grouped by Class Period</strong>
+              Guest sign-outs appear in <em>Active Sign-Outs</em> under their assigned Period with a <code>GUEST</code> badge.
+            </li>
+            <li>
+              <strong>Auto PDSB Email Link</strong>
+              Entering a student's numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> for one-click email reminders.
+            </li>
+          </ul>
         </div>
       </div>
     </div>
@@ -320,22 +317,25 @@
   <!-- TAB 4: Full Audit History -->
   <section id="tab-history" class="tab-pane">
     <div class="card">
-      <div class="card-body" style="padding-bottom: 12px;">
-        <div class="toolbar" style="margin-bottom: 0;">
-          <div class="search-box">
-            <svg class="icon icon-sm search-icon" viewBox="0 0 24 24" aria-hidden="true">
-              <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.35-4.35"/>
-            </svg>
-            <input type="search" id="history-search" placeholder="Search history by student, #, item, or code...">
-          </div>
-          <div class="btn-row">
-            <select id="history-status-filter" style="width: auto; min-width: 140px;">
-              <option value="all">All Records</option>
-              <option value="active">Active Only</option>
-              <option value="returned">Returned Only</option>
-            </select>
-            <button type="button" id="btn-export-csv" class="btn btn-ghost btn-sm">Download CSV</button>
-          </div>
+      <div class="toolbar">
+        <div class="btn-row" style="flex: 1; min-width: 240px;">
+          <input type="search" id="history-search" placeholder="Search history by student, #, item, or code...">
+          <select id="history-period-filter" aria-label="Filter History by Class Period">
+            <option value="all">All Periods</option>
+            <option value="Period 1">Period 1</option>
+            <option value="Period 2">Period 2</option>
+            <option value="Period 3">Period 3</option>
+            <option value="Period 4">Period 4</option>
+            <option value="unassigned">No Period Set</option>
+          </select>
+        </div>
+        <div class="btn-row">
+          <select id="history-status-filter">
+            <option value="all">All Records</option>
+            <option value="active">Active Only</option>
+            <option value="returned">Returned Only</option>
+          </select>
+          <button type="button" id="btn-export-csv" class="btn btn-ghost btn-sm">Download CSV</button>
         </div>
       </div>
 
@@ -346,6 +346,7 @@
               <th>Component</th>
               <th>Student</th>
               <th>Student #</th>
+              <th>Period</th>
               <th>Checked Out</th>
               <th>Due Date</th>
               <th>Returned</th>
@@ -353,7 +354,7 @@
             </tr>
           </thead>
           <tbody id="history-list">
-            <tr><td colspan="7" class="empty-state">Loading checkout history...</td></tr>
+            <tr><td colspan="8" class="empty-state">Loading checkout history...</td></tr>
           </tbody>
         </table>
       </div>
@@ -402,7 +403,7 @@
           <label for="edit-item-name">Component Name</label>
           <input type="text" id="edit-item-name" required>
         </div>
-        <div class="grid-2" style="gap: 10px;">
+        <div class="grid-2" style="gap: 8px;">
           <div class="form-group">
             <label for="edit-item-category">Category</label>
             <select id="edit-item-category">
@@ -445,7 +446,7 @@
       <button type="button" class="modal-close" data-close-modal="confirm-modal" aria-label="Close">&times;</button>
     </div>
     <div class="modal-body">
-      <p id="confirm-modal-message" style="font-size: 14px;"></p>
+      <p id="confirm-modal-message"></p>
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" data-close-modal="confirm-modal">Cancel</button>
@@ -512,7 +513,6 @@
   let unsubActive = null;
   let unsubHistory = null;
 
-  // Main Tabs
   function activateTab(tabId) {
     document.querySelectorAll(".tab-btn").forEach((b) => {
       const isMatch = b.dataset.tab === tabId;
@@ -528,7 +528,6 @@
     btn.addEventListener("click", () => activateTab(btn.dataset.tab));
   });
 
-  // Active Filter Chips
   function setActiveFilter(filterVal) {
     activeStatusFilter = filterVal;
     document.querySelectorAll("#active-filter-chips .chip-btn").forEach((c) => {
@@ -543,10 +542,10 @@
 
   document.getElementById("btn-jump-overdue").addEventListener("click", () => {
     activateTab("tab-active");
+    document.getElementById("active-period-filter").value = "all";
     setActiveFilter("overdue");
   });
 
-  // Modals
   function openModal(id) {
     document.getElementById(id).classList.add("open");
   }
@@ -588,10 +587,16 @@
   });
 
   function statusBadgeHtml(status) {
-    if (status === "overdue") return '<span class="badge badge-danger"><span class="badge-dot"></span>Overdue</span>';
-    if (status === "due-soon") return '<span class="badge badge-warn"><span class="badge-dot"></span>Due Soon</span>';
-    if (status === "returned") return '<span class="badge badge-success"><span class="badge-dot"></span>Returned</span>';
-    return '<span class="badge badge-accent"><span class="badge-dot"></span>Active</span>';
+    if (status === "overdue") return '<span class="badge badge-danger">Overdue</span>';
+    if (status === "due-soon") return '<span class="badge badge-warn">Due Soon</span>';
+    if (status === "returned") return '<span class="badge badge-success">Returned</span>';
+    return '<span class="badge badge-accent">Active</span>';
+  }
+
+  function matchesPeriodFilter(recordPeriod, filterValue) {
+    if (filterValue === "all") return true;
+    if (filterValue === "unassigned") return !recordPeriod;
+    return recordPeriod === filterValue;
   }
 
   function updateStats() {
@@ -621,19 +626,22 @@
       `Hi ${co.studentName},\n\n` +
       `This is a reminder from the Computer Engineering Lab that the following component is signed out under your account:\n\n` +
       `- Component: ${co.itemName} (${co.itemCode})\n` +
+      `- Class Period: ${co.period || "N/A"}\n` +
       `- Student #: ${co.studentNumber || "N/A"}\n` +
       `- Due Date: ${dueStr}\n\n` +
       `Please return it to the lab bin and check it in on CEIT.\n\nThank you!`;
     return `mailto:${encodeURIComponent(co.studentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   }
 
-  // Render Tab 1: Active Checkouts
+  // Render Tab 1: Active Sign-Outs
   function renderActiveCheckouts() {
     document.getElementById("count-active").textContent = activeCheckouts.length;
     const queryStr = document.getElementById("active-search").value.trim().toLowerCase();
+    const periodFilter = document.getElementById("active-period-filter").value;
 
     const filtered = activeCheckouts.filter((co) => {
       const disp = getCheckoutDisplayStatus(co);
+      if (!matchesPeriodFilter(co.period, periodFilter)) return false;
       if (activeStatusFilter === "overdue" && disp !== "overdue") return false;
       if (activeStatusFilter === "due-soon" && disp !== "due-soon") return false;
       if (activeStatusFilter === "guest" && !co.isGuest) return false;
@@ -643,13 +651,14 @@
         (co.itemCode || "").toLowerCase().includes(queryStr) ||
         (co.studentName || "").toLowerCase().includes(queryStr) ||
         (co.studentNumber || "").toLowerCase().includes(queryStr) ||
-        (co.studentEmail || "").toLowerCase().includes(queryStr)
+        (co.studentEmail || "").toLowerCase().includes(queryStr) ||
+        (co.period || "").toLowerCase().includes(queryStr)
       );
     });
 
     const tbody = document.getElementById("active-list");
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><strong>No matching active sign-outs</strong>Everything in this filter is checked in.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><strong>No matching active sign-outs</strong>Try changing the Period or status filter.</td></tr>';
       return;
     }
 
@@ -658,15 +667,17 @@
         const status = getCheckoutDisplayStatus(co);
         const relDue = formatRelativeDue(co.dueDate);
         const guestTag = co.isGuest ? ' <span class="badge badge-neutral">Guest</span>' : "";
+        const periodHtml = co.period
+          ? `<span class="badge badge-neutral">${escapeHtml(co.period)}</span>`
+          : '<span class="text-muted">—</span>';
         const mailto = buildReminderMailto(co);
-        const remindBtn = mailto
-          ? `<a href="${mailto}" class="btn btn-ghost btn-xs" title="Send email reminder">Email</a>`
-          : "";
+        const remindBtn = mailto ? `<a href="${mailto}" class="btn btn-ghost btn-xs">Email</a>` : "";
+
         return `
           <tr>
             <td>
               <strong>${escapeHtml(co.itemName)}</strong>
-              <div class="text-small mt-8" style="margin-top: 2px;"><code>${escapeHtml(co.itemCode)}</code></div>
+              <div><code>${escapeHtml(co.itemCode)}</code></div>
               ${co.notes ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>` : ""}
             </td>
             <td>
@@ -674,6 +685,7 @@
               ${co.studentEmail ? `<div class="text-small text-muted">${escapeHtml(co.studentEmail)}</div>` : ""}
             </td>
             <td><code>${escapeHtml(co.studentNumber || "N/A")}</code></td>
+            <td>${periodHtml}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
             <td class="tabular">
               <strong>${escapeHtml(formatDate(co.dueDate))}</strong>
@@ -701,7 +713,7 @@
         const id = btn.dataset.id;
         showConfirmDialog({
           title: "Check In Component",
-          message: `Mark "${btn.dataset.item}" borrowed by ${btn.dataset.student} as returned?`,
+          message: `Mark "${btn.dataset.item}" signed out by ${btn.dataset.student} as returned?`,
           okLabel: "Confirm Check In",
           okClass: "btn-success",
           onConfirm: async () => {
@@ -727,7 +739,7 @@
     });
   }
 
-  // Render Tab 2: Inventory + Guest Dropdown
+  // Render Tab 2: Inventory
   function renderInventory() {
     document.getElementById("count-inventory").textContent = allItems.length;
 
@@ -747,7 +759,7 @@
     const tbody = document.getElementById("inventory-list");
 
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><strong>No components found</strong>Add your first component using the form on the left.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-state"><strong>No components found</strong>Add a component using the form on the left.</td></tr>';
       return;
     }
 
@@ -812,12 +824,10 @@
         if (!item) return;
         const checkedOut = (item.totalQuantity || 0) - (item.availableQuantity || 0);
         const warning =
-          checkedOut > 0
-            ? ` Warning: ${checkedOut} unit(s) are currently signed out to students.`
-            : "";
+          checkedOut > 0 ? ` Warning: ${checkedOut} unit(s) are currently signed out.` : "";
         showConfirmDialog({
           title: "Delete Component",
-          message: `Permanently delete "${item.name}" (${item.code}) from lab inventory?${warning}`,
+          message: `Permanently delete "${item.name}" (${item.code}) from inventory?${warning}`,
           okLabel: "Delete Item",
           okClass: "btn-danger",
           onConfirm: async () => {
@@ -833,22 +843,25 @@
   function renderHistory() {
     document.getElementById("count-history").textContent = checkoutHistory.length;
     const q = document.getElementById("history-search").value.trim().toLowerCase();
+    const periodFilter = document.getElementById("history-period-filter").value;
     const stFilter = document.getElementById("history-status-filter").value;
 
     const filtered = checkoutHistory.filter((co) => {
+      if (!matchesPeriodFilter(co.period, periodFilter)) return false;
       if (stFilter !== "all" && co.status !== stFilter) return false;
       if (!q) return true;
       return (
         (co.itemName || "").toLowerCase().includes(q) ||
         (co.itemCode || "").toLowerCase().includes(q) ||
         (co.studentName || "").toLowerCase().includes(q) ||
-        (co.studentNumber || "").toLowerCase().includes(q)
+        (co.studentNumber || "").toLowerCase().includes(q) ||
+        (co.period || "").toLowerCase().includes(q)
       );
     });
 
     const tbody = document.getElementById("history-list");
     if (filtered.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><strong>No audit logs match</strong>Try adjusting your search or status filter.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><strong>No audit logs match</strong>Adjust your search or Period filter.</td></tr>';
       return;
     }
 
@@ -856,11 +869,15 @@
       .map((co) => {
         const disp = getCheckoutDisplayStatus(co);
         const guestBadge = co.isGuest ? ' <span class="badge badge-neutral">Guest</span>' : "";
+        const periodHtml = co.period
+          ? `<span class="badge badge-neutral">${escapeHtml(co.period)}</span>`
+          : '<span class="text-muted">—</span>';
         return `
           <tr>
-            <td><strong>${escapeHtml(co.itemName)}</strong> <div class="text-small"><code>${escapeHtml(co.itemCode)}</code></div></td>
+            <td><strong>${escapeHtml(co.itemName)}</strong><div><code>${escapeHtml(co.itemCode)}</code></div></td>
             <td>${escapeHtml(co.studentName)}${guestBadge}</td>
             <td><code>${escapeHtml(co.studentNumber || "N/A")}</code></td>
+            <td>${periodHtml}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
             <td class="tabular text-secondary">${escapeHtml(formatDate(co.dueDate))}</td>
             <td class="tabular text-secondary">${co.returnedAt ? escapeHtml(formatDateTime(co.returnedAt)) : "—"}</td>
@@ -871,7 +888,6 @@
       .join("");
   }
 
-  // QR Modal & Print Sheet
   function openQrModal(item) {
     activeQrItem = item;
     const qrUrl = buildCheckoutQrUrl(item.code);
@@ -989,6 +1005,12 @@
   document.getElementById("guest-checkout-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     if (!currentUser) return;
+    const period = document.getElementById("guest-period").value;
+    if (!period) {
+      showToast("Please select a Class Period (Period 1–4).", "warn");
+      return;
+    }
+
     const btn = document.getElementById("btn-guest-submit");
     btn.disabled = true;
 
@@ -999,11 +1021,12 @@
         studentName: document.getElementById("guest-student-name").value,
         studentNumber: document.getElementById("guest-student-num").value,
         studentEmail: document.getElementById("guest-student-email").value,
+        period,
         durationDays: parseInt(document.getElementById("guest-duration").value, 10) || 7,
         notes: document.getElementById("guest-notes").value
       });
 
-      showToast(`Recorded guest sign-out for "${res.item.name}"`, "success");
+      showToast(`Recorded guest sign-out for "${res.item.name}" (${period})`, "success");
       document.getElementById("guest-checkout-form").reset();
       document.getElementById("guest-duration").value = "7";
     } catch (err) {
@@ -1025,12 +1048,13 @@
   document.getElementById("btn-export-csv-top").addEventListener("click", handleExportCsv);
 
   document.getElementById("active-search").addEventListener("input", renderActiveCheckouts);
+  document.getElementById("active-period-filter").addEventListener("change", renderActiveCheckouts);
   document.getElementById("inv-search").addEventListener("input", renderInventory);
   document.getElementById("inv-cat-filter").addEventListener("change", renderInventory);
   document.getElementById("history-search").addEventListener("input", renderHistory);
+  document.getElementById("history-period-filter").addEventListener("change", renderHistory);
   document.getElementById("history-status-filter").addEventListener("change", renderHistory);
 
-  // Strict Teacher Role Guard
   requireAuth({
     requiredRole: "teacher",
     redirectUrl: "index.html",
@@ -1038,7 +1062,6 @@
       currentUser = user;
       const name = user.displayName || user.profile?.displayName || "Teacher";
       document.getElementById("teacher-name").textContent = name;
-      document.getElementById("teacher-avatar").textContent = name.charAt(0).toUpperCase();
       document.getElementById("teacher-email").textContent = (user.email || "").split("@")[0];
 
       if (unsubItems) unsubItems();

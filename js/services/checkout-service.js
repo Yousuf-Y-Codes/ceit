@@ -35,6 +35,7 @@ function assertDbReady() {
  * @param {string} params.itemId - Firestore ID of the item
  * @param {object} params.user - Current user object (with uid, email, profile)
  * @param {string} [params.studentNumber] - Optional student number override
+ * @param {string} [params.period=""] - Class period ("Period 1" .. "Period 4")
  * @param {number} [params.durationDays=7] - Loan period in days
  * @param {string} [params.notes=""] - Optional checkout notes
  * @returns {Promise<{ checkoutId: string, item: object }>}
@@ -43,6 +44,7 @@ export async function checkOutItem({
   itemId,
   user,
   studentNumber = "",
+  period = "",
   durationDays = 7,
   notes = ""
 }) {
@@ -94,6 +96,7 @@ export async function checkOutItem({
       studentEmail: user.email || "",
       studentName: user.displayName || user.profile?.displayName || "Student",
       studentNumber: resolvedStudentNumber,
+      period: (period || "").trim(),
       durationDays: durationDays,
       checkedOutAt: serverTimestamp(),
       dueDate: dueDate,
@@ -172,6 +175,7 @@ export async function returnItem(checkoutId, returnedBy = "self") {
  * @param {string} params.studentName - Student's full name
  * @param {string} params.studentNumber - Student's school number
  * @param {string} [params.studentEmail=""] - Optional student email (defaults to <studentNumber>@pdsb.net if numeric)
+ * @param {string} [params.period=""] - Class period ("Period 1" .. "Period 4")
  * @param {number} [params.durationDays=7] - Loan period in days
  * @param {string} [params.notes=""] - Optional checkout notes
  * @returns {Promise<{ checkoutId: string, item: object }>}
@@ -182,6 +186,7 @@ export async function guestCheckOutItem({
   studentName,
   studentNumber,
   studentEmail = "",
+  period = "",
   durationDays = 7,
   notes = ""
 }) {
@@ -234,6 +239,7 @@ export async function guestCheckOutItem({
       studentEmail: resolvedEmail,
       studentName: cleanName,
       studentNumber: cleanNum,
+      period: (period || "").trim(),
       durationDays: durationDays,
       checkedOutAt: serverTimestamp(),
       dueDate: dueDate,
