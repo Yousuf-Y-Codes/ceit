@@ -4,7 +4,7 @@
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-import { getFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
+import { initializeFirestore } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-firestore.js";
 
 /**
  * Replace the placeholders below with the credentials from your Firebase Console:
@@ -51,7 +51,9 @@ if (isFirebaseConfigured()) {
   try {
     app = initializeApp(firebaseConfig);
     auth = getAuth(app);
-    db = getFirestore(app);
+    db = initializeFirestore(app, {
+      experimentalAutoDetectLongPolling: true
+    });
     console.log("[CEIT] Firebase initialized successfully.");
   } catch (err) {
     console.error("[CEIT] Error initializing Firebase:", err);

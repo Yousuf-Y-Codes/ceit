@@ -41,6 +41,23 @@ function assertFirebaseReady() {
 }
 
 /**
+ * Wraps a promise with a timeout so slow or unreachable Firestore requests
+ * never block authentication or page redirects indefinitely.
+ * @template T
+ * @param {Promise<T>} promise
+ * @param {number} [ms=3500]
+ * @returns {Promise<T>}
+ */
+function withTimeout(promise, ms = 3500) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Firestore request timed out")), ms)
+    )
+  ]);
+}
+
+/**
  * Extracts student number from a PDSB student email if it matches format (e.g. 123456@pdsb.net).
  * @param {string} email
  * @returns {string}
@@ -89,7 +106,7 @@ export async function syncUserProfile(firebaseUser, extraData = {}) {
 
   try {
     const userRef = doc(db, "users", firebaseUser.uid);
-    const userSnap = await getDoc(userRef);
+    const userSnap = await withTimeout(getDoc(userRef), 3500);
 
     if (!userSnap.exists()) {
       const profile = {
@@ -97,7 +114,7 @@ export async function syncUserProfile(firebaseUser, extraData = {}) {
         createdAt: serverTimestamp(),
         lastLoginAt: serverTimestamp()
       };
-      await setDoc(userRef, profile);
+      await withTimeout(setDoc(userRef, profile), 3500);
       return profile;
     } else {
       const existingData = userSnap.data();
@@ -107,12 +124,12 @@ export async function syncUserProfile(firebaseUser, extraData = {}) {
       if (extraData.displayName && extraData.displayName !== existingData.displayName) {
         updates.displayName = extraData.displayName;
       }
-      await updateDoc(userRef, updates);
+      await withTimeout(updateDoc(userRef, updates), 3500);
       return { ...existingData, ...updates };
     }
   } catch (err) {
     console.warn(
-      "[CEIT] Firestore profile sync skipped (database may not be initialized yet):",
+      "[CEIT] Firestore profile sync skipped (database may be offline or not initialized yet):",
       err.message
     );
     return fallbackProfile;
@@ -202,7 +219,7 @@ export async function getCurrentUserProfile() {
 
   try {
     const userRef = doc(db, "users", u.uid);
-    const snap = await getDoc(userRef);
+    const snap = await withTimeout(getDoc(userRef), 3500);
     if (snap.exists()) {
       return { uid: u.uid, ...snap.data() };
     }

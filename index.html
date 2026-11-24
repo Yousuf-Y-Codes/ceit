@@ -273,10 +273,16 @@
     const btn = document.getElementById("btn-google");
     btn.disabled = true;
     try {
-      await signInWithGoogle(false);
+      const res = await signInWithGoogle(false);
+      showStatus("Signed in! Redirecting to your workspace...");
+      window.location.href = resolveDestination({
+        uid: res.user.uid,
+        email: res.user.email,
+        displayName: res.user.displayName,
+        profile: res.profile
+      });
     } catch (err) {
       showError(getFriendlyAuthError(err));
-    } finally {
       btn.disabled = false;
     }
   });
@@ -295,6 +301,7 @@
 
     submitBtn.disabled = true;
     try {
+      let res;
       if (isSignUpMode) {
         const name = document.getElementById("name-input").value.trim();
         const studentNum = studentNumInput.value.trim() || extractStudentNumberFromEmail(email);
@@ -309,11 +316,18 @@
           return;
         }
         showStatus("Creating your CEIT account...");
-        await signUpWithEmail(email, password, name, studentNum);
+        res = await signUpWithEmail(email, password, name, studentNum);
       } else {
         showStatus("Signing you in...");
-        await signInWithEmail(email, password);
+        res = await signInWithEmail(email, password);
       }
+      showStatus("Signed in! Redirecting to your workspace...");
+      window.location.href = resolveDestination({
+        uid: res.user.uid,
+        email: res.user.email,
+        displayName: res.user.displayName,
+        profile: res.profile
+      });
     } catch (err) {
       showError(getFriendlyAuthError(err));
       submitBtn.disabled = false;
