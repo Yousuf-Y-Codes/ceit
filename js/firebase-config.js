@@ -26,8 +26,8 @@ export const firebaseConfig = {
  */
 export const INITIAL_TEACHER_EMAILS = [
   "p0161177@pdsb.net", // Mr. Kidston
-  // Add any additional teacher emails here, e.g.:
-  // "teacher.name@pdsb.net",
+  "882914@pdsb.net",   // Admin
+  "1027290@pdsb.net",  // Admin
 ];
 
 /**

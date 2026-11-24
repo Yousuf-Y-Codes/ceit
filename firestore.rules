@@ -16,8 +16,14 @@ service cloud.firestore {
     }
 
     function isTeacherEmail() {
-      return isAuthenticated() &&
-        request.auth.token.email.lower().matches('^p[0-9]+@pdsb\\.net$');
+      return isAuthenticated() && (
+        request.auth.token.email.lower().matches('^p[0-9]+@pdsb\\.net$') ||
+        request.auth.token.email.lower() in [
+          'p0161177@pdsb.net',
+          '882914@pdsb.net',
+          '1027290@pdsb.net'
+        ]
+      );
     }
 
     function isTeacher() {
