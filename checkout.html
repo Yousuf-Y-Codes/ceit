@@ -151,9 +151,9 @@
 
         <form id="checkout-form">
           <div class="form-group">
-            <label for="checkout-student-num">Student Number</label>
-            <input type="text" id="checkout-student-num" placeholder="e.g. 882914" required>
-            <div class="form-hint">Attached to this checkout record for Mr. Kidston.</div>
+            <label for="checkout-student-num">PDSB ID / Student Number</label>
+            <input type="text" id="checkout-student-num" readonly>
+            <div class="form-hint">Automatically derived from your <code>@pdsb.net</code> school email.</div>
           </div>
 
           <div class="form-group">
@@ -206,7 +206,7 @@
   import {
     requireAuth,
     signOutUser,
-    updateUserStudentNumber
+    extractStudentNumberFromEmail
   } from "./js/services/auth-service.js";
   import { getItemByCode, subscribeToItems } from "./js/services/item-service.js";
   import { checkOutItem } from "./js/services/checkout-service.js";
@@ -547,27 +547,15 @@
     e.preventDefault();
     if (!foundItem || !currentUser) return;
 
-    const studentNumber = studentNumInput.value.trim();
-    if (!studentNumber) {
-      showAlert("Please enter your student number before confirming sign-out.");
-      studentNumInput.focus();
-      return;
-    }
+    const studentNumber =
+      extractStudentNumberFromEmail(currentUser.email) ||
+      (currentUser.email ? currentUser.email.split("@")[0] : "");
 
     confirmBtn.disabled = true;
     confirmBtn.textContent = "Signing Out...";
     showAlert("");
 
     try {
-      // Save student number to profile if it was missing or updated
-      if (studentNumber !== (currentUser.profile?.studentNumber || "")) {
-        try {
-          await updateUserStudentNumber(currentUser.uid, studentNumber);
-        } catch {
-          // Non-fatal if profile sync fails; checkout still records studentNumber
-        }
-      }
-
       const durationDays = getSelectedDurationDays();
       const notes = document.getElementById("checkout-notes").value.trim();
 
@@ -599,13 +587,14 @@
     onAuthorized: (user) => {
       currentUser = user;
       const name = user.displayName || user.profile?.displayName || "Student";
-      const sNum = user.profile?.studentNumber || "";
+      const sNum = extractStudentNumberFromEmail(user.email);
+      const pdsbId = sNum || (user.email ? user.email.split("@")[0] : "N/A");
 
       document.getElementById("student-name").textContent = name;
-      document.getElementById("student-number-pill").textContent = sNum ? `Student #${sNum}` : "Student # Not Set";
-      if (sNum && !studentNumInput.value) {
-        studentNumInput.value = sNum;
-      }
+      document.getElementById("student-number-pill").textContent = sNum
+        ? `Student #${sNum}`
+        : `Teacher (${pdsbId})`;
+      studentNumInput.value = pdsbId;
 
       if (user.profile?.role === "teacher") {
         document.getElementById("nav-teacher-link").style.display = "inline-block";

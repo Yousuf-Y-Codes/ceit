@@ -55,10 +55,10 @@ export async function checkOutItem({
   const newCheckoutRef = doc(collection(db, CHECKOUTS_COLLECTION));
 
   const resolvedStudentNumber =
+    extractStudentNumberFromEmail(user.email) ||
     studentNumber ||
     user.profile?.studentNumber ||
-    extractStudentNumberFromEmail(user.email) ||
-    "N/A";
+    (user.email ? user.email.split("@")[0] : "N/A");
 
   const durationMs = Math.max(1, durationDays) * 24 * 60 * 60 * 1000;
   const dueDate = Timestamp.fromDate(new Date(Date.now() + durationMs));
@@ -196,7 +196,7 @@ export async function guestCheckOutItem({
 
   const resolvedEmail =
     studentEmail.trim() ||
-    (/^\d{6,8}$/.test(cleanNum) ? `${cleanNum}@pdsb.net` : "");
+    (/^\d+$/.test(cleanNum) ? `${cleanNum}@pdsb.net` : "");
 
   const itemRef = doc(db, ITEMS_COLLECTION, itemId);
   const newCheckoutRef = doc(collection(db, CHECKOUTS_COLLECTION));

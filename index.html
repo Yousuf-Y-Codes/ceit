@@ -100,16 +100,12 @@
                 <label for="name-input">Full Name</label>
                 <input type="text" id="name-input" placeholder="e.g. Jordan Patel" autocomplete="name">
               </div>
-              <div class="form-group">
-                <label for="student-num-input">Student Number</label>
-                <input type="text" id="student-num-input" placeholder="e.g. 882914 (auto-filled from PDSB email)">
-                <div class="form-hint">Teachers can leave Student Number blank.</div>
-              </div>
             </div>
 
             <div class="form-group">
-              <label for="email-input">School Email</label>
-              <input type="email" id="email-input" placeholder="123456@pdsb.net" autocomplete="email" required>
+              <label for="email-input">PDSB School Email (<code>@pdsb.net</code> only)</label>
+              <input type="email" id="email-input" placeholder="123456@pdsb.net or p0161177@pdsb.net" autocomplete="email" required>
+              <div class="form-hint" id="email-detect-hint">Student number and teacher role are detected automatically from your <code>@pdsb.net</code> email.</div>
             </div>
 
             <div class="form-group">
@@ -159,6 +155,8 @@
     signUpWithEmail,
     signOutUser,
     observeAuthState,
+    isPdsbEmail,
+    isTeacherEmail,
     extractStudentNumberFromEmail
   } from "./js/services/auth-service.js";
   import { getFriendlyAuthError, sanitizeRedirectUrl } from "./js/utils.js";
@@ -184,7 +182,7 @@
   const toggleText = document.getElementById("toggle-text");
   const emailInput = document.getElementById("email-input");
   const passwordInput = document.getElementById("password-input");
-  const studentNumInput = document.getElementById("student-num-input");
+  const emailDetectHint = document.getElementById("email-detect-hint");
 
   function showError(msg) {
     if (!msg) {
@@ -219,11 +217,27 @@
     return role === "teacher" ? "teacher.html" : "dashboard.html";
   }
 
-  // Auto-fill student number in Sign Up mode when typing a PDSB email (e.g. 882914@pdsb.net)
-  emailInput.addEventListener("blur", () => {
-    if (isSignUpMode && !studentNumInput.value.trim()) {
-      const detected = extractStudentNumberFromEmail(emailInput.value.trim());
-      if (detected) studentNumInput.value = detected;
+  // Live indicator of detected student number or teacher account from @pdsb.net email
+  emailInput.addEventListener("input", () => {
+    const val = emailInput.value.trim().toLowerCase();
+    if (!val) {
+      emailDetectHint.innerHTML =
+        "Student number and teacher role are detected automatically from your <code>@pdsb.net</code> email.";
+      return;
+    }
+    if (!isPdsbEmail(val)) {
+      emailDetectHint.textContent = "Only @pdsb.net school email addresses are permitted.";
+      return;
+    }
+    if (isTeacherEmail(val)) {
+      emailDetectHint.textContent = `Detected PDSB Teacher account (${val.split("@")[0]}).`;
+      return;
+    }
+    const sNum = extractStudentNumberFromEmail(val);
+    if (sNum) {
+      emailDetectHint.textContent = `Detected PDSB Student #${sNum}.`;
+    } else {
+      emailDetectHint.textContent = "Valid @pdsb.net account.";
     }
   });
 
@@ -266,14 +280,14 @@
     }
   });
 
-  // Google Sign-In
+  // Google Sign-In (strictly @pdsb.net only)
   document.getElementById("btn-google").addEventListener("click", async () => {
     showError("");
     showStatus("Opening Google Sign-In...");
     const btn = document.getElementById("btn-google");
     btn.disabled = true;
     try {
-      const res = await signInWithGoogle(false);
+      const res = await signInWithGoogle(true);
       showStatus("Signed in! Redirecting to your workspace...");
       window.location.href = resolveDestination({
         uid: res.user.uid,
@@ -287,15 +301,20 @@
     }
   });
 
-  // Email / Password Sign-In or Sign-Up
+  // Email / Password Sign-In or Sign-Up (strictly @pdsb.net only)
   document.getElementById("email-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     showError("");
-    const email = emailInput.value.trim();
+    const email = emailInput.value.trim().toLowerCase();
     const password = passwordInput.value;
 
     if (!email || !password) {
       showError("Please enter both your school email and password.");
+      return;
+    }
+
+    if (!isPdsbEmail(email)) {
+      showError("Access restricted: Only Peel District School Board (@pdsb.net) email addresses are allowed.");
       return;
     }
 
@@ -304,7 +323,6 @@
       let res;
       if (isSignUpMode) {
         const name = document.getElementById("name-input").value.trim();
-        const studentNum = studentNumInput.value.trim() || extractStudentNumberFromEmail(email);
         if (!name) {
           showError("Please enter your full name to create an account.");
           submitBtn.disabled = false;
@@ -316,7 +334,7 @@
           return;
         }
         showStatus("Creating your CEIT account...");
-        res = await signUpWithEmail(email, password, name, studentNum);
+        res = await signUpWithEmail(email, password, name);
       } else {
         showStatus("Signing you in...");
         res = await signInWithEmail(email, password);

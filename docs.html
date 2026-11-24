@@ -88,27 +88,29 @@
           <ol>
             <li>Open the CEIT portal (<code>ceit.site</code>).</li>
             <li>Click <strong>Sign In with School Google Account</strong>.</li>
-            <li>Select your PDSB Google account (<code>&lt;student-number&gt;@pdsb.net</code> or teacher email).</li>
-            <li>Your 6–8 digit student number is automatically extracted from your <code>@pdsb.net</code> address.</li>
+            <li>Select your Peel District School Board Google account (<strong>only <code>@pdsb.net</code> emails are allowed</strong>).</li>
+            <li>Your student number (<code>&lt;digits&gt;@pdsb.net</code>) or teacher status (<code>p&lt;digits&gt;@pdsb.net</code>) is detected automatically from your email address.</li>
           </ol>
 
           <h3>Option B — Email &amp; Password Fallback</h3>
           <p>
             If third-party Google OAuth is restricted by school network policy on a lab computer, students and teachers
-            can use the built-in <strong>Email &amp; Password</strong> login:
+            can use the built-in <strong>Email &amp; Password</strong> login with their <code>@pdsb.net</code> email:
           </p>
           <ol>
             <li>Click <strong>Create Account</strong> beneath the Sign In button.</li>
-            <li>Enter your <strong>Full Name</strong>, <strong>Student Number</strong>, <strong>School Email</strong>, and a password (at least 6 characters).</li>
+            <li>Enter your <strong>Full Name</strong>, your <strong><code>@pdsb.net</code> School Email</strong>, and a password (at least 6 characters).</li>
             <li>Click <strong>Create Account</strong> to register and sign in immediately.</li>
           </ol>
 
-          <h3>Automatic Role Routing</h3>
+          <h3>Automatic Role Routing &amp; Domain Restriction</h3>
           <p>
-            Whitelisted teacher emails (such as Mr. Kidston's <code>p0161177@pdsb.net</code>) are automatically assigned
-            the <strong>Teacher</strong> role and sent to <code>teacher.html</code>. All student accounts are routed to
-            <code>dashboard.html</code>. If you arrived by scanning a QR code link, CEIT remembers the component and sends
-            you straight to the Check Out page after login.
+            Accounts outside <code>@pdsb.net</code> are automatically blocked. Any PDSB teacher email matching
+            <code>p&lt;digits&gt;@pdsb.net</code> (such as Mr. Kidston's <code>p0161177@pdsb.net</code>) is automatically
+            assigned the <strong>Teacher</strong> role and routed to <code>teacher.html</code>. Numeric student emails
+            (<code>&lt;digits&gt;@pdsb.net</code>) receive the <strong>Student</strong> role with their student number
+            derived directly from their email and are routed to <code>dashboard.html</code>. If you arrived by scanning
+            a QR code link, CEIT remembers the component and sends you straight to the Check Out page after login.
           </p>
         </div>
       </section>
@@ -140,10 +142,10 @@
             <li><strong>Available Lab Inventory:</strong> Lets you search the lab's stock by name, code, bin location, or category and click <strong>Check Out</strong> directly on any in-stock item.</li>
           </ul>
 
-          <h3>Updating Your Student Number</h3>
+          <h3>Automatic Student Number Detection</h3>
           <p>
-            If your student number wasn't auto-detected from your email, click <strong>Edit Student #</strong> in the blue
-            sub-bar to save it to your profile.
+            Your student number is automatically pulled from your PDSB email (<code>&lt;digits&gt;@pdsb.net</code>) and
+            attached to every component you sign out — no manual entry needed.
           </p>
         </div>
       </section>

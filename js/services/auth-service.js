@@ -23,9 +23,10 @@ import {
 import { auth, db, INITIAL_TEACHER_EMAILS, isFirebaseConfigured } from "../firebase-config.js";
 
 const googleProvider = new GoogleAuthProvider();
-// Prompt user to select account every time for shared lab computers
+// Prompt user to select their @pdsb.net account every time for shared lab computers
 googleProvider.setCustomParameters({
-  prompt: "select_account"
+  prompt: "select_account",
+  hd: "pdsb.net"
 });
 
 /**
@@ -58,29 +59,65 @@ function withTimeout(promise, ms = 3500) {
 }
 
 /**
- * Extracts student number from a PDSB student email if it matches format (e.g. 123456@pdsb.net).
+ * Validates that an email belongs to Peel District School Board (@pdsb.net).
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isPdsbEmail(email) {
+  if (!email) return false;
+  return /^[^@\s]+@pdsb\.net$/i.test(email.trim());
+}
+
+/**
+ * Throws if an email is not a valid @pdsb.net address.
+ * @param {string} email
+ */
+function assertPdsbEmail(email) {
+  if (!isPdsbEmail(email)) {
+    throw new Error(
+      `Access restricted: Only Peel District School Board (@pdsb.net) emails are allowed.${email ? ` You used: ${email}` : ""}`
+    );
+  }
+}
+
+/**
+ * Extracts student number from a PDSB student email (e.g. 1234567890@pdsb.net -> "1234567890").
+ * Number of digits varies across PDSB accounts. Returns "" for teacher emails (p<digits>@pdsb.net).
  * @param {string} email
  * @returns {string}
  */
 export function extractStudentNumberFromEmail(email) {
-  if (!email) return "";
+  if (!isPdsbEmail(email)) return "";
   const username = email.split("@")[0].trim();
-  // PDSB student numbers are usually 6 to 8 digits
-  if (/^\d{6,8}$/.test(username)) {
+  if (/^\d+$/.test(username)) {
     return username;
   }
   return "";
 }
 
 /**
- * Determines whether an email belongs to a teacher based on the whitelist.
+ * Determines whether a @pdsb.net email belongs to a teacher:
+ * matches p<digits>@pdsb.net (variable digits) or is in INITIAL_TEACHER_EMAILS.
  * @param {string} email
  * @returns {boolean}
  */
 export function isWhitelistedTeacher(email) {
-  if (!email) return false;
+  if (!isPdsbEmail(email)) return false;
   const normalized = email.toLowerCase().trim();
+  const username = normalized.split("@")[0];
+  if (/^p\d+$/.test(username)) {
+    return true;
+  }
   return INITIAL_TEACHER_EMAILS.some((t) => t.toLowerCase().trim() === normalized);
+}
+
+/**
+ * Alias for isWhitelistedTeacher — checks if a @pdsb.net email is a teacher account.
+ * @param {string} email
+ * @returns {boolean}
+ */
+export function isTeacherEmail(email) {
+  return isWhitelistedTeacher(email);
 }
 
 /**
@@ -91,17 +128,16 @@ export function isWhitelistedTeacher(email) {
  */
 export async function syncUserProfile(firebaseUser, extraData = {}) {
   assertFirebaseReady();
-  const email = (firebaseUser.email || "").toLowerCase();
+  const email = (firebaseUser.email || "").toLowerCase().trim();
   const isTeacher = isWhitelistedTeacher(email);
-  const inferredStudentNumber =
-    extraData.studentNumber || extractStudentNumberFromEmail(email);
+  const inferredStudentNumber = extractStudentNumberFromEmail(email);
 
   const fallbackProfile = {
     uid: firebaseUser.uid,
     email: email,
     displayName: firebaseUser.displayName || extraData.displayName || "User",
     role: isTeacher ? "teacher" : "student",
-    studentNumber: inferredStudentNumber || ""
+    studentNumber: inferredStudentNumber
   };
 
   try {
@@ -120,7 +156,9 @@ export async function syncUserProfile(firebaseUser, extraData = {}) {
       const existingData = userSnap.data();
       const updates = { lastLoginAt: serverTimestamp() };
       if (isTeacher && existingData.role !== "teacher") updates.role = "teacher";
-      if (inferredStudentNumber && !existingData.studentNumber) updates.studentNumber = inferredStudentNumber;
+      if (inferredStudentNumber && existingData.studentNumber !== inferredStudentNumber) {
+        updates.studentNumber = inferredStudentNumber;
+      }
       if (extraData.displayName && extraData.displayName !== existingData.displayName) {
         updates.displayName = extraData.displayName;
       }
@@ -138,17 +176,17 @@ export async function syncUserProfile(firebaseUser, extraData = {}) {
 
 /**
  * Sign in with Google Popup.
- * During development/testing, any Google account is permitted so you can test before school domain setup.
- * @param {boolean} [enforcePdsbDomain=false]
+ * Strictly requires a Peel District School Board (@pdsb.net) account.
+ * @param {boolean} [enforcePdsbDomain=true]
  * @returns {Promise<object>} Combined user profile
  */
-export async function signInWithGoogle(enforcePdsbDomain = false) {
+export async function signInWithGoogle(enforcePdsbDomain = true) {
   assertFirebaseReady();
   const result = await signInWithPopup(auth, googleProvider);
   const user = result.user;
-  const email = (user.email || "").toLowerCase();
+  const email = (user.email || "").toLowerCase().trim();
 
-  if (enforcePdsbDomain && !email.endsWith("@pdsb.net")) {
+  if (enforcePdsbDomain && !isPdsbEmail(email)) {
     await signOut(auth);
     throw new Error(
       `Access restricted: Please sign in with your Peel District School Board account (@pdsb.net). You used: ${email}`
@@ -161,34 +199,40 @@ export async function signInWithGoogle(enforcePdsbDomain = false) {
 
 /**
  * Sign up with Email and Password (for fallback if Google OAuth is blocked by school admin).
+ * Strictly requires a @pdsb.net email; student number and teacher role are derived from the email.
  * @param {string} email
  * @param {string} password
  * @param {string} displayName
- * @param {string} [studentNumber=""]
  * @returns {Promise<object>}
  */
-export async function signUpWithEmail(email, password, displayName, studentNumber = "") {
+export async function signUpWithEmail(email, password, displayName) {
   assertFirebaseReady();
-  const cred = await createUserWithEmailAndPassword(auth, email.trim(), password);
+  const cleanEmail = (email || "").trim().toLowerCase();
+  assertPdsbEmail(cleanEmail);
+
+  const cred = await createUserWithEmailAndPassword(auth, cleanEmail, password);
   if (displayName) {
     await updateProfile(cred.user, { displayName: displayName.trim() });
   }
   const profile = await syncUserProfile(cred.user, {
-    displayName: displayName.trim(),
-    studentNumber: studentNumber.trim()
+    displayName: (displayName || "").trim()
   });
   return { user: cred.user, profile };
 }
 
 /**
  * Sign in with Email and Password.
+ * Strictly requires a @pdsb.net email.
  * @param {string} email
  * @param {string} password
  * @returns {Promise<object>}
  */
 export async function signInWithEmail(email, password) {
   assertFirebaseReady();
-  const cred = await signInWithEmailAndPassword(auth, email.trim(), password);
+  const cleanEmail = (email || "").trim().toLowerCase();
+  assertPdsbEmail(cleanEmail);
+
+  const cred = await signInWithEmailAndPassword(auth, cleanEmail, password);
   const profile = await syncUserProfile(cred.user);
   return { user: cred.user, profile };
 }
@@ -268,24 +312,41 @@ export function observeAuthState(callback) {
       callback(null);
       return;
     }
+
+    // Reject any non-@pdsb.net session immediately
+    if (!isPdsbEmail(firebaseUser.email)) {
+      console.warn(`[CEIT] Signing out unauthorized non-PDSB email: ${firebaseUser.email}`);
+      await signOut(auth).catch(() => {});
+      callback(null);
+      return;
+    }
+
     const baseUser = {
       uid: firebaseUser.uid,
       email: firebaseUser.email || "",
       displayName: firebaseUser.displayName || "",
       photoURL: firebaseUser.photoURL || ""
     };
+    const derivedStudentNumber = extractStudentNumberFromEmail(firebaseUser.email);
     const fallbackProfile = {
       uid: firebaseUser.uid,
       email: firebaseUser.email || "",
       displayName: firebaseUser.displayName || "User",
       role: isWhitelistedTeacher(firebaseUser.email) ? "teacher" : "student",
-      studentNumber: extractStudentNumberFromEmail(firebaseUser.email)
+      studentNumber: derivedStudentNumber
     };
     try {
       const profile = await getCurrentUserProfile();
+      const mergedProfile = profile
+        ? {
+            ...profile,
+            role: isWhitelistedTeacher(firebaseUser.email) ? "teacher" : (profile.role || "student"),
+            studentNumber: derivedStudentNumber || profile.studentNumber || ""
+          }
+        : fallbackProfile;
       callback({
         ...baseUser,
-        profile: profile || fallbackProfile
+        profile: mergedProfile
       });
     } catch (err) {
       console.error("[CEIT] Error resolving user profile:", err);

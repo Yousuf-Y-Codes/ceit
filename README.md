@@ -13,10 +13,11 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 ## Features
 
 ### 1. Authentication & Role Routing (`index.html`)
-- **School Google Sign-In (`@pdsb.net`)** via Firebase Auth.
+- **Strict `@pdsb.net` access control** enforced in Google Sign-In, Email/Password auth, session observer, and Cloud Firestore security rules.
 - **Email & Password Sign-In / Sign-Up fallback** in case PDSB IT restricts third-party Google OAuth on school computers.
-- Automatic student number extraction from PDSB numeric emails (e.g., `882914@pdsb.net` -> `882914`).
-- Automatic role routing: whitelisted teachers go to `teacher.html`, students go to `dashboard.html`.
+- **Automatic Student Number & Teacher Role detection** from PDSB emails (variable number of digits):
+  - `<digits>@pdsb.net` -> **Student** role, student number = `<digits>`
+  - `p<digits>@pdsb.net` -> **Teacher** role (routed to `teacher.html`)
 - Deep-link redirect preservation: scanning a printed QR code (`checkout.html?code=...`) while logged out redirects back to that exact component after signing in.
 
 ### 2. Student Dashboard (`dashboard.html`)
@@ -24,7 +25,6 @@ A lightweight, pure HTML/CSS/JS web application for the **PDSB Computer Engineer
 - **My Checked Out Items:** View component names, codes, checkout timestamps, due dates, status badges, and return items back to inventory.
 - **My Return History:** Full personal record of returned hardware.
 - **Available Lab Inventory:** Searchable read-only catalog with one-click check-out links.
-- Inline **Edit Student #** modal so students can update their student number anytime.
 
 ### 3. Check Out Page (`checkout.html`)
 - **Manual Code Lookup:** Enter any item code (case-insensitive) or choose from the in-stock quick-select dropdown.

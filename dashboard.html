@@ -34,16 +34,9 @@
       <span class="subnav-pill" id="student-email-pill">...</span>
     </div>
     <div class="subnav-actions">
-      <button type="button" id="btn-edit-student-num" class="subnav-link">Edit Student #</button>
       <button type="button" id="btn-logout" class="subnav-link">Sign Out</button>
     </div>
   </div>
-</div>
-
-<!-- Optional warning banner when student number has not been entered yet -->
-<div class="notice-strip" id="missing-num-banner" style="display: none;">
-  <span><strong>Action Recommended:</strong> Your student number is not set yet. Add it so Mr. Kidston can match your sign-outs quickly.</span>
-  <button type="button" id="btn-banner-add-num" class="btn btn-amber btn-xs">Set Student Number</button>
 </div>
 
 <main class="page-wrapper">
@@ -168,29 +161,6 @@
   </div>
 </main>
 
-<!-- Modal: Edit Student Number -->
-<div class="modal-backdrop" id="student-num-modal" role="dialog" aria-modal="true" aria-labelledby="modal-snum-title">
-  <div class="modal-dialog">
-    <div class="modal-header">
-      <h3 id="modal-snum-title">Update Student Number</h3>
-      <button type="button" class="modal-close" data-close-modal="student-num-modal">&times;</button>
-    </div>
-    <form id="student-num-form">
-      <div class="modal-body">
-        <div class="form-group">
-          <label for="modal-student-num-input">PDSB Student Number</label>
-          <input type="text" id="modal-student-num-input" placeholder="e.g. 882914" required>
-          <div class="form-hint">This number is attached to your component sign-outs so your teacher can identify your loans.</div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-silver" data-close-modal="student-num-modal">Cancel</button>
-        <button type="submit" class="btn btn-green">Save Student Number</button>
-      </div>
-    </form>
-  </div>
-</div>
-
 <!-- Modal: Confirm Return -->
 <div class="modal-backdrop" id="return-modal" role="dialog" aria-modal="true" aria-labelledby="modal-return-title">
   <div class="modal-dialog">
@@ -225,7 +195,7 @@
   import {
     requireAuth,
     signOutUser,
-    updateUserStudentNumber
+    extractStudentNumberFromEmail
   } from "./js/services/auth-service.js";
   import {
     subscribeToStudentCheckouts,
@@ -273,12 +243,15 @@
 
   function renderStudentHeader() {
     const name = currentUser.displayName || currentUser.profile?.displayName || "Student";
-    const sNum = currentUser.profile?.studentNumber || "";
+    const sNum = extractStudentNumberFromEmail(currentUser.email) || currentUser.profile?.studentNumber || "";
+    const isTeacher = currentUser.profile?.role === "teacher";
     document.getElementById("student-name").textContent = name;
     document.getElementById("student-email-pill").textContent = currentUser.email || "";
-    document.getElementById("student-number-pill").textContent = sNum ? `Student #${sNum}` : "Student # Not Set";
-    document.getElementById("missing-num-banner").style.display =
-      !sNum && currentUser.profile?.role !== "teacher" ? "flex" : "none";
+    document.getElementById("student-number-pill").textContent = sNum
+      ? `Student #${sNum}`
+      : isTeacher
+        ? `Teacher (${(currentUser.email || "").split("@")[0]})`
+        : "PDSB Account";
   }
 
   function renderStatusBadge(status) {
@@ -442,30 +415,6 @@
       pendingReturnId = null;
       btn.disabled = false;
       btn.textContent = "Confirm Return";
-    }
-  });
-
-  // Edit Student Number handlers
-  function openStudentNumModal() {
-    document.getElementById("modal-student-num-input").value = currentUser?.profile?.studentNumber || "";
-    openModal("student-num-modal");
-  }
-  document.getElementById("btn-edit-student-num").addEventListener("click", openStudentNumModal);
-  document.getElementById("btn-banner-add-num").addEventListener("click", openStudentNumModal);
-
-  document.getElementById("student-num-form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    if (!currentUser) return;
-    const val = document.getElementById("modal-student-num-input").value.trim();
-    if (!val) return;
-    try {
-      const saved = await updateUserStudentNumber(currentUser.uid, val);
-      currentUser.profile = { ...(currentUser.profile || {}), studentNumber: saved };
-      renderStudentHeader();
-      closeModal("student-num-modal");
-      showToast(`Student number saved (#${saved}).`, "success");
-    } catch (err) {
-      showToast("Could not save student number: " + err.message, "warn");
     }
   });
 

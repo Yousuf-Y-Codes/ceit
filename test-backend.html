@@ -67,10 +67,6 @@
             <label for="auth-name">Display Name (Sign Up only)</label>
             <input type="text" id="auth-name" placeholder="Jordan Patel">
           </div>
-          <div class="form-group">
-            <label for="auth-student-num">Student Number (Sign Up only)</label>
-            <input type="text" id="auth-student-num" placeholder="882914">
-          </div>
 
           <div class="btn-row mt-8">
             <button id="btn-email-sign-in" type="button" class="btn btn-green">Sign In</button>
@@ -319,8 +315,8 @@
 
   document.getElementById("btn-google-sign-in").addEventListener("click", async () => {
     try {
-      log("Launching Google Sign-In popup...", "info");
-      const res = await signInWithGoogle(false);
+      log("Launching Google Sign-In popup (@pdsb.net only)...", "info");
+      const res = await signInWithGoogle(true);
       log(`Signed in via Google as ${res.user.email}`, "success");
     } catch (err) {
       log(`Google Sign-In error: ${err.message}`, "error");
@@ -344,11 +340,10 @@
     const email = document.getElementById("auth-email").value;
     const password = document.getElementById("auth-password").value;
     const name = document.getElementById("auth-name").value;
-    const studentNum = document.getElementById("auth-student-num").value;
     try {
       if (!email || !password) throw new Error("Please enter email and password.");
       log(`Creating account for ${email}...`, "info");
-      await signUpWithEmail(email, password, name, studentNum);
+      await signUpWithEmail(email, password, name);
       log("Account created successfully.", "success");
     } catch (err) {
       log(`Sign up error: ${err.message}`, "error");
