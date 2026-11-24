@@ -213,8 +213,31 @@ export async function getCurrentUserProfile() {
 }
 
 /**
+ * Updates the current user's student number in Firestore `users/{uid}`.
+ * @param {string} uid
+ * @param {string} studentNumber
+ * @returns {Promise<string>} Normalized student number
+ */
+export async function updateUserStudentNumber(uid, studentNumber) {
+  assertFirebaseReady();
+  const clean = (studentNumber || "").trim();
+  if (!uid) throw new Error("User ID is required.");
+  const userRef = doc(db, "users", uid);
+  await setDoc(
+    userRef,
+    {
+      studentNumber: clean,
+      updatedAt: serverTimestamp()
+    },
+    { merge: true }
+  );
+  return clean;
+}
+
+/**
  * Observes auth state changes. Fetches the Firestore profile and invokes callback.
- * @param {function(object|null): void} callback Receives the profile object (or null if logged out)
+ * Preserves Firebase User properties explicitly so prototype getters are never dropped.
+ * @param {function(object|null): void} callback Receives the enriched user object (or null if logged out)
  * @returns {function(): void} Unsubscribe function
  */
 export function observeAuthState(callback) {
@@ -228,21 +251,31 @@ export function observeAuthState(callback) {
       callback(null);
       return;
     }
+    const baseUser = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email || "",
+      displayName: firebaseUser.displayName || "",
+      photoURL: firebaseUser.photoURL || ""
+    };
+    const fallbackProfile = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email || "",
+      displayName: firebaseUser.displayName || "User",
+      role: isWhitelistedTeacher(firebaseUser.email) ? "teacher" : "student",
+      studentNumber: extractStudentNumberFromEmail(firebaseUser.email)
+    };
     try {
       const profile = await getCurrentUserProfile();
       callback({
-        ...firebaseUser,
-        profile: profile || {
-          uid: firebaseUser.uid,
-          email: firebaseUser.email,
-          displayName: firebaseUser.displayName || "User",
-          role: isWhitelistedTeacher(firebaseUser.email) ? "teacher" : "student",
-          studentNumber: extractStudentNumberFromEmail(firebaseUser.email)
-        }
+        ...baseUser,
+        profile: profile || fallbackProfile
       });
     } catch (err) {
       console.error("[CEIT] Error resolving user profile:", err);
-      callback(firebaseUser);
+      callback({
+        ...baseUser,
+        profile: fallbackProfile
+      });
     }
   });
 }
@@ -252,17 +285,25 @@ export function observeAuthState(callback) {
  * Redirects unauthorized users to the specified URL.
  * @param {object} options
  * @param {string} [options.requiredRole] - "teacher" or "student". If set, enforces role.
- * @param {string} [options.redirectUrl="login.html"] - Where to send unauthorized users.
+ * @param {string} [options.redirectUrl="index.html"] - Where to send unauthorized users.
+ * @param {boolean} [options.preserveTarget=false] - Attach current page as ?redirect=... on login redirect.
  * @param {function(object): void} [options.onAuthorized] - Callback when authorized.
  */
 export function requireAuth({
   requiredRole = null,
-  redirectUrl = "login.html",
+  redirectUrl = "index.html",
+  preserveTarget = false,
   onAuthorized = () => {}
 } = {}) {
   return observeAuthState((user) => {
     if (!user) {
-      window.location.href = redirectUrl;
+      if (preserveTarget && typeof window !== "undefined") {
+        const currentFile = window.location.pathname.split("/").pop() || "dashboard.html";
+        const target = `${currentFile}${window.location.search || ""}`;
+        window.location.href = `${redirectUrl}?redirect=${encodeURIComponent(target)}`;
+      } else {
+        window.location.href = redirectUrl;
+      }
       return;
     }
 

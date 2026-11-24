@@ -43,8 +43,8 @@ service cloud.firestore {
     match /checkouts/{checkoutId} {
       // Teachers can read all checkouts; students can read their own
       allow read: if isTeacher() || (isAuthenticated() && resource.data.userId == request.auth.uid);
-      // Students can create a checkout under their own UID
-      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      // Students can create a checkout under their own UID; teachers can also create guest checkouts
+      allow create: if isTeacher() || (isAuthenticated() && request.resource.data.userId == request.auth.uid);
       // Teachers or the student who checked it out can mark it as returned
       allow update: if isTeacher() || (isAuthenticated() && resource.data.userId == request.auth.uid);
       allow delete: if isTeacher();
