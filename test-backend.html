@@ -3,407 +3,241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CEIT - Firebase Backend Diagnostic & Test Console</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #3b82f6;
-      --primary-hover: #2563eb;
-      --success: #10b981;
-      --warning: #f59e0b;
-      --danger: #ef4444;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font);
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 24px;
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-
-    header {
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #fff;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 4px 10px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .badge-success { background: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid #10b981; }
-    .badge-warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; border: 1px solid #f59e0b; }
-    .badge-danger { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
-    .badge-primary { background: rgba(59, 130, 246, 0.2); color: #60a5fa; border: 1px solid #3b82f6; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
-      gap: 24px;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .card h2 {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #e2e8f0;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-    }
-
-    .form-group {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    label {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    input, select, textarea {
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: #fff;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-size: 0.9rem;
-      font-family: inherit;
-    }
-    input:focus, select:focus, textarea:focus {
-      outline: 2px solid var(--primary);
-      border-color: transparent;
-    }
-
-    .btn-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s ease;
-    }
-    button:hover { background: var(--primary-hover); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    button.btn-secondary {
-      background: #334155;
-    }
-    button.btn-secondary:hover { background: #475569; }
-
-    button.btn-danger {
-      background: var(--danger);
-    }
-    button.btn-danger:hover { background: #dc2626; }
-
-    button.btn-success {
-      background: var(--success);
-    }
-    button.btn-success:hover { background: #059669; }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.85rem;
-      margin-top: 8px;
-    }
-    th, td {
-      text-align: left;
-      padding: 8px 10px;
-      border-bottom: 1px solid var(--border);
-    }
-    th {
-      color: var(--text-muted);
-      font-weight: 600;
-    }
-
-    .log-box {
-      background: #020617;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 12px;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      font-size: 0.8rem;
-      height: 180px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      color: #cbd5e1;
-    }
-
-    .log-entry { margin-bottom: 4px; }
-    .log-entry.info { color: #60a5fa; }
-    .log-entry.success { color: #34d399; }
-    .log-entry.error { color: #f87171; }
-    .log-entry.warn { color: #fbbf24; }
-
-    .alert {
-      padding: 12px 16px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      border: 1px solid transparent;
-    }
-    .alert-warning {
-      background: rgba(245, 158, 11, 0.1);
-      border-color: var(--warning);
-      color: #fde68a;
-    }
-    .alert-success {
-      background: rgba(16, 185, 129, 0.1);
-      border-color: var(--success);
-      color: #a7f3d0;
-    }
-  </style>
+  <title>Backend Diagnostic Console — CEIT</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <header>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <a href="index.html" class="brand-wordmark">
+        <span class="brand-cube">C</span>
+        <span>CEIT</span>
+      </a>
+      <span class="brand-subtitle">Firebase Diagnostic Console</span>
+    </div>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="index.html">Sign In</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="teacher.html">Teacher Panel</a>
+      <a href="docs.html">Documentation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-title-bar">
     <div>
-      <h1>Computer Engineering Item Tracker (CEIT)</h1>
-      <p style="color: var(--text-muted); font-size: 0.9rem;">Backend & Firebase Test Console (Vanilla JS)</p>
+      <h1>Firebase Backend Diagnostic Console</h1>
+      <p>Developer utility to test live authentication, inventory CRUD, and atomic checkout transactions.</p>
     </div>
     <div id="config-status-badge">
-      <span class="badge badge-warning">Checking Config...</span>
+      <span class="badge badge-amber">Checking Config...</span>
     </div>
-  </header>
-
-  <!-- Config Status Alert -->
-  <div id="config-alert" class="alert alert-warning" style="display: none;">
-    <strong>Firebase Not Configured:</strong> Placeholder credentials detected in <code>js/firebase-config.js</code>.
-    Follow the steps in <a href="FIREBASE_SETUP.md" target="_blank" style="color: #60a5fa;">FIREBASE_SETUP.md</a> to add your project credentials.
   </div>
 
-  <div class="grid">
+  <div id="config-alert" class="alert alert-warn" style="display: none;">
+    <strong>Firebase Not Configured:</strong> Placeholder credentials detected in <code>js/firebase-config.js</code>.
+    See <a href="FIREBASE_SETUP.md">FIREBASE_SETUP.md</a> to add your project credentials.
+  </div>
+
+  <div class="grid-2">
     <!-- Card 1: Authentication -->
-    <div class="card">
-      <h2>1. Authentication</h2>
+    <section class="panel">
+      <div class="panel-header panel-header-blue">
+        <h2>1. Authentication</h2>
+      </div>
+      <div class="panel-body">
+        <div id="auth-signed-out">
+          <p class="text-muted mb-12">Sign in to test inventory checkouts and role permissions.</p>
+          <button id="btn-google-sign-in" type="button" class="btn btn-google">Sign In with Google</button>
 
-      <div id="auth-signed-out">
-        <p style="font-size: 0.85rem; color: var(--text-muted);">
-          Sign in to test inventory checkouts and role permissions.
-        </p>
+          <div class="divider"><span>or email / password</span></div>
 
-        <div class="btn-row" style="margin-top: 12px;">
-          <button id="btn-google-sign-in" class="btn-primary">Sign In with Google</button>
+          <div class="form-group">
+            <label for="auth-email">School Email</label>
+            <input type="email" id="auth-email" placeholder="123456@pdsb.net or teacher@pdsb.net">
+          </div>
+          <div class="form-group">
+            <label for="auth-password">Password</label>
+            <input type="password" id="auth-password" placeholder="Password">
+          </div>
+          <div class="form-group">
+            <label for="auth-name">Display Name (Sign Up only)</label>
+            <input type="text" id="auth-name" placeholder="Jordan Patel">
+          </div>
+          <div class="form-group">
+            <label for="auth-student-num">Student Number (Sign Up only)</label>
+            <input type="text" id="auth-student-num" placeholder="882914">
+          </div>
+
+          <div class="btn-row mt-8">
+            <button id="btn-email-sign-in" type="button" class="btn btn-green">Sign In</button>
+            <button id="btn-email-sign-up" type="button" class="btn btn-silver">Create Account</button>
+          </div>
         </div>
 
-        <div style="margin: 12px 0; text-align: center; color: var(--text-muted); font-size: 0.8rem;">— OR EMAIL / PASSWORD —</div>
-
-        <div class="form-group">
-          <label for="auth-email">School Email</label>
-          <input type="email" id="auth-email" placeholder="123456@pdsb.net or teacher@pdsb.net">
-        </div>
-        <div class="form-group">
-          <label for="auth-password">Password</label>
-          <input type="password" id="auth-password" placeholder="••••••••">
-        </div>
-        <div class="form-group">
-          <label for="auth-name">Display Name (Sign Up only)</label>
-          <input type="text" id="auth-name" placeholder="John Doe">
-        </div>
-        <div class="form-group">
-          <label for="auth-student-num">Student Number (Sign Up only)</label>
-          <input type="text" id="auth-student-num" placeholder="123456">
-        </div>
-
-        <div class="btn-row" style="margin-top: 8px;">
-          <button id="btn-email-sign-in">Sign In</button>
-          <button id="btn-email-sign-up" class="btn-secondary">Create Account</button>
+        <div id="auth-signed-in" style="display: none;">
+          <div class="btn-row mb-12" style="justify-content: space-between;">
+            <span id="user-role-badge" class="badge badge-blue">STUDENT</span>
+            <button id="btn-sign-out" type="button" class="btn btn-amber btn-xs">Sign Out</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <tbody>
+                <tr><th>Name</th><td id="user-display-name">—</td></tr>
+                <tr><th>Email</th><td id="user-email">—</td></tr>
+                <tr><th>Student #</th><td id="user-student-number">—</td></tr>
+                <tr><th>Role</th><td id="user-role-text">—</td></tr>
+                <tr><th>UID</th><td id="user-uid" style="font-family: monospace; font-size: 11px;">—</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+    </section>
 
-      <div id="auth-signed-in" style="display: none;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span id="user-role-badge" class="badge badge-primary">STUDENT</span>
-          <button id="btn-sign-out" class="btn-danger" style="padding: 4px 10px; font-size: 0.75rem;">Sign Out</button>
-        </div>
-
-        <table style="margin-top: 10px;">
-          <tr><th>Name:</th><td id="user-display-name">-</td></tr>
-          <tr><th>Email:</th><td id="user-email">-</td></tr>
-          <tr><th>Student #:</th><td id="user-student-number">-</td></tr>
-          <tr><th>Role:</th><td id="user-role-text">-</td></tr>
-          <tr><th>UID:</th><td id="user-uid" style="font-family: monospace; font-size: 0.75rem;">-</td></tr>
-        </table>
+    <!-- Card 2: Inventory Management -->
+    <section class="panel">
+      <div class="panel-header panel-header-blue">
+        <h2>2. Inventory Management (Teacher)</h2>
       </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label for="item-name">Item Name</label>
+          <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3">
+        </div>
+        <div class="grid-2" style="gap: 8px;">
+          <div class="form-group">
+            <label for="item-code">Item Code (QR)</label>
+            <input type="text" id="item-code" placeholder="e.g. ARD-UNO-01">
+          </div>
+          <div class="form-group">
+            <label for="item-category">Category</label>
+            <select id="item-category">
+              <option value="Microcontrollers">Microcontrollers</option>
+              <option value="Sensors">Sensors</option>
+              <option value="Components">Components</option>
+              <option value="Cables & Power">Cables &amp; Power</option>
+              <option value="Tools & Meters">Tools &amp; Meters</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid-2" style="gap: 8px;">
+          <div class="form-group">
+            <label for="item-quantity">Total Quantity</label>
+            <input type="number" id="item-quantity" value="10" min="1">
+          </div>
+          <div class="form-group">
+            <label for="item-location">Storage Location</label>
+            <input type="text" id="item-location" placeholder="e.g. Cabinet B, Bin 3">
+          </div>
+        </div>
+        <button id="btn-create-item" type="button" class="btn btn-green btn-block mt-8">Add Item to Inventory</button>
+      </div>
+    </section>
+  </div>
+
+  <!-- Card 3: Checkout Test -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2>3. Sign Out Component (Atomic Transaction Test)</h2>
     </div>
-
-    <!-- Card 2: Create Item (Teacher Panel Feature) -->
-    <div class="card">
-      <h2>2. Inventory Management (Teacher Panel)</h2>
-      <p style="font-size: 0.85rem; color: var(--text-muted);">
-        Add hardware components and generate item codes / QR targets.
-      </p>
-
-      <div class="form-group">
-        <label for="item-name">Item Name</label>
-        <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3">
-      </div>
-      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
+    <div class="panel-body">
+      <div class="grid-2" style="gap: 10px;">
         <div class="form-group">
-          <label for="item-code">Item Code (QR)</label>
-          <input type="text" id="item-code" placeholder="e.g. ARD-UNO-01">
-        </div>
-        <div class="form-group">
-          <label for="item-category">Category</label>
-          <select id="item-category">
-            <option value="Microcontrollers">Microcontrollers</option>
-            <option value="Sensors">Sensors</option>
-            <option value="Components">Components / Passives</option>
-            <option value="Cables & Power">Cables & Power</option>
-            <option value="Tools & Meters">Tools & Meters</option>
-            <option value="General">General</option>
+          <label for="checkout-item-select">Select Item</label>
+          <select id="checkout-item-select">
+            <option value="">-- Choose an item --</option>
           </select>
         </div>
-      </div>
-      <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 8px;">
         <div class="form-group">
-          <label for="item-quantity">Total Quantity</label>
-          <input type="number" id="item-quantity" value="10" min="1">
-        </div>
-        <div class="form-group">
-          <label for="item-location">Storage Location</label>
-          <input type="text" id="item-location" placeholder="e.g. Cabinet B, Bin 3">
+          <label for="checkout-code-lookup">Or Enter Code</label>
+          <input type="text" id="checkout-code-lookup" placeholder="ARD-UNO-01">
         </div>
       </div>
-
-      <button id="btn-create-item" class="btn-success">Add Item to Inventory</button>
+      <div class="btn-row">
+        <div style="width: 140px;">
+          <input type="number" id="checkout-duration" value="7" min="1" max="30" aria-label="Duration Days">
+        </div>
+        <button id="btn-checkout-item" type="button" class="btn btn-green">Sign Out Item</button>
+      </div>
     </div>
+  </section>
+
+  <!-- Card 4: Live Tables -->
+  <div class="grid-2">
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Live Inventory (<span id="inventory-count">0</span>)</h2>
+      </div>
+      <div class="panel-body" style="padding: 0;">
+        <div class="table-wrap" style="border: none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Code</th>
+                <th>Name</th>
+                <th>Stock</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body">
+              <tr><td colspan="4" class="empty-cell">No items yet.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Active Checkouts (<span id="active-checkout-count">0</span>)</h2>
+      </div>
+      <div class="panel-body" style="padding: 0;">
+        <div class="table-wrap" style="border: none;">
+          <table>
+            <thead>
+              <tr>
+                <th>Item</th>
+                <th>Student</th>
+                <th>Due</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="checkouts-table-body">
+              <tr><td colspan="4" class="empty-cell">No active checkouts.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
   </div>
 
-  <!-- Card 3: Check Out Item (Student Feature) -->
-  <div class="card">
-    <h2>3. Sign Out Component (Check-Out Flow)</h2>
-    <p style="font-size: 0.85rem; color: var(--text-muted);">
-      Test the atomic transaction that checks stock and decrements inventory in real-time.
-    </p>
-
-    <div class="grid" style="grid-template-columns: 2fr 1fr 1fr auto; gap: 12px; align-items: flex-end;">
-      <div class="form-group">
-        <label for="checkout-item-select">Select Item</label>
-        <select id="checkout-item-select">
-          <option value="">-- Choose an item --</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="checkout-code-lookup">Or Enter Code / Scan</label>
-        <input type="text" id="checkout-code-lookup" placeholder="ARD-UNO-01">
-      </div>
-      <div class="form-group">
-        <label for="checkout-duration">Duration (Days)</label>
-        <input type="number" id="checkout-duration" value="7" min="1" max="30">
-      </div>
-      <div>
-        <button id="btn-checkout-item" class="btn-primary" style="height: 38px;">Sign Out</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card 4: Live Inventory & Active Checkouts -->
-  <div class="grid">
-    <div class="card">
-      <h2>Live Inventory (<span id="inventory-count">0</span>)</h2>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Available / Total</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="inventory-table-body">
-            <tr><td colspan="5" style="color: var(--text-muted);">No items yet. Add one above!</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <div class="card">
-      <h2>Active Checkouts (<span id="active-checkout-count">0</span>)</h2>
-      <div style="overflow-x: auto;">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th>Student</th>
-              <th>Student #</th>
-              <th>Due Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody id="checkouts-table-body">
-            <tr><td colspan="5" style="color: var(--text-muted);">No active checkouts.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- Card 5: Real-time Event Log -->
-  <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
+  <!-- Card 5: Activity Log -->
+  <section class="panel">
+    <div class="panel-header">
       <h2>System Activity Log</h2>
-      <button id="btn-clear-log" class="btn-secondary" style="padding: 2px 8px; font-size: 0.75rem;">Clear</button>
+      <button id="btn-clear-log" type="button" class="btn btn-silver btn-xs">Clear</button>
     </div>
-    <div id="log-box" class="log-box"></div>
-  </div>
-</div>
+    <div class="panel-body">
+      <div id="log-box" class="log-box"></div>
+    </div>
+  </section>
+</main>
 
-<!-- Application Logic -->
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><strong>CEIT</strong> — Backend Diagnostic Console</span>
+    <div class="footer-links">
+      <a href="index.html">Portal</a>
+      <a href="docs.html">Documentation</a>
+    </div>
+  </div>
+</footer>
+
 <script type="module">
   import { isFirebaseConfigured } from "./js/firebase-config.js";
   import {
@@ -425,16 +259,14 @@
     subscribeToAllActiveCheckouts,
     getCheckoutDisplayStatus
   } from "./js/services/checkout-service.js";
+  import { escapeHtml, formatDate } from "./js/utils.js";
 
-  // Elements
   const configAlert = document.getElementById("config-alert");
   const configStatusBadge = document.getElementById("config-status-badge");
   const logBox = document.getElementById("log-box");
 
   let currentUser = null;
-  let cachedItems = [];
 
-  // Logger
   function log(message, type = "info") {
     const time = new Date().toLocaleTimeString();
     const entry = document.createElement("div");
@@ -442,25 +274,21 @@
     entry.textContent = `[${time}] ${message}`;
     logBox.appendChild(entry);
     logBox.scrollTop = logBox.scrollHeight;
-    console.log(`[CEIT] ${message}`);
   }
 
   document.getElementById("btn-clear-log").addEventListener("click", () => {
     logBox.innerHTML = "";
   });
 
-  // 1. Check Config
-  const configured = isFirebaseConfigured();
-  if (configured) {
-    configStatusBadge.innerHTML = `<span class="badge badge-success">Firebase Ready</span>`;
+  if (isFirebaseConfigured()) {
+    configStatusBadge.innerHTML = '<span class="badge badge-green">Firebase Ready</span>';
     log("Firebase configuration verified.", "success");
   } else {
-    configStatusBadge.innerHTML = `<span class="badge badge-warning">Config Missing</span>`;
+    configStatusBadge.innerHTML = '<span class="badge badge-amber">Config Missing</span>';
     configAlert.style.display = "block";
-    log("Firebase is using placeholder credentials in js/firebase-config.js. See FIREBASE_SETUP.md.", "warn");
+    log("Firebase is using placeholder credentials in js/firebase-config.js.", "warn");
   }
 
-  // 2. Auth Listeners
   observeAuthState((user) => {
     currentUser = user;
     const signedOutView = document.getElementById("auth-signed-out");
@@ -473,7 +301,7 @@
       const role = user.profile?.role || "student";
       const roleBadge = document.getElementById("user-role-badge");
       roleBadge.textContent = role.toUpperCase();
-      roleBadge.className = role === "teacher" ? "badge badge-success" : "badge badge-primary";
+      roleBadge.className = role === "teacher" ? "badge badge-green" : "badge badge-blue";
 
       document.getElementById("user-display-name").textContent = user.displayName || user.profile?.displayName || "N/A";
       document.getElementById("user-email").textContent = user.email || "N/A";
@@ -489,11 +317,9 @@
     }
   });
 
-  // Google Sign-in
   document.getElementById("btn-google-sign-in").addEventListener("click", async () => {
     try {
       log("Launching Google Sign-In popup...", "info");
-      // Allow any domain for localhost test if needed, or enforce PDSB
       const res = await signInWithGoogle(false);
       log(`Signed in via Google as ${res.user.email}`, "success");
     } catch (err) {
@@ -501,7 +327,6 @@
     }
   });
 
-  // Email Sign-in
   document.getElementById("btn-email-sign-in").addEventListener("click", async () => {
     const email = document.getElementById("auth-email").value;
     const password = document.getElementById("auth-password").value;
@@ -515,7 +340,6 @@
     }
   });
 
-  // Email Sign-up
   document.getElementById("btn-email-sign-up").addEventListener("click", async () => {
     const email = document.getElementById("auth-email").value;
     const password = document.getElementById("auth-password").value;
@@ -531,7 +355,6 @@
     }
   });
 
-  // Sign out
   document.getElementById("btn-sign-out").addEventListener("click", async () => {
     try {
       await signOutUser();
@@ -541,7 +364,6 @@
     }
   });
 
-  // 3. Item Management
   document.getElementById("btn-create-item").addEventListener("click", async () => {
     try {
       const name = document.getElementById("item-name").value;
@@ -551,17 +373,11 @@
       const location = document.getElementById("item-location").value;
 
       log(`Adding item "${name}" (${code})...`, "info");
-      const id = await createItem({
-        name,
-        code,
-        category,
-        totalQuantity,
-        location
-      }, currentUser ? currentUser.uid : "test");
-
-      log(`Item created successfully with ID: ${id}`, "success");
-
-      // Reset form fields
+      const id = await createItem(
+        { name, code, category, totalQuantity, location },
+        currentUser ? currentUser.uid : "test"
+      );
+      log(`Item created with ID: ${id}`, "success");
       document.getElementById("item-name").value = "";
       document.getElementById("item-code").value = "";
       document.getElementById("item-location").value = "";
@@ -570,91 +386,70 @@
     }
   });
 
-  // Subscribe to Live Items
   subscribeToItems((items) => {
-    cachedItems = items;
     document.getElementById("inventory-count").textContent = items.length;
-
-    // Update Dropdown in check-out card
     const select = document.getElementById("checkout-item-select");
     select.innerHTML = '<option value="">-- Choose an item --</option>';
     items.forEach((item) => {
       const opt = document.createElement("option");
       opt.value = item.id;
-      opt.textContent = `${item.name} (${item.code}) - ${item.availableQuantity}/${item.totalQuantity} available`;
+      opt.textContent = `${item.name} (${item.code}) — ${item.availableQuantity}/${item.totalQuantity} avail`;
       select.appendChild(opt);
     });
 
-    // Update Inventory Table
     const tbody = document.getElementById("inventory-table-body");
     if (items.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="color: var(--text-muted);">No items yet. Add one above!</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">No items yet.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = items.map((item) => `
-      <tr>
-        <td><code>${item.code}</code></td>
-        <td><strong>${item.name}</strong></td>
-        <td>${item.category}</td>
-        <td>
-          <span class="badge ${item.availableQuantity > 0 ? 'badge-success' : 'badge-danger'}">
-            ${item.availableQuantity} / ${item.totalQuantity}
-          </span>
-        </td>
-        <td>
-          <button class="btn-danger btn-delete-item" data-id="${item.id}" style="padding: 2px 8px; font-size: 0.75rem;">Delete</button>
-        </td>
-      </tr>
-    `).join("");
+    tbody.innerHTML = items
+      .map(
+        (item) => `
+          <tr>
+            <td><code>${escapeHtml(item.code)}</code></td>
+            <td><strong>${escapeHtml(item.name)}</strong></td>
+            <td>
+              <span class="badge ${item.availableQuantity > 0 ? "badge-green" : "badge-amber"}">
+                ${item.availableQuantity} / ${item.totalQuantity}
+              </span>
+            </td>
+            <td>
+              <button type="button" class="btn btn-amber btn-xs btn-delete-item" data-id="${escapeHtml(item.id)}">Delete</button>
+            </td>
+          </tr>
+        `
+      )
+      .join("");
 
-    // Hook delete buttons
-    document.querySelectorAll(".btn-delete-item").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        const id = e.target.getAttribute("data-id");
-        if (confirm("Delete this item from inventory?")) {
-          try {
-            await deleteItem(id);
-            log(`Deleted item ${id}`, "info");
-          } catch (err) {
-            log(`Failed to delete item: ${err.message}`, "error");
-          }
+    tbody.querySelectorAll(".btn-delete-item").forEach((btn) => {
+      btn.addEventListener("click", async () => {
+        const id = btn.dataset.id;
+        try {
+          await deleteItem(id);
+          log(`Deleted item ${id}`, "info");
+        } catch (err) {
+          log(`Failed to delete item: ${err.message}`, "error");
         }
       });
     });
   });
 
-  // 4. Checkout / Sign Out Flow
   document.getElementById("btn-checkout-item").addEventListener("click", async () => {
     try {
-      if (!currentUser) {
-        throw new Error("You must be signed in to check out an item.");
-      }
-
+      if (!currentUser) throw new Error("You must be signed in to check out an item.");
       let itemId = document.getElementById("checkout-item-select").value;
       const codeLookup = document.getElementById("checkout-code-lookup").value.trim();
       const durationDays = parseInt(document.getElementById("checkout-duration").value, 10) || 7;
 
       if (!itemId && codeLookup) {
-        log(`Looking up item code "${codeLookup}"...`, "info");
         const found = await getItemByCode(codeLookup);
-        if (!found) {
-          throw new Error(`Item code "${codeLookup}" not found.`);
-        }
+        if (!found) throw new Error(`Item code "${codeLookup}" not found.`);
         itemId = found.id;
       }
+      if (!itemId) throw new Error("Please select an item or enter a valid item code.");
 
-      if (!itemId) {
-        throw new Error("Please select an item or enter a valid item code.");
-      }
-
-      log(`Initiating checkout for item ID ${itemId}...`, "info");
-      const res = await checkOutItem({
-        itemId,
-        user: currentUser,
-        durationDays
-      });
-
+      const res = await checkOutItem({ itemId, user: currentUser, durationDays });
       log(`Checked out "${res.item.name}"! Checkout ID: ${res.checkoutId}`, "success");
       document.getElementById("checkout-code-lookup").value = "";
     } catch (err) {
@@ -662,42 +457,36 @@
     }
   });
 
-  // Subscribe to Active Checkouts
   subscribeToAllActiveCheckouts((checkouts) => {
     document.getElementById("active-checkout-count").textContent = checkouts.length;
     const tbody = document.getElementById("checkouts-table-body");
-
     if (checkouts.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="5" style="color: var(--text-muted);">No active checkouts.</td></tr>';
+      tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">No active checkouts.</td></tr>';
       return;
     }
 
-    tbody.innerHTML = checkouts.map((co) => {
-      const status = getCheckoutDisplayStatus(co);
-      const dueDateStr = co.dueDate?.toDate ? co.dueDate.toDate().toLocaleDateString() : "N/A";
-      const overdueBadge = status === "overdue" ? '<span class="badge badge-danger">OVERDUE</span>' : '';
+    tbody.innerHTML = checkouts
+      .map((co) => {
+        const status = getCheckoutDisplayStatus(co);
+        const badge = status === "overdue" ? ' <span class="badge badge-overdue">OVERDUE</span>' : "";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(co.itemName)}</strong><br><code>${escapeHtml(co.itemCode)}</code></td>
+            <td>${escapeHtml(co.studentName)}<br><small class="text-muted">${escapeHtml(co.studentNumber || "N/A")}</small></td>
+            <td>${escapeHtml(formatDate(co.dueDate))}${badge}</td>
+            <td>
+              <button type="button" class="btn btn-green btn-xs btn-return-item" data-id="${escapeHtml(co.id)}">Check In</button>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
 
-      return `
-        <tr>
-          <td><strong>${co.itemName}</strong> <br><small style="color: var(--text-muted);">${co.itemCode}</small></td>
-          <td>${co.studentName} <br><small style="color: var(--text-muted);">${co.studentEmail}</small></td>
-          <td><code>${co.studentNumber || "N/A"}</code></td>
-          <td>${dueDateStr} ${overdueBadge}</td>
-          <td>
-            <button class="btn-success btn-return-item" data-id="${co.id}" style="padding: 2px 8px; font-size: 0.75rem;">Check In</button>
-          </td>
-        </tr>
-      `;
-    }).join("");
-
-    // Hook return buttons
-    document.querySelectorAll(".btn-return-item").forEach((btn) => {
-      btn.addEventListener("click", async (e) => {
-        const id = e.target.getAttribute("data-id");
+    tbody.querySelectorAll(".btn-return-item").forEach((btn) => {
+      btn.addEventListener("click", async () => {
         try {
-          log(`Returning checkout ${id}...`, "info");
-          await returnItem(id, currentUser ? currentUser.email : "teacher");
-          log(`Item returned and checked back into inventory!`, "success");
+          await returnItem(btn.dataset.id, currentUser ? currentUser.email : "teacher");
+          log(`Returned checkout ${btn.dataset.id}`, "success");
         } catch (err) {
           log(`Return failed: ${err.message}`, "error");
         }

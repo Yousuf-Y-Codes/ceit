@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation &amp; User Guide — CEIT</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <a href="index.html" class="brand-wordmark">
+        <span class="brand-cube">C</span>
+        <span>CEIT</span>
+      </a>
+      <span class="brand-subtitle">User Documentation</span>
+    </div>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="index.html" id="nav-home">Sign In</a>
+      <a href="dashboard.html" id="nav-dash" style="display: none;">Dashboard</a>
+      <a href="checkout.html" id="nav-checkout" style="display: none;">Check Out Item</a>
+      <a href="teacher.html" id="nav-teacher" style="display: none;">Teacher Panel</a>
+      <a href="docs.html" class="active">Documentation</a>
+    </nav>
+  </div>
+</header>
+
+<main class="page-wrapper">
+  <div class="page-title-bar">
+    <div>
+      <h1>CEIT User Documentation</h1>
+      <p>Complete guide for students and teachers using the Computer Engineering Item Tracker.</p>
+    </div>
+    <a href="index.html" class="btn btn-green" id="cta-portal">Open CEIT Portal &rarr;</a>
+  </div>
+
+  <div class="grid-sidebar">
+
+    <!-- Left Sidebar TOC -->
+    <aside class="panel" style="position: sticky; top: 12px;">
+      <div class="panel-header panel-header-blue">
+        <h3>Table of Contents</h3>
+      </div>
+      <ul class="docs-nav">
+        <li><a href="#overview">1. Overview</a></li>
+        <li><a href="#login">2. Signing In &amp; Accounts</a></li>
+        <li><a href="#student-dashboard">3. Student Dashboard</a></li>
+        <li><a href="#checkout-page">4. Check Out Page (QR &amp; Code)</a></li>
+        <li><a href="#teacher-panel">5. Teacher Admin Panel</a></li>
+        <li><a href="#teacher-inventory">6. Creating Items &amp; QR Labels</a></li>
+        <li><a href="#teacher-guest-audit">7. Guest Mode &amp; Audit Logs</a></li>
+        <li><a href="#troubleshooting">8. Troubleshooting &amp; FAQ</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Documentation Content -->
+    <div>
+
+      <!-- 1. Overview -->
+      <section id="overview" class="panel docs-section">
+        <div class="panel-header">
+          <h2>1. Project Overview</h2>
+          <span class="badge badge-blue">PDSB Computer Engineering</span>
+        </div>
+        <div class="panel-body">
+          <p>
+            The <strong>Computer Engineering Item Tracker (CEIT)</strong> is a lightweight web application built for
+            Mr. Kidston's Computer Engineering lab. It works like a digital library for hardware components
+            (Arduinos, sensors, breadboards, cables, meters, and tools).
+          </p>
+          <ul>
+            <li><strong>Students</strong> sign in with their school account, scan a component's QR code or enter its text code, select a loan duration, and monitor due dates from their dashboard.</li>
+            <li><strong>Teachers</strong> view every signed-out component in real time, add/edit lab inventory, print cut-out QR code bin labels, record guest sign-outs, and export audit logs to CSV.</li>
+            <li><strong>Zero App Installs Required:</strong> Runs in any modern desktop or mobile web browser using pure HTML, CSS, JavaScript, and Firebase.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 2. Login System -->
+      <section id="login" class="panel docs-section">
+        <div class="panel-header">
+          <h2>2. Signing In &amp; Role Routing (<code>index.html</code>)</h2>
+        </div>
+        <div class="panel-body">
+          <h3>Option A — School Google Sign-In (Recommended)</h3>
+          <ol>
+            <li>Open the CEIT portal (<code>ceit.site</code>).</li>
+            <li>Click <strong>Sign In with School Google Account</strong>.</li>
+            <li>Select your PDSB Google account (<code>&lt;student-number&gt;@pdsb.net</code> or teacher email).</li>
+            <li>Your 6–8 digit student number is automatically extracted from your <code>@pdsb.net</code> address.</li>
+          </ol>
+
+          <h3>Option B — Email &amp; Password Fallback</h3>
+          <p>
+            If third-party Google OAuth is restricted by school network policy on a lab computer, students and teachers
+            can use the built-in <strong>Email &amp; Password</strong> login:
+          </p>
+          <ol>
+            <li>Click <strong>Create Account</strong> beneath the Sign In button.</li>
+            <li>Enter your <strong>Full Name</strong>, <strong>Student Number</strong>, <strong>School Email</strong>, and a password (at least 6 characters).</li>
+            <li>Click <strong>Create Account</strong> to register and sign in immediately.</li>
+          </ol>
+
+          <h3>Automatic Role Routing</h3>
+          <p>
+            Whitelisted teacher emails (such as Mr. Kidston's <code>p0161177@pdsb.net</code>) are automatically assigned
+            the <strong>Teacher</strong> role and sent to <code>teacher.html</code>. All student accounts are routed to
+            <code>dashboard.html</code>. If you arrived by scanning a QR code link, CEIT remembers the component and sends
+            you straight to the Check Out page after login.
+          </p>
+        </div>
+      </section>
+
+      <!-- 3. Student Dashboard -->
+      <section id="student-dashboard" class="panel docs-section">
+        <div class="panel-header">
+          <h2>3. Student Dashboard (<code>dashboard.html</code>)</h2>
+          <span class="badge badge-green">Student Guide</span>
+        </div>
+        <div class="panel-body">
+          <p>The Student Dashboard is your home page for tracking borrowed hardware.</p>
+
+          <h3>Summary Stats Bar</h3>
+          <p>
+            At the top of the page, four live counters display your <strong>Checked Out Now</strong> total,
+            items <strong>Due Within 24h</strong>, any <strong>Overdue Items</strong>, and your <strong>Total Returned</strong> count.
+          </p>
+
+          <h3>My Checked Out Items Tab</h3>
+          <ul>
+            <li>Lists every component currently signed out under your account, including its <strong>Item Code</strong>, <strong>Checked Out</strong> timestamp, <strong>Due Date</strong>, and live status badge (<code>ACTIVE</code>, <code>DUE SOON</code>, or <code>OVERDUE</code>).</li>
+            <li>When you finish using a component and place it back in its lab bin, click <strong>Return Item</strong> and confirm in the dialog. Inventory stock updates immediately.</li>
+          </ul>
+
+          <h3>My Return History &amp; Available Lab Inventory Tabs</h3>
+          <ul>
+            <li><strong>My Return History:</strong> Shows a timestamped record of all items you have previously returned.</li>
+            <li><strong>Available Lab Inventory:</strong> Lets you search the lab's stock by name, code, bin location, or category and click <strong>Check Out</strong> directly on any in-stock item.</li>
+          </ul>
+
+          <h3>Updating Your Student Number</h3>
+          <p>
+            If your student number wasn't auto-detected from your email, click <strong>Edit Student #</strong> in the blue
+            sub-bar to save it to your profile.
+          </p>
+        </div>
+      </section>
+
+      <!-- 4. Check Out Page -->
+      <section id="checkout-page" class="panel docs-section">
+        <div class="panel-header">
+          <h2>4. Check Out Page (<code>checkout.html</code>)</h2>
+          <span class="badge badge-green">Student Guide</span>
+        </div>
+        <div class="panel-body">
+          <p>
+            Click <strong>+ Check Out New Component</strong> from your dashboard (or scan a printed QR label with your phone)
+            to open the Check Out page.
+          </p>
+
+          <h3>Method 1 — Type a Component Code</h3>
+          <ol>
+            <li>Stay on the <strong>Type Component Code</strong> tab.</li>
+            <li>Type the bin code (for example, <code>MCU-ARDUN-01</code>) and click <strong>Find</strong> (or press Enter).</li>
+            <li>Alternatively, choose any in-stock component from the <strong>Quick Select</strong> dropdown.</li>
+          </ol>
+
+          <h3>Method 2 — Scan a QR Code</h3>
+          <ol>
+            <li>Click the <strong>Scan QR Code</strong> tab.</li>
+            <li>Click <strong>Start Camera</strong> and allow browser camera permission.</li>
+            <li>Hold the component's QR label inside the green framing square. CEIT automatically detects the code and loads the component details.</li>
+            <li><strong>No webcam?</strong> Use <strong>Scan QR Code from Saved Image</strong> to upload a photo of the QR label instead.</li>
+          </ol>
+
+          <h3>Confirming Your Sign-Out</h3>
+          <ol>
+            <li>Verify the component name, bin location, and available stock on the right-hand card.</li>
+            <li>Confirm your <strong>Student Number</strong>.</li>
+            <li>Choose your <strong>Loan Duration</strong> (1 Day, 3 Days, 1 Week, 2 Weeks, or Custom 1–30 Days) and inspect the calculated due date.</li>
+            <li>Optionally add a short note (e.g., lab name) and click <strong>Confirm Sign Out</strong>. Stock is atomically decremented and you are returned to your dashboard.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- 5. Teacher Panel -->
+      <section id="teacher-panel" class="panel docs-section">
+        <div class="panel-header">
+          <h2>5. Teacher Admin Panel — Active Sign-Outs (<code>teacher.html</code>)</h2>
+          <span class="badge badge-blue">Teacher Guide</span>
+        </div>
+        <div class="panel-body">
+          <p>
+            Only accounts with the <code>teacher</code> role can access <code>teacher.html</code>. Students attempting to
+            open it are automatically redirected to their Student Dashboard.
+          </p>
+
+          <h3>Monitoring Checked-Out Items</h3>
+          <ul>
+            <li>The <strong>Active Sign-Outs</strong> tab displays every item currently out across the entire lab in real time, showing the component name/code, student name/email, <strong>Student Number</strong>, checkout time, due date, and status badge.</li>
+            <li>Use the search box to look up a specific student number, name, or component code.</li>
+            <li>Use the dropdown filter to isolate <strong>Overdue Only</strong>, <strong>Due Within 24h</strong>, or <strong>Teacher Guest Sign-Outs</strong>.</li>
+            <li>Click <strong>Check In</strong> to mark a component returned and restore its stock count.</li>
+            <li>Click <strong>Email</strong> to open a pre-addressed return reminder email to the student's <code>@pdsb.net</code> address.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 6. Creating Items & QR Labels -->
+      <section id="teacher-inventory" class="panel docs-section">
+        <div class="panel-header">
+          <h2>6. Creating New Items &amp; Printable QR Codes</h2>
+          <span class="badge badge-blue">Teacher Guide</span>
+        </div>
+        <div class="panel-body">
+          <h3>Adding a Component</h3>
+          <ol>
+            <li>Open the <strong>Inventory &amp; QR Labels</strong> tab in <code>teacher.html</code>.</li>
+            <li>Enter the <strong>Component Name</strong> (e.g., <em>Arduino Uno R3</em>) and select a <strong>Category</strong>.</li>
+            <li>Enter a unique <strong>Item Code</strong>, or click <strong>Auto</strong> to generate a clean code automatically (e.g., <code>MCU-ARDUN-01</code>).</li>
+            <li>Set the <strong>Total Quantity</strong>, optional <strong>Bin / Location</strong>, and <strong>Notes</strong>, then click <strong>+ Add Component to Inventory</strong>.</li>
+          </ol>
+
+          <h3>Editing or Deleting Items</h3>
+          <ul>
+            <li>Click <strong>Edit</strong> next to any item to change its name, category, total quantity, bin location, or notes. CEIT prevents lowering total quantity below the number of units currently signed out.</li>
+            <li>Click <strong>Delete</strong> to remove an obsolete component from inventory (with a confirmation warning if units are currently signed out).</li>
+          </ul>
+
+          <h3>Generating &amp; Printing QR Code Labels</h3>
+          <ul>
+            <li>Click <strong>QR Code</strong> on any inventory row to preview its scannable QR label. Each QR encodes a direct deep link (<code>checkout.html?code=...</code>) so students can scan it with either their phone's built-in camera or the CEIT Check Out scanner.</li>
+            <li>From the QR modal, you can <strong>Copy Code</strong>, <strong>Download PNG</strong>, or <strong>Print Label</strong>.</li>
+            <li>Click <strong>Print All QR Labels</strong> (top right) or <strong>Print Visible QR Labels</strong> to generate a clean, 3-column cut-out sheet formatted specifically for classroom printing and taping onto lab bins.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- 7. Guest Mode & Audit Logs -->
+      <section id="teacher-guest-audit" class="panel docs-section">
+        <div class="panel-header">
+          <h2>7. Guest Sign-Out Mode &amp; Audit History</h2>
+          <span class="badge badge-blue">Teacher Guide</span>
+        </div>
+        <div class="panel-body">
+          <h3>Guest Sign-Out Tab</h3>
+          <p>
+            If a student does not have a device or cannot log in during class, open the <strong>Guest Sign-Out</strong>
+            tab, enter the student's <strong>Full Name</strong> and <strong>Student Number</strong>, choose the component
+            and duration, and click <strong>Record Guest Sign-Out</strong>. Inventory decrements immediately and the loan
+            appears in Active Sign-Outs with a <code>GUEST</code> badge.
+          </p>
+
+          <h3>Audit History &amp; CSV Export</h3>
+          <p>
+            The <strong>Audit History</strong> tab retains a complete chronological log of both active and returned checkouts.
+            Use the search bar or status dropdown to filter logs, or click <strong>Download CSV</strong> / <strong>Export Audit CSV</strong>
+            to save a spreadsheet copy for lab records.
+          </p>
+        </div>
+      </section>
+
+      <!-- 8. Troubleshooting -->
+      <section id="troubleshooting" class="panel docs-section">
+        <div class="panel-header">
+          <h2>8. Troubleshooting &amp; FAQ</h2>
+        </div>
+        <div class="panel-body">
+          <ul>
+            <li><strong>Google Sign-In popup is blocked or restricted on a PDSB device:</strong> Allow popups in the address bar, or switch to the <strong>Email &amp; Password</strong> login/sign-up form on <code>index.html</code>.</li>
+            <li><strong>Camera won't start on the Check Out page:</strong> Ensure the site is loaded over HTTPS (such as <code>https://ceit.site</code>), grant camera permissions when prompted, or use the <strong>Type Component Code</strong> / <strong>Scan QR from Saved Image</strong> options.</li>
+            <li><strong>Adding another teacher account:</strong> Add the teacher's email address to <code>INITIAL_TEACHER_EMAILS</code> inside <code>js/firebase-config.js</code>, or update their document's <code>role</code> field to <code>"teacher"</code> in Cloud Firestore.</li>
+            <li><strong>Testing live database connectivity:</strong> Open the built-in <a href="test-backend.html">Backend Diagnostic Console</a> to verify Firebase configuration, authentication, and real-time Firestore transactions.</li>
+          </ul>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <div class="footer-links">
+      <a href="index.html">Sign In</a>
+      <a href="test-backend.html">Backend Diagnostics</a>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  import { observeAuthState } from "./js/services/auth-service.js";
+
+  observeAuthState((user) => {
+    if (!user) return;
+    document.getElementById("nav-home").style.display = "none";
+    document.getElementById("nav-dash").style.display = "inline-block";
+    document.getElementById("nav-checkout").style.display = "inline-block";
+    const isTeacher = user.profile?.role === "teacher";
+    if (isTeacher) {
+      document.getElementById("nav-teacher").style.display = "inline-block";
+    }
+    const cta = document.getElementById("cta-portal");
+    cta.href = isTeacher ? "teacher.html" : "dashboard.html";
+    cta.textContent = isTeacher ? "Go to Teacher Panel →" : "Go to Student Dashboard →";
+  });
+</script>
+
+</body>
+</html>
