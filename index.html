@@ -3,302 +3,154 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CEIT - Computer Engineering Item Tracker</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --google-btn: #ffffff;
-      --google-text: #1f2937;
-      --danger: #ef4444;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: var(--font);
-      background-color: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .auth-container {
-      width: 100%;
-      max-width: 420px;
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 32px 28px;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-    }
-
-    .header {
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .header h1 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.01em;
-    }
-
-    .header p {
-      color: var(--text-muted);
-      font-size: 0.9rem;
-      margin-top: 6px;
-    }
-
-    .btn-google {
-      width: 100%;
-      background: var(--google-btn);
-      color: var(--google-text);
-      border: 1px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      cursor: pointer;
-      transition: background-color 0.15s, transform 0.05s;
-    }
-    .btn-google:hover {
-      background: #f3f4f6;
-    }
-    .btn-google:active {
-      transform: scale(0.99);
-    }
-
-    .divider {
-      display: flex;
-      align-items: center;
-      margin: 24px 0 20px 0;
-      color: var(--text-muted);
-      font-size: 0.8rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .divider::before, .divider::after {
-      content: "";
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-    .divider span {
-      padding: 0 12px;
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    label {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 500;
-      color: #cbd5e1;
-      margin-bottom: 6px;
-    }
-
-    input {
-      width: 100%;
-      background: #0f172a;
-      border: 1px solid var(--border);
-      color: #fff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      transition: border-color 0.15s;
-    }
-    input:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    .btn-submit {
-      width: 100%;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      padding: 11px;
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.15s;
-      margin-top: 4px;
-    }
-    .btn-submit:hover {
-      background: var(--primary-hover);
-    }
-
-    .toggle-mode {
-      text-align: center;
-      margin-top: 18px;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-    .toggle-mode a {
-      color: #60a5fa;
-      text-decoration: none;
-      font-weight: 500;
-      cursor: pointer;
-    }
-    .toggle-mode a:hover {
-      text-decoration: underline;
-    }
-
-    .error-msg {
-      background: rgba(239, 68, 68, 0.15);
-      border: 1px solid rgba(239, 68, 68, 0.3);
-      color: #fca5a5;
-      padding: 10px 12px;
-      border-radius: 8px;
-      font-size: 0.85rem;
-      margin-bottom: 16px;
-      display: none;
-    }
-
-    .user-card {
-      text-align: center;
-      padding: 12px 0;
-    }
-    .user-card .avatar {
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.4rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-    .user-card h3 {
-      font-size: 1.1rem;
-      color: #fff;
-    }
-    .user-card p {
-      color: var(--text-muted);
-      font-size: 0.85rem;
-      margin-top: 2px;
-    }
-    .role-badge {
-      display: inline-block;
-      margin-top: 8px;
-      padding: 3px 10px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .role-teacher { background: rgba(16, 185, 129, 0.2); color: #34d399; }
-    .role-student { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-
-    .btn-secondary {
-      background: #334155;
-      color: #fff;
-      border: none;
-      padding: 10px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 10px;
-    }
-    .btn-secondary:hover {
-      background: #475569;
-    }
-  </style>
+  <title>CEIT — Computer Engineering Item Tracker</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="auth-container">
-  <div class="header">
-    <h1>Computer Engineering Item Tracker</h1>
-    <p>Sign in to check out and track lab components</p>
-  </div>
-
-  <div id="error-box" class="error-msg"></div>
-
-  <!-- Signed Out View -->
-  <div id="auth-forms">
-    <button id="btn-google" class="btn-google" type="button">
-      <svg width="18" height="18" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-      </svg>
-      Sign In with School Account
-    </button>
-
-    <div class="divider">
-      <span>or with password</span>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <a href="index.html" class="brand-wordmark">
+        <span class="brand-cube">C</span>
+        <span>CEIT</span>
+      </a>
+      <span class="brand-subtitle">PDSB Computer Engineering Lab</span>
     </div>
-
-    <form id="email-form">
-      <div id="signup-fields" style="display: none;">
-        <div class="form-group">
-          <label for="name-input">Full Name</label>
-          <input type="text" id="name-input" placeholder="e.g. John Doe">
-        </div>
-        <div class="form-group">
-          <label for="student-num-input">Student Number</label>
-          <input type="text" id="student-num-input" placeholder="e.g. 123456">
-        </div>
-      </div>
-
-      <div class="form-group">
-        <label for="email-input">School Email</label>
-        <input type="email" id="email-input" placeholder="student@pdsb.net" required>
-      </div>
-
-      <div class="form-group">
-        <label for="password-input">Password</label>
-        <input type="password" id="password-input" placeholder="••••••••" required>
-      </div>
-
-      <button type="submit" id="submit-btn" class="btn-submit">Sign In</button>
-    </form>
-
-    <div class="toggle-mode">
-      <span id="toggle-text">Need an account?</span>
-      <a id="toggle-btn">Sign up</a>
-    </div>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="index.html" class="active">Sign In</a>
+      <a href="docs.html">Documentation</a>
+    </nav>
   </div>
+</header>
 
-  <!-- Signed In View -->
-  <div id="auth-signed-in" style="display: none;" class="user-card">
-    <div class="avatar" id="user-avatar">U</div>
-    <h3 id="user-name">Welcome Back</h3>
-    <p id="user-email"></p>
-    <div id="user-role" class="role-badge role-student">Student</div>
-
-    <div style="margin-top: 24px;">
-      <button id="btn-continue" class="btn-submit">Go to Dashboard &rarr;</button>
-      <button id="btn-logout" class="btn-secondary">Sign Out</button>
-    </div>
-  </div>
+<div class="notice-strip" id="redirect-notice" style="display: none;">
+  <span><strong>Component Link Detected:</strong> Sign in below to continue directly to your component check-out.</span>
 </div>
+
+<main class="page-wrapper">
+  <div class="grid-login">
+
+    <!-- Left Column: Classic Lab Portal Overview -->
+    <section class="panel">
+      <div class="panel-header">
+        <h2>Welcome to the Computer Engineering Item Tracker</h2>
+        <span class="badge badge-blue">Mr. Kidston's Lab</span>
+      </div>
+      <div class="panel-body">
+        <p class="mb-12">
+          <strong>CEIT</strong> is a digital sign-out library for the Peel District School Board
+          Computer Engineering lab. Sign in with your school account to borrow microcontrollers,
+          sensors, cables, and tools — and track due dates in real time.
+        </p>
+
+        <ul class="feature-list mb-12">
+          <li>
+            <strong>1. Scan a QR Code or Type an Item Code</strong>
+            Use your phone camera, lab webcam, or type the printed bin code (e.g. <code>ARD-UNO-01</code>)
+            to check out hardware in seconds.
+          </li>
+          <li>
+            <strong>2. Track Your Borrowed Components &amp; Due Dates</strong>
+            View every item currently signed out to your student number, check due dates, and return
+            parts back to inventory when your lab is complete.
+          </li>
+          <li>
+            <strong>3. Built-In Teacher Admin Panel</strong>
+            Teachers can monitor all active sign-outs across the class, add new hardware components,
+            and print cut-out QR code bin labels directly from the browser.
+          </li>
+        </ul>
+
+        <div class="alert alert-info" style="margin-bottom: 0;">
+          <strong>PDSB Account Tip:</strong> Click <em>Sign In with School Google Account</em> to log in
+          with your <code>@pdsb.net</code> address. If Google OAuth is restricted on your school network,
+          use the <strong>Email &amp; Password</strong> login or sign-up form on the right.
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Classic Blue-Headed Login / Sign-Up Box -->
+    <section class="panel">
+      <div class="panel-header panel-header-blue">
+        <h2 id="auth-panel-title">Member Sign In</h2>
+        <span class="badge badge-green" id="auth-mode-badge">Portal</span>
+      </div>
+      <div class="panel-body">
+        <div id="error-box" class="alert alert-warn" style="display: none;"></div>
+        <div id="status-box" class="alert alert-info" style="display: none;"></div>
+
+        <!-- Signed Out View -->
+        <div id="auth-forms">
+          <button id="btn-google" class="btn btn-google" type="button">
+            <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+              <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+              <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+              <path fill="#5C6B73" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            Sign In with School Google Account
+          </button>
+
+          <div class="divider"><span>or with email &amp; password</span></div>
+
+          <form id="email-form" novalidate>
+            <div id="signup-fields" style="display: none;">
+              <div class="form-group">
+                <label for="name-input">Full Name</label>
+                <input type="text" id="name-input" placeholder="e.g. Jordan Patel" autocomplete="name">
+              </div>
+              <div class="form-group">
+                <label for="student-num-input">Student Number</label>
+                <input type="text" id="student-num-input" placeholder="e.g. 882914 (auto-filled from PDSB email)">
+                <div class="form-hint">Teachers can leave Student Number blank.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="email-input">School Email</label>
+              <input type="email" id="email-input" placeholder="123456@pdsb.net" autocomplete="email" required>
+            </div>
+
+            <div class="form-group">
+              <label for="password-input">Password</label>
+              <input type="password" id="password-input" placeholder="Enter your password" autocomplete="current-password" required>
+            </div>
+
+            <button type="submit" id="submit-btn" class="btn btn-green btn-block btn-lg mt-8">
+              Sign In
+            </button>
+          </form>
+
+          <div style="text-align: center; margin-top: 14px; padding-top: 10px; border-top: 1px solid #d5dce6;">
+            <span id="toggle-text" class="text-muted">Need a password account?</span>
+            <a href="#" id="toggle-btn" class="fw-bold" style="margin-left: 4px;">Create Account</a>
+          </div>
+        </div>
+
+        <!-- Redirecting View (shown briefly while routing after sign-in) -->
+        <div id="auth-redirecting" style="display: none; text-align: center; padding: 18px 8px;">
+          <p class="fw-bold mb-8" id="redirect-msg">Signed in! Loading your workspace...</p>
+          <div class="btn-row" style="justify-content: center;">
+            <button id="btn-continue" class="btn btn-green" type="button">Continue Now</button>
+            <button id="btn-logout" class="btn btn-silver" type="button">Sign Out</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <div class="footer-links">
+      <a href="docs.html">User Documentation</a>
+      <a href="test-backend.html">Backend Diagnostics</a>
+    </div>
+  </div>
+</footer>
 
 <script type="module">
   import {
@@ -306,19 +158,33 @@
     signInWithEmail,
     signUpWithEmail,
     signOutUser,
-    observeAuthState
+    observeAuthState,
+    extractStudentNumberFromEmail
   } from "./js/services/auth-service.js";
+  import { getFriendlyAuthError, sanitizeRedirectUrl } from "./js/utils.js";
 
   let isSignUpMode = false;
   let currentUser = null;
 
+  const params = new URLSearchParams(window.location.search);
+  const redirectTarget = sanitizeRedirectUrl(params.get("redirect"));
+
+  if (redirectTarget) {
+    document.getElementById("redirect-notice").style.display = "flex";
+  }
+
   const errorBox = document.getElementById("error-box");
+  const statusBox = document.getElementById("status-box");
   const authForms = document.getElementById("auth-forms");
-  const authSignedIn = document.getElementById("auth-signed-in");
+  const authRedirecting = document.getElementById("auth-redirecting");
   const signupFields = document.getElementById("signup-fields");
+  const panelTitle = document.getElementById("auth-panel-title");
   const submitBtn = document.getElementById("submit-btn");
   const toggleBtn = document.getElementById("toggle-btn");
   const toggleText = document.getElementById("toggle-text");
+  const emailInput = document.getElementById("email-input");
+  const passwordInput = document.getElementById("password-input");
+  const studentNumInput = document.getElementById("student-num-input");
 
   function showError(msg) {
     if (!msg) {
@@ -326,77 +192,139 @@
       errorBox.textContent = "";
       return;
     }
+    statusBox.style.display = "none";
     errorBox.textContent = msg;
     errorBox.style.display = "block";
   }
 
-  // Toggle Login / Sign Up
-  toggleBtn.addEventListener("click", () => {
+  function showStatus(msg) {
+    if (!msg) {
+      statusBox.style.display = "none";
+      statusBox.textContent = "";
+      return;
+    }
+    errorBox.style.display = "none";
+    statusBox.textContent = msg;
+    statusBox.style.display = "block";
+  }
+
+  function resolveDestination(user) {
+    const role = user.profile?.role || "student";
+    if (redirectTarget) {
+      if (redirectTarget.startsWith("teacher.html") && role !== "teacher") {
+        return "dashboard.html";
+      }
+      return redirectTarget;
+    }
+    return role === "teacher" ? "teacher.html" : "dashboard.html";
+  }
+
+  // Auto-fill student number in Sign Up mode when typing a PDSB email (e.g. 882914@pdsb.net)
+  emailInput.addEventListener("blur", () => {
+    if (isSignUpMode && !studentNumInput.value.trim()) {
+      const detected = extractStudentNumberFromEmail(emailInput.value.trim());
+      if (detected) studentNumInput.value = detected;
+    }
+  });
+
+  // Toggle Sign In / Create Account mode
+  toggleBtn.addEventListener("click", (e) => {
+    e.preventDefault();
     isSignUpMode = !isSignUpMode;
     showError("");
+    showStatus("");
     if (isSignUpMode) {
       signupFields.style.display = "block";
+      panelTitle.textContent = "Create Lab Account";
       submitBtn.textContent = "Create Account";
+      passwordInput.setAttribute("autocomplete", "new-password");
       toggleText.textContent = "Already have an account?";
-      toggleBtn.textContent = "Sign in";
+      toggleBtn.textContent = "Sign In";
     } else {
       signupFields.style.display = "none";
+      panelTitle.textContent = "Member Sign In";
       submitBtn.textContent = "Sign In";
-      toggleText.textContent = "Need an account?";
-      toggleBtn.textContent = "Sign up";
+      passwordInput.setAttribute("autocomplete", "current-password");
+      toggleText.textContent = "Need a password account?";
+      toggleBtn.textContent = "Create Account";
     }
   });
 
-  // Observe Auth State: automatically route user to their dashboard
+  // Observe auth state and route automatically
   observeAuthState((user) => {
+    currentUser = user;
     if (user) {
-      const role = user.profile?.role || "student";
-      window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
+      authForms.style.display = "none";
+      authRedirecting.style.display = "block";
+      const dest = resolveDestination(user);
+      document.getElementById("redirect-msg").textContent =
+        `Welcome, ${user.displayName || user.profile?.displayName || user.email}! Redirecting...`;
+      window.location.href = dest;
     } else {
       authForms.style.display = "block";
-      const signedInCard = document.getElementById("auth-signed-in");
-      if (signedInCard) signedInCard.style.display = "none";
+      authRedirecting.style.display = "none";
     }
   });
 
-  // Google Sign In (allows test accounts during development)
+  // Google Sign-In
   document.getElementById("btn-google").addEventListener("click", async () => {
     showError("");
+    showStatus("Opening Google Sign-In...");
+    const btn = document.getElementById("btn-google");
+    btn.disabled = true;
     try {
       await signInWithGoogle(false);
     } catch (err) {
-      showError(err.message);
+      showError(getFriendlyAuthError(err));
+    } finally {
+      btn.disabled = false;
     }
   });
 
-  // Email Submit (Sign In or Sign Up)
+  // Email / Password Sign-In or Sign-Up
   document.getElementById("email-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     showError("");
-    const email = document.getElementById("email-input").value.trim();
-    const password = document.getElementById("password-input").value;
+    const email = emailInput.value.trim();
+    const password = passwordInput.value;
 
+    if (!email || !password) {
+      showError("Please enter both your school email and password.");
+      return;
+    }
+
+    submitBtn.disabled = true;
     try {
       if (isSignUpMode) {
         const name = document.getElementById("name-input").value.trim();
-        const studentNum = document.getElementById("student-num-input").value.trim();
+        const studentNum = studentNumInput.value.trim() || extractStudentNumberFromEmail(email);
+        if (!name) {
+          showError("Please enter your full name to create an account.");
+          submitBtn.disabled = false;
+          return;
+        }
+        if (password.length < 6) {
+          showError("Password must be at least 6 characters long.");
+          submitBtn.disabled = false;
+          return;
+        }
+        showStatus("Creating your CEIT account...");
         await signUpWithEmail(email, password, name, studentNum);
       } else {
+        showStatus("Signing you in...");
         await signInWithEmail(email, password);
       }
     } catch (err) {
-      showError(err.message);
+      showError(getFriendlyAuthError(err));
+      submitBtn.disabled = false;
     }
   });
 
-  // Continue to role-specific dashboard
   document.getElementById("btn-continue").addEventListener("click", () => {
     if (!currentUser) return;
-    const role = currentUser.profile?.role || "student";
-    window.location.href = role === "teacher" ? "teacher.html" : "dashboard.html";
+    window.location.href = resolveDestination(currentUser);
   });
 
-  // Sign out
   document.getElementById("btn-logout").addEventListener("click", async () => {
     await signOutUser();
   });

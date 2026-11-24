@@ -3,216 +3,512 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard - CEIT</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #2563eb;
-      --primary-hover: #1d4ed8;
-      --success: #10b981;
-      --danger: #ef4444;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font);
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 24px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .avatar {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: var(--primary);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      display: inline-block;
-      font-size: 0.9rem;
-    }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-secondary {
-      background: #334155;
-    }
-    .btn-secondary:hover { background: #475569; }
-    .btn-sm {
-      padding: 4px 10px;
-      font-size: 0.8rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 12px;
-      font-size: 0.9rem;
-    }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid var(--border);
-    }
-    th { color: var(--text-muted); font-size: 0.8rem; text-transform: uppercase; }
-    .badge {
-      display: inline-block;
-      padding: 2px 8px;
-      border-radius: 9999px;
-      font-size: 0.75rem;
-      font-weight: 600;
-    }
-    .badge-active { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .badge-overdue { background: rgba(239, 68, 68, 0.2); color: #f87171; }
-  </style>
+  <title>Student Dashboard — CEIT</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div>
-      <h1 style="font-size: 1.4rem;">Student Dashboard</h1>
-      <p style="color: var(--text-muted); font-size: 0.85rem;">Computer Engineering Item Tracker</p>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <a href="dashboard.html" class="brand-wordmark">
+        <span class="brand-cube">C</span>
+        <span>CEIT</span>
+      </a>
+      <span class="brand-subtitle">Computer Engineering Item Tracker</span>
     </div>
-    <div class="user-info">
-      <div class="avatar" id="avatar">S</div>
-      <div>
-        <div id="student-name" style="font-weight: 600; font-size: 0.9rem;">Loading...</div>
-        <div id="student-number" style="font-size: 0.8rem; color: var(--text-muted);"></div>
-      </div>
-      <button id="btn-logout" class="btn btn-secondary btn-sm" style="margin-left: 8px;">Sign Out</button>
-    </div>
-  </header>
-
-  <div style="display: flex; justify-content: space-between; align-items: center;">
-    <h2 style="font-size: 1.15rem;">My Checked Out Components</h2>
-    <a href="checkout.html" class="btn">+ Check Out New Item</a>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="checkout.html">Check Out Item</a>
+      <a href="teacher.html" id="nav-teacher-link" style="display: none;">Teacher Panel</a>
+      <a href="docs.html">Documentation</a>
+    </nav>
   </div>
+</header>
 
-  <div class="card">
-    <div style="overflow-x: auto;">
-      <table>
-        <thead>
-          <tr>
-            <th>Item</th>
-            <th>Code</th>
-            <th>Checked Out</th>
-            <th>Due Date</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="checkouts-list">
-          <tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">Loading your checkouts...</td></tr>
-        </tbody>
-      </table>
+<div class="site-subnav">
+  <div class="subnav-inner">
+    <div class="subnav-user">
+      <span>Hi, <strong id="student-name">Loading...</strong></span>
+      <span class="subnav-pill" id="student-number-pill">Student #—</span>
+      <span class="subnav-pill" id="student-email-pill">...</span>
+    </div>
+    <div class="subnav-actions">
+      <button type="button" id="btn-edit-student-num" class="subnav-link">Edit Student #</button>
+      <button type="button" id="btn-logout" class="subnav-link">Sign Out</button>
     </div>
   </div>
 </div>
 
+<!-- Optional warning banner when student number has not been entered yet -->
+<div class="notice-strip" id="missing-num-banner" style="display: none;">
+  <span><strong>Action Recommended:</strong> Your student number is not set yet. Add it so Mr. Kidston can match your sign-outs quickly.</span>
+  <button type="button" id="btn-banner-add-num" class="btn btn-amber btn-xs">Set Student Number</button>
+</div>
+
+<main class="page-wrapper">
+  <div class="page-title-bar">
+    <div>
+      <h1>Student Dashboard</h1>
+      <p>View your borrowed components, due dates, return history, and available lab inventory.</p>
+    </div>
+    <a href="checkout.html" class="btn btn-green btn-lg">+ Check Out New Component</a>
+  </div>
+
+  <!-- Stats Strip -->
+  <section class="stats-strip" aria-label="Checkout Summary">
+    <div class="stat-box">
+      <div class="stat-value" id="stat-active">0</div>
+      <div class="stat-label">Checked Out Now</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value stat-amber" id="stat-due-soon">0</div>
+      <div class="stat-label">Due Within 24h</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value stat-amber" id="stat-overdue">0</div>
+      <div class="stat-label">Overdue Items</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value stat-green" id="stat-returned">0</div>
+      <div class="stat-label">Total Returned</div>
+    </div>
+  </section>
+
+  <!-- Classic Tabs -->
+  <div class="tab-bar" role="tablist">
+    <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
+      My Checked Out Items (<span id="tab-active-count">0</span>)
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-history" role="tab" aria-selected="false">
+      My Return History (<span id="tab-history-count">0</span>)
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-catalog" role="tab" aria-selected="false">
+      Available Lab Inventory (<span id="tab-catalog-count">0</span>)
+    </button>
+  </div>
+
+  <div class="tab-content-panel">
+
+    <!-- Tab 1: Active Checkouts -->
+    <section id="tab-active" class="tab-pane active">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Code</th>
+              <th>Checked Out</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="checkouts-list">
+            <tr><td colspan="6" class="empty-cell">Loading your checked-out components...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 2: Return History -->
+    <section id="tab-history" class="tab-pane">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Code</th>
+              <th>Checked Out</th>
+              <th>Returned On</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="history-list">
+            <tr><td colspan="5" class="empty-cell">No returned items yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Tab 3: Available Lab Inventory -->
+    <section id="tab-catalog" class="tab-pane">
+      <div class="filter-bar">
+        <input type="search" id="catalog-search" placeholder="Search components by name, code, or bin...">
+        <select id="catalog-category">
+          <option value="">All Categories</option>
+          <option value="Microcontrollers">Microcontrollers</option>
+          <option value="Sensors">Sensors</option>
+          <option value="Components">Components</option>
+          <option value="Cables & Tools">Cables &amp; Tools</option>
+          <option value="Cables & Power">Cables &amp; Power</option>
+          <option value="Tools & Meters">Tools &amp; Meters</option>
+          <option value="General">General</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Code</th>
+              <th>Component</th>
+              <th>Category</th>
+              <th>Location</th>
+              <th>Stock</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="catalog-list">
+            <tr><td colspan="6" class="empty-cell">Loading lab inventory...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Modal: Edit Student Number -->
+<div class="modal-backdrop" id="student-num-modal" role="dialog" aria-modal="true" aria-labelledby="modal-snum-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 id="modal-snum-title">Update Student Number</h3>
+      <button type="button" class="modal-close" data-close-modal="student-num-modal">&times;</button>
+    </div>
+    <form id="student-num-form">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="modal-student-num-input">PDSB Student Number</label>
+          <input type="text" id="modal-student-num-input" placeholder="e.g. 882914" required>
+          <div class="form-hint">This number is attached to your component sign-outs so your teacher can identify your loans.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-silver" data-close-modal="student-num-modal">Cancel</button>
+        <button type="submit" class="btn btn-green">Save Student Number</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Confirm Return -->
+<div class="modal-backdrop" id="return-modal" role="dialog" aria-modal="true" aria-labelledby="modal-return-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 id="modal-return-title">Return Component to Lab</h3>
+      <button type="button" class="modal-close" data-close-modal="return-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="return-modal-desc">Are you sure you want to mark this component as returned?</p>
+      <div class="alert alert-info mt-12" style="margin-bottom: 0;">
+        Make sure you physically place the component back into its labeled lab bin after clicking Confirm Return.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-silver" data-close-modal="return-modal">Cancel</button>
+      <button type="button" class="btn btn-green" id="btn-confirm-return">Confirm Return</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><strong>CEIT</strong> — Computer Engineering Item Tracker (PDSB &bull; Mr. Kidston)</span>
+    <div class="footer-links">
+      <a href="checkout.html">Check Out Component</a>
+      <a href="docs.html">User Documentation</a>
+    </div>
+  </div>
+</footer>
+
 <script type="module">
-  import { observeAuthState, signOutUser } from "./js/services/auth-service.js";
-  import { subscribeToStudentActiveCheckouts, returnItem, getCheckoutDisplayStatus } from "./js/services/checkout-service.js";
+  import {
+    requireAuth,
+    signOutUser,
+    updateUserStudentNumber
+  } from "./js/services/auth-service.js";
+  import {
+    subscribeToStudentCheckouts,
+    returnItem,
+    getCheckoutDisplayStatus
+  } from "./js/services/checkout-service.js";
+  import { subscribeToItems } from "./js/services/item-service.js";
+  import { escapeHtml, formatDate, formatDateTime, showToast } from "./js/utils.js";
 
   let currentUser = null;
+  let unsubCheckouts = null;
+  let unsubItems = null;
+  let allItems = [];
+  let pendingReturnId = null;
 
-  observeAuthState((user) => {
-    if (!user) {
-      window.location.href = "index.html";
-      return;
-    }
-    currentUser = user;
-
-    const name = user.displayName || user.profile?.displayName || "Student";
-    const studentNum = user.profile?.studentNumber || "";
-
-    document.getElementById("student-name").textContent = name;
-    document.getElementById("student-number").textContent = studentNum ? `Student #${studentNum}` : user.email;
-    document.getElementById("avatar").textContent = name.charAt(0).toUpperCase();
-
-    // Load active items
-    subscribeToStudentActiveCheckouts(user.uid, (items) => {
-      const tbody = document.getElementById("checkouts-list");
-      if (items.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">You have no checked out components right now.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = items.map((co) => {
-        const status = getCheckoutDisplayStatus(co);
-        const checkedDate = co.checkedOutAt?.toDate ? co.checkedOutAt.toDate().toLocaleDateString() : "Recently";
-        const dueDate = co.dueDate?.toDate ? co.dueDate.toDate().toLocaleDateString() : "N/A";
-        const badge = status === "overdue" ? '<span class="badge badge-overdue">OVERDUE</span>' : '<span class="badge badge-active">ACTIVE</span>';
-
-        return `
-          <tr>
-            <td><strong>${co.itemName}</strong></td>
-            <td><code>${co.itemCode}</code></td>
-            <td>${checkedDate}</td>
-            <td>${dueDate} ${badge}</td>
-            <td>
-              <button class="btn btn-secondary btn-sm btn-return" data-id="${co.id}">Return Item</button>
-            </td>
-          </tr>
-        `;
-      }).join("");
-
-      document.querySelectorAll(".btn-return").forEach((btn) => {
-        btn.addEventListener("click", async (e) => {
-          const id = e.target.getAttribute("data-id");
-          if (confirm("Return this component back into inventory?")) {
-            try {
-              await returnItem(id, currentUser.email);
-            } catch (err) {
-              alert("Error returning item: " + err.message);
-            }
-          }
-        });
+  // Tab switching
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
       });
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+      document.getElementById(btn.dataset.tab).classList.add("active");
     });
   });
 
+  // Modal helpers
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+  document.querySelectorAll("[data-close-modal]").forEach((el) => {
+    el.addEventListener("click", () => closeModal(el.dataset.closeModal));
+  });
+  document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) backdrop.classList.remove("open");
+    });
+  });
+
+  function renderStudentHeader() {
+    const name = currentUser.displayName || currentUser.profile?.displayName || "Student";
+    const sNum = currentUser.profile?.studentNumber || "";
+    document.getElementById("student-name").textContent = name;
+    document.getElementById("student-email-pill").textContent = currentUser.email || "";
+    document.getElementById("student-number-pill").textContent = sNum ? `Student #${sNum}` : "Student # Not Set";
+    document.getElementById("missing-num-banner").style.display =
+      !sNum && currentUser.profile?.role !== "teacher" ? "flex" : "none";
+  }
+
+  function renderStatusBadge(status) {
+    if (status === "overdue") return '<span class="badge badge-overdue">OVERDUE</span>';
+    if (status === "due-soon") return '<span class="badge badge-amber">DUE SOON</span>';
+    if (status === "returned") return '<span class="badge badge-green">RETURNED</span>';
+    return '<span class="badge badge-blue">ACTIVE</span>';
+  }
+
+  function renderActiveCheckouts(active) {
+    const tbody = document.getElementById("checkouts-list");
+    document.getElementById("tab-active-count").textContent = active.length;
+    document.getElementById("stat-active").textContent = active.length;
+
+    let overdueCount = 0;
+    let dueSoonCount = 0;
+    active.forEach((co) => {
+      const st = getCheckoutDisplayStatus(co);
+      if (st === "overdue") overdueCount++;
+      else if (st === "due-soon") dueSoonCount++;
+    });
+    document.getElementById("stat-overdue").textContent = overdueCount;
+    document.getElementById("stat-due-soon").textContent = dueSoonCount;
+
+    if (active.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="6" class="empty-cell">You have no checked-out components right now. Click "+ Check Out New Component" above to sign one out.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = active
+      .map((co) => {
+        const status = getCheckoutDisplayStatus(co);
+        const notesHtml = co.notes
+          ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>`
+          : "";
+        return `
+          <tr>
+            <td>
+              <strong>${escapeHtml(co.itemName)}</strong>
+              <div class="text-small text-muted">${escapeHtml(co.category || "General")}</div>
+              ${notesHtml}
+            </td>
+            <td><code>${escapeHtml(co.itemCode)}</code></td>
+            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td><strong>${escapeHtml(formatDate(co.dueDate))}</strong></td>
+            <td>${renderStatusBadge(status)}</td>
+            <td>
+              <button type="button" class="btn btn-silver btn-sm btn-open-return"
+                data-id="${escapeHtml(co.id)}"
+                data-name="${escapeHtml(co.itemName)}"
+                data-code="${escapeHtml(co.itemCode)}">
+                Return Item
+              </button>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    tbody.querySelectorAll(".btn-open-return").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        pendingReturnId = btn.dataset.id;
+        document.getElementById("return-modal-desc").textContent =
+          `Return "${btn.dataset.name}" (${btn.dataset.code}) back into lab inventory?`;
+        openModal("return-modal");
+      });
+    });
+  }
+
+  function renderHistory(returned) {
+    const tbody = document.getElementById("history-list");
+    document.getElementById("tab-history-count").textContent = returned.length;
+    document.getElementById("stat-returned").textContent = returned.length;
+
+    if (returned.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-cell">No returned components in your history yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = returned
+      .map(
+        (co) => `
+          <tr>
+            <td><strong>${escapeHtml(co.itemName)}</strong></td>
+            <td><code>${escapeHtml(co.itemCode)}</code></td>
+            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td>${escapeHtml(formatDateTime(co.returnedAt))}</td>
+            <td>${renderStatusBadge("returned")}</td>
+          </tr>
+        `
+      )
+      .join("");
+  }
+
+  function renderCatalog() {
+    const search = document.getElementById("catalog-search").value.trim().toLowerCase();
+    const cat = document.getElementById("catalog-category").value;
+
+    const filtered = allItems.filter((item) => {
+      if (cat && item.category !== cat) return false;
+      if (!search) return true;
+      return (
+        (item.name || "").toLowerCase().includes(search) ||
+        (item.code || "").toLowerCase().includes(search) ||
+        (item.location || "").toLowerCase().includes(search)
+      );
+    });
+
+    document.getElementById("tab-catalog-count").textContent = allItems.length;
+    const tbody = document.getElementById("catalog-list");
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-cell">No matching lab components found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered
+      .map((item) => {
+        const inStock = item.availableQuantity > 0;
+        const stockBadge = inStock
+          ? `<span class="badge badge-green">${item.availableQuantity} / ${item.totalQuantity} IN STOCK</span>`
+          : `<span class="badge badge-slate">0 / ${item.totalQuantity} OUT</span>`;
+        const actionHtml = inStock
+          ? `<a href="checkout.html?code=${encodeURIComponent(item.code)}" class="btn btn-green btn-sm">Check Out</a>`
+          : `<span class="text-small text-muted">Unavailable</span>`;
+
+        return `
+          <tr>
+            <td><code>${escapeHtml(item.code)}</code></td>
+            <td>
+              <strong>${escapeHtml(item.name)}</strong>
+              ${item.notes ? `<div class="text-small text-muted">${escapeHtml(item.notes)}</div>` : ""}
+            </td>
+            <td>${escapeHtml(item.category || "General")}</td>
+            <td>${escapeHtml(item.location || "—")}</td>
+            <td>${stockBadge}</td>
+            <td>${actionHtml}</td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  document.getElementById("catalog-search").addEventListener("input", renderCatalog);
+  document.getElementById("catalog-category").addEventListener("change", renderCatalog);
+
+  // Confirm return button
+  document.getElementById("btn-confirm-return").addEventListener("click", async () => {
+    if (!pendingReturnId || !currentUser) return;
+    const btn = document.getElementById("btn-confirm-return");
+    btn.disabled = true;
+    btn.textContent = "Returning...";
+    try {
+      await returnItem(pendingReturnId, currentUser.email || "student");
+      closeModal("return-modal");
+      showToast("Component returned to inventory!", "success");
+    } catch (err) {
+      showToast("Return failed: " + err.message, "warn");
+    } finally {
+      pendingReturnId = null;
+      btn.disabled = false;
+      btn.textContent = "Confirm Return";
+    }
+  });
+
+  // Edit Student Number handlers
+  function openStudentNumModal() {
+    document.getElementById("modal-student-num-input").value = currentUser?.profile?.studentNumber || "";
+    openModal("student-num-modal");
+  }
+  document.getElementById("btn-edit-student-num").addEventListener("click", openStudentNumModal);
+  document.getElementById("btn-banner-add-num").addEventListener("click", openStudentNumModal);
+
+  document.getElementById("student-num-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    const val = document.getElementById("modal-student-num-input").value.trim();
+    if (!val) return;
+    try {
+      const saved = await updateUserStudentNumber(currentUser.uid, val);
+      currentUser.profile = { ...(currentUser.profile || {}), studentNumber: saved };
+      renderStudentHeader();
+      closeModal("student-num-modal");
+      showToast(`Student number saved (#${saved}).`, "success");
+    } catch (err) {
+      showToast("Could not save student number: " + err.message, "warn");
+    }
+  });
+
+  // Auth Guard & Realtime Subscriptions
+  requireAuth({
+    redirectUrl: "index.html",
+    preserveTarget: true,
+    onAuthorized: (user) => {
+      currentUser = user;
+      renderStudentHeader();
+
+      if (user.profile?.role === "teacher") {
+        document.getElementById("nav-teacher-link").style.display = "inline-block";
+      }
+
+      if (unsubCheckouts) unsubCheckouts();
+      unsubCheckouts = subscribeToStudentCheckouts(
+        user.uid,
+        ({ active, returned }) => {
+          renderActiveCheckouts(active);
+          renderHistory(returned);
+        },
+        (err) => {
+          showToast("Error loading checkouts: " + err.message, "warn");
+        }
+      );
+
+      if (unsubItems) unsubItems();
+      unsubItems = subscribeToItems(
+        (items) => {
+          allItems = items;
+          renderCatalog();
+        },
+        (err) => {
+          console.error("[CEIT] Catalog load error:", err);
+        }
+      );
+    }
+  });
+
   document.getElementById("btn-logout").addEventListener("click", async () => {
+    if (unsubCheckouts) unsubCheckouts();
+    if (unsubItems) unsubItems();
     await signOutUser();
     window.location.href = "index.html";
   });
