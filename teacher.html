@@ -3,211 +3,1028 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Teacher Panel - CEIT</title>
-  <style>
-    :root {
-      --bg: #0f172a;
-      --card-bg: #1e293b;
-      --border: #334155;
-      --text: #f8fafc;
-      --text-muted: #94a3b8;
-      --primary: #10b981;
-      --primary-hover: #059669;
-      --danger: #ef4444;
-      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: var(--font);
-      background-color: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 24px;
-    }
-    .container {
-      max-width: 1000px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 16px;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .card {
-      background: var(--card-bg);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-    }
-    .btn {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 0.9rem;
-    }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-secondary { background: #334155; }
-    .btn-secondary:hover { background: #475569; }
-    .btn-sm { padding: 4px 10px; font-size: 0.8rem; }
-    .grid { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
-    @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.85rem; }
-    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
-    th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
-    .form-group { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
-    label { font-size: 0.8rem; color: #cbd5e1; font-weight: 500; }
-    input, select { background: #0f172a; border: 1px solid var(--border); color: #fff; padding: 8px 12px; border-radius: 6px; font-size: 0.85rem; }
-  </style>
+  <title>Teacher Admin Panel — CEIT</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-  <header>
-    <div>
-      <h1 style="font-size: 1.4rem;">Teacher Admin Panel</h1>
-      <p style="color: var(--text-muted); font-size: 0.85rem;">Computer Engineering Item Tracker</p>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand-group">
+      <a href="teacher.html" class="brand-wordmark">
+        <span class="brand-cube">C</span>
+        <span>CEIT</span>
+      </a>
+      <span class="brand-subtitle">Teacher Admin Panel</span>
     </div>
-    <div style="display: flex; align-items: center; gap: 12px;">
-      <span id="teacher-email" style="font-size: 0.85rem; color: var(--text-muted);">Teacher</span>
-      <button id="btn-logout" class="btn btn-secondary btn-sm">Sign Out</button>
-    </div>
-  </header>
+    <nav class="main-nav" aria-label="Main Navigation">
+      <a href="teacher.html" class="active">Teacher Panel</a>
+      <a href="dashboard.html">Student View</a>
+      <a href="checkout.html">Check Out</a>
+      <a href="docs.html">Documentation</a>
+    </nav>
+  </div>
+</header>
 
-  <div class="grid">
-    <!-- Active Checkouts Table -->
-    <div class="card">
-      <h2 style="font-size: 1.15rem; margin-bottom: 8px;">Active Sign-Outs (<span id="count">0</span>)</h2>
-      <div style="overflow-x: auto;">
+<div class="site-subnav">
+  <div class="subnav-inner">
+    <div class="subnav-user">
+      <span>Signed in as <strong id="teacher-name">Teacher</strong></span>
+      <span class="subnav-pill">TEACHER ADMIN</span>
+      <span class="subnav-pill" id="teacher-email">...</span>
+    </div>
+    <div class="subnav-actions">
+      <button type="button" id="btn-logout" class="subnav-link">Sign Out</button>
+    </div>
+  </div>
+</div>
+
+<main class="page-wrapper">
+  <div class="page-title-bar">
+    <div>
+      <h1>Teacher Admin Panel</h1>
+      <p>Monitor all signed-out lab hardware, manage component inventory, print QR labels, and export logs.</p>
+    </div>
+    <div class="btn-row">
+      <button type="button" id="btn-print-all-top" class="btn">Print All QR Labels</button>
+      <button type="button" id="btn-export-csv-top" class="btn btn-silver">Export Audit CSV</button>
+    </div>
+  </div>
+
+  <!-- Stats Strip -->
+  <section class="stats-strip" aria-label="Lab Overview">
+    <div class="stat-box">
+      <div class="stat-value" id="stat-item-types">0</div>
+      <div class="stat-label">Component Types</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value stat-green" id="stat-avail-units">0</div>
+      <div class="stat-label">Units In Stock</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value" id="stat-active-loans">0</div>
+      <div class="stat-label">Active Sign-Outs</div>
+    </div>
+    <div class="stat-box">
+      <div class="stat-value stat-amber" id="stat-overdue-loans">0</div>
+      <div class="stat-label">Overdue Loans</div>
+    </div>
+  </section>
+
+  <!-- Classic 4-Tab Bar -->
+  <div class="tab-bar" role="tablist">
+    <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
+      Active Sign-Outs (<span id="count-active">0</span>)
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-inventory" role="tab" aria-selected="false">
+      Inventory &amp; QR Labels (<span id="count-inventory">0</span>)
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-guest" role="tab" aria-selected="false">
+      Guest Sign-Out
+    </button>
+    <button type="button" class="tab-btn" data-tab="tab-history" role="tab" aria-selected="false">
+      Audit History (<span id="count-history">0</span>)
+    </button>
+  </div>
+
+  <div class="tab-content-panel">
+
+    <!-- TAB 1: Active Sign-Outs -->
+    <section id="tab-active" class="tab-pane active">
+      <div class="filter-bar">
+        <input type="search" id="active-search" placeholder="Search by student #, name, email, item, or code...">
+        <select id="active-status-filter">
+          <option value="all">All Active Loans</option>
+          <option value="overdue">Overdue Only</option>
+          <option value="due-soon">Due Within 24h</option>
+          <option value="guest">Teacher Guest Sign-Outs</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
         <table>
           <thead>
             <tr>
               <th>Component</th>
               <th>Student</th>
               <th>Student #</th>
+              <th>Checked Out</th>
               <th>Due Date</th>
-              <th>Action</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody id="active-list">
-            <tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">No active sign-outs.</td></tr>
+            <tr><td colspan="7" class="empty-cell">Loading active sign-outs...</td></tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
 
-    <!-- Add Component -->
-    <div class="card">
-      <h2 style="font-size: 1.15rem; margin-bottom: 12px;">Add New Component</h2>
-      <form id="add-item-form">
-        <div class="form-group">
-          <label for="item-name">Component Name</label>
-          <input type="text" id="item-name" placeholder="e.g. Arduino Uno" required>
+    <!-- TAB 2: Inventory & QR Code Labels -->
+    <section id="tab-inventory" class="tab-pane">
+      <div class="grid-teacher">
+
+        <!-- Left: Add New Component Form -->
+        <div class="panel" style="margin-bottom: 0;">
+          <div class="panel-header panel-header-blue">
+            <h3>Add New Component</h3>
+          </div>
+          <div class="panel-body">
+            <form id="add-item-form">
+              <div class="form-group">
+                <label for="item-name">Component Name</label>
+                <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3" required>
+              </div>
+
+              <div class="form-group">
+                <label for="item-category">Category</label>
+                <select id="item-category">
+                  <option value="Microcontrollers">Microcontrollers</option>
+                  <option value="Sensors">Sensors</option>
+                  <option value="Components">Components</option>
+                  <option value="Cables & Tools">Cables &amp; Tools</option>
+                  <option value="Cables & Power">Cables &amp; Power</option>
+                  <option value="Tools & Meters">Tools &amp; Meters</option>
+                  <option value="General">General</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="item-code">Item Code (Printed &amp; QR)</label>
+                <div class="input-inline">
+                  <input type="text" id="item-code" placeholder="e.g. MCU-ARDUN-01" required>
+                  <button type="button" id="btn-gen-code" class="btn btn-silver btn-sm">Auto</button>
+                </div>
+                <div class="form-hint">Must be unique. Click <strong>Auto</strong> to generate one automatically.</div>
+              </div>
+
+              <div class="grid-2" style="gap: 8px;">
+                <div class="form-group">
+                  <label for="item-qty">Total Quantity</label>
+                  <input type="number" id="item-qty" value="5" min="1" max="999" required>
+                </div>
+                <div class="form-group">
+                  <label for="item-location">Bin / Location</label>
+                  <input type="text" id="item-location" placeholder="e.g. Cabinet B-3">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="item-notes">Notes (Optional)</label>
+                <input type="text" id="item-notes" placeholder="e.g. Includes USB cable">
+              </div>
+
+              <button type="submit" id="btn-add-item" class="btn btn-green btn-block">
+                + Add Component to Inventory
+              </button>
+            </form>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="item-code">Item Code (QR/Barcode)</label>
-          <input type="text" id="item-code" placeholder="e.g. ARD-01" required>
+
+        <!-- Right: Live Inventory Table -->
+        <div>
+          <div class="filter-bar">
+            <input type="search" id="inv-search" placeholder="Search inventory by name, code, or bin...">
+            <div class="btn-row">
+              <select id="inv-cat-filter">
+                <option value="">All Categories</option>
+                <option value="Microcontrollers">Microcontrollers</option>
+                <option value="Sensors">Sensors</option>
+                <option value="Components">Components</option>
+                <option value="Cables & Tools">Cables &amp; Tools</option>
+                <option value="Cables & Power">Cables &amp; Power</option>
+                <option value="Tools & Meters">Tools &amp; Meters</option>
+                <option value="General">General</option>
+              </select>
+              <button type="button" id="btn-print-filtered" class="btn btn-sm">Print Visible QR Labels</button>
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Component</th>
+                  <th>Category</th>
+                  <th>Stock</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="inventory-list">
+                <tr><td colspan="5" class="empty-cell">Loading lab inventory...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="item-category">Category</label>
-          <select id="item-category">
-            <option value="Microcontrollers">Microcontrollers</option>
-            <option value="Sensors">Sensors</option>
-            <option value="Components">Components</option>
-            <option value="Cables & Tools">Cables & Tools</option>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: Guest Sign-Out (Teacher signs out for a student without login) -->
+    <section id="tab-guest" class="tab-pane">
+      <div class="grid-2">
+        <div class="panel" style="margin-bottom: 0;">
+          <div class="panel-header panel-header-blue">
+            <h3>Sign Out Component for a Student (Guest Mode)</h3>
+          </div>
+          <div class="panel-body">
+            <form id="guest-checkout-form">
+              <div class="form-group">
+                <label for="guest-student-name">Student Full Name</label>
+                <input type="text" id="guest-student-name" placeholder="e.g. Samira Khan" required>
+              </div>
+              <div class="grid-2" style="gap: 8px;">
+                <div class="form-group">
+                  <label for="guest-student-num">Student Number</label>
+                  <input type="text" id="guest-student-num" placeholder="e.g. 882914" required>
+                </div>
+                <div class="form-group">
+                  <label for="guest-student-email">Student Email (Optional)</label>
+                  <input type="email" id="guest-student-email" placeholder="Auto: <num>@pdsb.net">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="guest-item-select">Select Component</label>
+                <select id="guest-item-select" required>
+                  <option value="">-- Choose an available component --</option>
+                </select>
+              </div>
+              <div class="grid-2" style="gap: 8px;">
+                <div class="form-group">
+                  <label for="guest-duration">Loan Duration (Days)</label>
+                  <input type="number" id="guest-duration" value="7" min="1" max="30" required>
+                </div>
+                <div class="form-group">
+                  <label for="guest-notes">Notes (Optional)</label>
+                  <input type="text" id="guest-notes" placeholder="e.g. Forgot laptop today">
+                </div>
+              </div>
+              <button type="submit" id="btn-guest-submit" class="btn btn-green btn-block">
+                Record Guest Sign-Out
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div class="panel" style="margin-bottom: 0;">
+          <div class="panel-header">
+            <h3>How Guest Mode Works</h3>
+          </div>
+          <div class="panel-body">
+            <ul class="feature-list">
+              <li>
+                <strong>No Student Login Needed</strong>
+                If a student forgot their phone/laptop or cannot access Google Sign-In during class,
+                you can immediately record their sign-out under their name and student number.
+              </li>
+              <li>
+                <strong>Atomic Stock Tracking</strong>
+                Guest sign-outs decrement inventory stock identically to student self-checkouts and
+                appear in <em>Active Sign-Outs</em> with a <code>GUEST</code> badge.
+              </li>
+              <li>
+                <strong>Automatic PDSB Email Link</strong>
+                Entering a 6–8 digit student number automatically pre-fills <code>&lt;number&gt;@pdsb.net</code>
+                so you can send email reminders with one click.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: Full Audit History -->
+    <section id="tab-history" class="tab-pane">
+      <div class="filter-bar">
+        <input type="search" id="history-search" placeholder="Search history by student, #, item, or code...">
+        <div class="btn-row">
+          <select id="history-status-filter">
+            <option value="all">All Records</option>
+            <option value="active">Active Only</option>
+            <option value="returned">Returned Only</option>
           </select>
+          <button type="button" id="btn-export-csv" class="btn btn-silver btn-sm">Download CSV</button>
         </div>
-        <div class="form-group">
-          <label for="item-qty">Quantity</label>
-          <input type="number" id="item-qty" value="5" min="1" required>
-        </div>
-        <button type="submit" class="btn" style="width: 100%; margin-top: 8px;">Add Component</button>
-      </form>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Student</th>
+              <th>Student #</th>
+              <th>Checked Out</th>
+              <th>Due Date</th>
+              <th>Returned</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="history-list">
+            <tr><td colspan="7" class="empty-cell">Loading checkout history...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<!-- Modal: Single QR Code Label Viewer -->
+<div class="modal-backdrop" id="qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-modal-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 id="qr-modal-title">Component QR Code Label</h3>
+      <button type="button" class="modal-close" data-close-modal="qr-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="qr-label-card">
+        <canvas id="qr-modal-canvas" width="200" height="200"></canvas>
+        <div class="qr-label-code" id="qr-modal-code">—</div>
+        <div class="qr-label-name" id="qr-modal-name">—</div>
+        <div class="qr-label-meta" id="qr-modal-meta">—</div>
+      </div>
+      <div class="form-group mt-12" style="margin-bottom: 0;">
+        <label for="qr-modal-url">Encoded Deep-Link URL</label>
+        <input type="text" id="qr-modal-url" readonly>
+        <div class="form-hint">Students can scan this label with any phone camera OR inside the CEIT Check Out scanner.</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-silver btn-sm" id="btn-qr-copy">Copy Code</button>
+      <button type="button" class="btn btn-silver btn-sm" id="btn-qr-download">Download PNG</button>
+      <button type="button" class="btn btn-green btn-sm" id="btn-qr-print-one">Print Label</button>
     </div>
   </div>
 </div>
 
+<!-- Modal: Edit Component -->
+<div class="modal-backdrop" id="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 id="edit-modal-title">Edit Component</h3>
+      <button type="button" class="modal-close" data-close-modal="edit-modal">&times;</button>
+    </div>
+    <form id="edit-item-form">
+      <div class="modal-body">
+        <input type="hidden" id="edit-item-id">
+        <div class="form-group">
+          <label for="edit-item-name">Component Name</label>
+          <input type="text" id="edit-item-name" required>
+        </div>
+        <div class="grid-2" style="gap: 8px;">
+          <div class="form-group">
+            <label for="edit-item-category">Category</label>
+            <select id="edit-item-category">
+              <option value="Microcontrollers">Microcontrollers</option>
+              <option value="Sensors">Sensors</option>
+              <option value="Components">Components</option>
+              <option value="Cables & Tools">Cables &amp; Tools</option>
+              <option value="Cables & Power">Cables &amp; Power</option>
+              <option value="Tools & Meters">Tools &amp; Meters</option>
+              <option value="General">General</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="edit-item-qty">Total Quantity</label>
+            <input type="number" id="edit-item-qty" min="0" max="999" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="edit-item-location">Bin / Location</label>
+          <input type="text" id="edit-item-location">
+        </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="edit-item-notes">Notes</label>
+          <input type="text" id="edit-item-notes">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-silver" data-close-modal="edit-modal">Cancel</button>
+        <button type="submit" class="btn btn-green">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Reusable Confirmation Dialog -->
+<div class="modal-backdrop" id="confirm-modal" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title">
+  <div class="modal-dialog">
+    <div class="modal-header">
+      <h3 id="confirm-modal-title">Confirm Action</h3>
+      <button type="button" class="modal-close" data-close-modal="confirm-modal">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p id="confirm-modal-message"></p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-silver" data-close-modal="confirm-modal">Cancel</button>
+      <button type="button" class="btn btn-green" id="confirm-modal-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Hidden Print Sheet (rendered only during window.print()) -->
+<section id="print-sheet" aria-hidden="true">
+  <div class="print-sheet-header">
+    <h2>CEIT — Computer Engineering Lab QR Code Labels</h2>
+    <p>Scan with a phone camera or open <strong>ceit.site/checkout.html</strong> to sign out a component.</p>
+  </div>
+  <div id="print-grid" class="print-grid"></div>
+</section>
+
+<footer class="site-footer">
+  <div class="footer-inner">
+    <span><strong>CEIT</strong> — Teacher Admin Panel (PDSB &bull; Mr. Kidston)</span>
+    <div class="footer-links">
+      <a href="docs.html">User Documentation</a>
+      <a href="test-backend.html">Backend Diagnostics</a>
+    </div>
+  </div>
+</footer>
+
 <script type="module">
-  import { observeAuthState, signOutUser } from "./js/services/auth-service.js";
-  import { createItem } from "./js/services/item-service.js";
-  import { subscribeToAllActiveCheckouts, returnItem } from "./js/services/checkout-service.js";
+  import { requireAuth, signOutUser } from "./js/services/auth-service.js";
+  import {
+    createItem,
+    updateItem,
+    deleteItem,
+    subscribeToItems
+  } from "./js/services/item-service.js";
+  import {
+    subscribeToAllActiveCheckouts,
+    subscribeToCheckoutHistory,
+    returnItem,
+    guestCheckOutItem,
+    getCheckoutDisplayStatus
+  } from "./js/services/checkout-service.js";
+  import { renderQrToCanvas, generateQrSvg } from "./js/lib/qrcode.js";
+  import {
+    escapeHtml,
+    formatDate,
+    formatDateTime,
+    buildCheckoutQrUrl,
+    generateSuggestedCode,
+    exportCheckoutsToCsv,
+    showToast
+  } from "./js/utils.js";
 
   let currentUser = null;
+  let allItems = [];
+  let activeCheckouts = [];
+  let checkoutHistory = [];
+  let activeQrItem = null;
+  let pendingConfirmAction = null;
 
-  observeAuthState((user) => {
-    if (!user) {
-      window.location.href = "index.html";
+  let unsubItems = null;
+  let unsubActive = null;
+  let unsubHistory = null;
+
+  // Tabs
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document.querySelectorAll(".tab-btn").forEach((b) => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
+      document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+      btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
+      document.getElementById(btn.dataset.tab).classList.add("active");
+    });
+  });
+
+  // Modals
+  function openModal(id) {
+    document.getElementById(id).classList.add("open");
+  }
+  function closeModal(id) {
+    document.getElementById(id).classList.remove("open");
+  }
+  document.querySelectorAll("[data-close-modal]").forEach((el) => {
+    el.addEventListener("click", () => closeModal(el.dataset.closeModal));
+  });
+  document.querySelectorAll(".modal-backdrop").forEach((backdrop) => {
+    backdrop.addEventListener("click", (e) => {
+      if (e.target === backdrop) backdrop.classList.remove("open");
+    });
+  });
+
+  function showConfirmDialog({ title, message, okLabel = "Confirm", okClass = "btn-green", onConfirm }) {
+    document.getElementById("confirm-modal-title").textContent = title;
+    document.getElementById("confirm-modal-message").textContent = message;
+    const okBtn = document.getElementById("confirm-modal-ok");
+    okBtn.textContent = okLabel;
+    okBtn.className = `btn ${okClass}`;
+    pendingConfirmAction = onConfirm;
+    openModal("confirm-modal");
+  }
+
+  document.getElementById("confirm-modal-ok").addEventListener("click", async () => {
+    if (!pendingConfirmAction) return;
+    const okBtn = document.getElementById("confirm-modal-ok");
+    okBtn.disabled = true;
+    try {
+      await pendingConfirmAction();
+      closeModal("confirm-modal");
+    } catch (err) {
+      showToast("Action failed: " + err.message, "warn");
+    } finally {
+      pendingConfirmAction = null;
+      okBtn.disabled = false;
+    }
+  });
+
+  function statusBadgeHtml(status) {
+    if (status === "overdue") return '<span class="badge badge-overdue">OVERDUE</span>';
+    if (status === "due-soon") return '<span class="badge badge-amber">DUE SOON</span>';
+    if (status === "returned") return '<span class="badge badge-green">RETURNED</span>';
+    return '<span class="badge badge-blue">ACTIVE</span>';
+  }
+
+  function updateStats() {
+    document.getElementById("stat-item-types").textContent = allItems.length;
+    const availUnits = allItems.reduce((sum, i) => sum + (Number(i.availableQuantity) || 0), 0);
+    document.getElementById("stat-avail-units").textContent = availUnits;
+    document.getElementById("stat-active-loans").textContent = activeCheckouts.length;
+    const overdue = activeCheckouts.filter((c) => getCheckoutDisplayStatus(c) === "overdue").length;
+    document.getElementById("stat-overdue-loans").textContent = overdue;
+  }
+
+  function buildReminderMailto(co) {
+    if (!co.studentEmail) return "";
+    const subject = `CEIT Lab Return Reminder: ${co.itemName} (${co.itemCode})`;
+    const dueStr = formatDate(co.dueDate);
+    const body =
+      `Hi ${co.studentName},\n\n` +
+      `This is a reminder from the Computer Engineering Lab that the following component is signed out under your account:\n\n` +
+      `- Component: ${co.itemName} (${co.itemCode})\n` +
+      `- Student #: ${co.studentNumber || "N/A"}\n` +
+      `- Due Date: ${dueStr}\n\n` +
+      `Please return it to the lab bin and check it in on CEIT.\n\nThank you!`;
+    return `mailto:${encodeURIComponent(co.studentEmail)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  }
+
+  // Render Tab 1: Active Checkouts
+  function renderActiveCheckouts() {
+    document.getElementById("count-active").textContent = activeCheckouts.length;
+    const queryStr = document.getElementById("active-search").value.trim().toLowerCase();
+    const statusFilter = document.getElementById("active-status-filter").value;
+
+    const filtered = activeCheckouts.filter((co) => {
+      const disp = getCheckoutDisplayStatus(co);
+      if (statusFilter === "overdue" && disp !== "overdue") return false;
+      if (statusFilter === "due-soon" && disp !== "due-soon") return false;
+      if (statusFilter === "guest" && !co.isGuest) return false;
+      if (!queryStr) return true;
+      return (
+        (co.itemName || "").toLowerCase().includes(queryStr) ||
+        (co.itemCode || "").toLowerCase().includes(queryStr) ||
+        (co.studentName || "").toLowerCase().includes(queryStr) ||
+        (co.studentNumber || "").toLowerCase().includes(queryStr) ||
+        (co.studentEmail || "").toLowerCase().includes(queryStr)
+      );
+    });
+
+    const tbody = document.getElementById("active-list");
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">No matching active sign-outs.</td></tr>';
       return;
     }
-    currentUser = user;
-    document.getElementById("teacher-email").textContent = user.email || user.displayName;
 
-    subscribeToAllActiveCheckouts((checkouts) => {
-      document.getElementById("count").textContent = checkouts.length;
-      const tbody = document.getElementById("active-list");
-      if (checkouts.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="color: var(--text-muted); text-align: center; padding: 24px;">No active sign-outs.</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = checkouts.map((co) => {
-        const dueDate = co.dueDate?.toDate ? co.dueDate.toDate().toLocaleDateString() : "N/A";
+    tbody.innerHTML = filtered
+      .map((co) => {
+        const status = getCheckoutDisplayStatus(co);
+        const guestTag = co.isGuest ? ' <span class="badge badge-slate">GUEST</span>' : "";
+        const mailto = buildReminderMailto(co);
+        const remindBtn = mailto
+          ? `<a href="${mailto}" class="btn btn-silver btn-xs" title="Send email reminder">Email</a>`
+          : "";
         return `
           <tr>
-            <td><strong>${co.itemName}</strong><br><small style="color: var(--text-muted);">${co.itemCode}</small></td>
-            <td>${co.studentName}</td>
-            <td><code>${co.studentNumber || "N/A"}</code></td>
-            <td>${dueDate}</td>
             <td>
-              <button class="btn btn-secondary btn-sm btn-return" data-id="${co.id}">Check In</button>
+              <strong>${escapeHtml(co.itemName)}</strong>
+              <div class="text-small"><code>${escapeHtml(co.itemCode)}</code></div>
+              ${co.notes ? `<div class="text-small text-muted">Note: ${escapeHtml(co.notes)}</div>` : ""}
+            </td>
+            <td>
+              <strong>${escapeHtml(co.studentName)}</strong>${guestTag}
+              ${co.studentEmail ? `<div class="text-small text-muted">${escapeHtml(co.studentEmail)}</div>` : ""}
+            </td>
+            <td><code>${escapeHtml(co.studentNumber || "N/A")}</code></td>
+            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td><strong>${escapeHtml(formatDate(co.dueDate))}</strong></td>
+            <td>${statusBadgeHtml(status)}</td>
+            <td>
+              <div class="btn-row">
+                <button type="button" class="btn btn-green btn-xs btn-checkin"
+                  data-id="${escapeHtml(co.id)}"
+                  data-item="${escapeHtml(co.itemName)}"
+                  data-student="${escapeHtml(co.studentName)}">
+                  Check In
+                </button>
+                ${remindBtn}
+              </div>
             </td>
           </tr>
         `;
-      }).join("");
+      })
+      .join("");
 
-      document.querySelectorAll(".btn-return").forEach((btn) => {
-        btn.addEventListener("click", async (e) => {
-          const id = e.target.getAttribute("data-id");
-          if (confirm("Check this item back into inventory?")) {
-            try {
-              await returnItem(id, currentUser.email);
-            } catch (err) {
-              alert("Error returning item: " + err.message);
-            }
+    tbody.querySelectorAll(".btn-checkin").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.id;
+        showConfirmDialog({
+          title: "Check In Component",
+          message: `Mark "${btn.dataset.item}" signed out by ${btn.dataset.student} as returned to inventory?`,
+          okLabel: "Confirm Check In",
+          okClass: "btn-green",
+          onConfirm: async () => {
+            await returnItem(id, currentUser.email || "teacher");
+            showToast(`Checked in "${btn.dataset.item}"!`, "success");
           }
         });
       });
     });
+  }
+
+  // Filter helper for inventory
+  function getFilteredInventory() {
+    const q = document.getElementById("inv-search").value.trim().toLowerCase();
+    const cat = document.getElementById("inv-cat-filter").value;
+    return allItems.filter((item) => {
+      if (cat && item.category !== cat) return false;
+      if (!q) return true;
+      return (
+        (item.name || "").toLowerCase().includes(q) ||
+        (item.code || "").toLowerCase().includes(q) ||
+        (item.location || "").toLowerCase().includes(q)
+      );
+    });
+  }
+
+  // Render Tab 2: Inventory Table + Tab 3 Guest Dropdown
+  function renderInventory() {
+    document.getElementById("count-inventory").textContent = allItems.length;
+
+    // Update Guest Sign-Out dropdown
+    const guestSelect = document.getElementById("guest-item-select");
+    const prevGuestVal = guestSelect.value;
+    guestSelect.innerHTML = '<option value="">-- Choose an available component --</option>';
+    allItems.forEach((item) => {
+      const opt = document.createElement("option");
+      opt.value = item.id;
+      opt.textContent = `${item.name} (${item.code}) — ${item.availableQuantity}/${item.totalQuantity} avail`;
+      if (item.availableQuantity <= 0) opt.disabled = true;
+      guestSelect.appendChild(opt);
+    });
+    guestSelect.value = prevGuestVal;
+
+    const filtered = getFilteredInventory();
+    const tbody = document.getElementById("inventory-list");
+
+    if (filtered.length === 0) {
+      tbody.innerHTML =
+        '<tr><td colspan="5" class="empty-cell">No components match your filter. Add a new component on the left.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered
+      .map((item) => {
+        const stockClass = item.availableQuantity > 0 ? "badge-green" : "badge-amber";
+        return `
+          <tr>
+            <td><code>${escapeHtml(item.code)}</code></td>
+            <td>
+              <strong>${escapeHtml(item.name)}</strong>
+              <div class="text-small text-muted">${escapeHtml(item.location || "No bin assigned")}</div>
+              ${item.notes ? `<div class="text-small text-muted">${escapeHtml(item.notes)}</div>` : ""}
+            </td>
+            <td>${escapeHtml(item.category || "General")}</td>
+            <td>
+              <span class="badge ${stockClass}">
+                ${item.availableQuantity} / ${item.totalQuantity}
+              </span>
+            </td>
+            <td>
+              <div class="btn-row">
+                <button type="button" class="btn btn-xs btn-qr" data-id="${escapeHtml(item.id)}">QR Code</button>
+                <button type="button" class="btn btn-silver btn-xs btn-edit" data-id="${escapeHtml(item.id)}">Edit</button>
+                <button type="button" class="btn btn-amber btn-xs btn-del" data-id="${escapeHtml(item.id)}">Delete</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      })
+      .join("");
+
+    tbody.querySelectorAll(".btn-qr").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = allItems.find((i) => i.id === btn.dataset.id);
+        if (item) openQrModal(item);
+      });
+    });
+
+    tbody.querySelectorAll(".btn-edit").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = allItems.find((i) => i.id === btn.dataset.id);
+        if (!item) return;
+        document.getElementById("edit-item-id").value = item.id;
+        document.getElementById("edit-item-name").value = item.name || "";
+        document.getElementById("edit-item-category").value = item.category || "General";
+        document.getElementById("edit-item-qty").value = item.totalQuantity ?? 1;
+        document.getElementById("edit-item-location").value = item.location || "";
+        document.getElementById("edit-item-notes").value = item.notes || "";
+        openModal("edit-modal");
+      });
+    });
+
+    tbody.querySelectorAll(".btn-del").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const item = allItems.find((i) => i.id === btn.dataset.id);
+        if (!item) return;
+        const checkedOut = (item.totalQuantity || 0) - (item.availableQuantity || 0);
+        const warning =
+          checkedOut > 0
+            ? ` Warning: ${checkedOut} unit(s) are currently signed out to students.`
+            : "";
+        showConfirmDialog({
+          title: "Delete Component",
+          message: `Permanently delete "${item.name}" (${item.code}) from lab inventory?${warning}`,
+          okLabel: "Delete Item",
+          okClass: "btn-amber",
+          onConfirm: async () => {
+            await deleteItem(item.id);
+            showToast(`Deleted "${item.name}" from inventory.`, "info");
+          }
+        });
+      });
+    });
+  }
+
+  // Render Tab 4: Audit History
+  function renderHistory() {
+    document.getElementById("count-history").textContent = checkoutHistory.length;
+    const q = document.getElementById("history-search").value.trim().toLowerCase();
+    const stFilter = document.getElementById("history-status-filter").value;
+
+    const filtered = checkoutHistory.filter((co) => {
+      if (stFilter !== "all" && co.status !== stFilter) return false;
+      if (!q) return true;
+      return (
+        (co.itemName || "").toLowerCase().includes(q) ||
+        (co.itemCode || "").toLowerCase().includes(q) ||
+        (co.studentName || "").toLowerCase().includes(q) ||
+        (co.studentNumber || "").toLowerCase().includes(q)
+      );
+    });
+
+    const tbody = document.getElementById("history-list");
+    if (filtered.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">No checkout records found.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered
+      .map((co) => {
+        const disp = getCheckoutDisplayStatus(co);
+        const guestBadge = co.isGuest ? ' <span class="badge badge-slate">GUEST</span>' : "";
+        return `
+          <tr>
+            <td><strong>${escapeHtml(co.itemName)}</strong> <div class="text-small"><code>${escapeHtml(co.itemCode)}</code></div></td>
+            <td>${escapeHtml(co.studentName)}${guestBadge}</td>
+            <td><code>${escapeHtml(co.studentNumber || "N/A")}</code></td>
+            <td>${escapeHtml(formatDateTime(co.checkedOutAt))}</td>
+            <td>${escapeHtml(formatDate(co.dueDate))}</td>
+            <td>${co.returnedAt ? escapeHtml(formatDateTime(co.returnedAt)) : "—"}</td>
+            <td>${statusBadgeHtml(disp)}</td>
+          </tr>
+        `;
+      })
+      .join("");
+  }
+
+  // QR Code Modal & Print Sheet Helpers
+  function openQrModal(item) {
+    activeQrItem = item;
+    const qrUrl = buildCheckoutQrUrl(item.code);
+    const canvas = document.getElementById("qr-modal-canvas");
+    renderQrToCanvas(canvas, qrUrl, { size: 200, quietZone: 4 });
+
+    document.getElementById("qr-modal-code").textContent = item.code;
+    document.getElementById("qr-modal-name").textContent = item.name;
+    document.getElementById("qr-modal-meta").textContent =
+      `${item.category || "General"}${item.location ? " • " + item.location : ""}`;
+    document.getElementById("qr-modal-url").value = qrUrl;
+
+    openModal("qr-modal");
+  }
+
+  function printQrLabels(itemsToPrint) {
+    if (!itemsToPrint || itemsToPrint.length === 0) {
+      showToast("No components to print labels for.", "warn");
+      return;
+    }
+
+    const grid = document.getElementById("print-grid");
+    grid.innerHTML = itemsToPrint
+      .map((item) => {
+        const url = buildCheckoutQrUrl(item.code);
+        const svg = generateQrSvg(url, { size: 135, quietZone: 4 });
+        return `
+          <div class="print-label">
+            ${svg}
+            <div class="qr-label-code">${escapeHtml(item.code)}</div>
+            <div class="qr-label-name">${escapeHtml(item.name)}</div>
+            <div class="qr-label-meta">${escapeHtml(item.location || item.category || "CEIT Lab")}</div>
+          </div>
+        `;
+      })
+      .join("");
+
+    window.print();
+  }
+
+  document.getElementById("btn-qr-copy").addEventListener("click", async () => {
+    if (!activeQrItem) return;
+    try {
+      await navigator.clipboard.writeText(activeQrItem.code);
+      showToast(`Copied code "${activeQrItem.code}" to clipboard.`, "success");
+    } catch {
+      showToast(`Item code: ${activeQrItem.code}`, "info");
+    }
   });
 
+  document.getElementById("btn-qr-download").addEventListener("click", () => {
+    if (!activeQrItem) return;
+    const canvas = document.getElementById("qr-modal-canvas");
+    const link = document.createElement("a");
+    link.download = `CEIT-${activeQrItem.code}.png`;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+    showToast(`Downloaded QR PNG for ${activeQrItem.code}.`, "success");
+  });
+
+  document.getElementById("btn-qr-print-one").addEventListener("click", () => {
+    if (activeQrItem) printQrLabels([activeQrItem]);
+  });
+
+  document.getElementById("btn-print-all-top").addEventListener("click", () => {
+    printQrLabels(allItems);
+  });
+  document.getElementById("btn-print-filtered").addEventListener("click", () => {
+    printQrLabels(getFilteredInventory());
+  });
+
+  // Auto-generate Item Code button
+  document.getElementById("btn-gen-code").addEventListener("click", () => {
+    const category = document.getElementById("item-category").value;
+    const name = document.getElementById("item-name").value;
+    document.getElementById("item-code").value = generateSuggestedCode(category, name, allItems);
+  });
+
+  // Add Component Form
   document.getElementById("add-item-form").addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (!currentUser) return;
+    const btn = document.getElementById("btn-add-item");
+    btn.disabled = true;
+
     try {
-      const name = document.getElementById("item-name").value;
-      const code = document.getElementById("item-code").value;
+      const name = document.getElementById("item-name").value.trim();
+      const code = document.getElementById("item-code").value.trim().toUpperCase();
       const category = document.getElementById("item-category").value;
       const totalQuantity = document.getElementById("item-qty").value;
+      const location = document.getElementById("item-location").value.trim();
+      const notes = document.getElementById("item-notes").value.trim();
 
-      await createItem({ name, code, category, totalQuantity }, currentUser.uid);
-      alert(`Component "${name}" (${code}) added to inventory!`);
-      document.getElementById("item-name").value = "";
-      document.getElementById("item-code").value = "";
+      await createItem({ name, code, category, totalQuantity, location, notes }, currentUser.uid);
+      showToast(`Added "${name}" (${code}) to inventory!`, "success");
+
+      document.getElementById("add-item-form").reset();
+      document.getElementById("item-qty").value = "5";
     } catch (err) {
-      alert("Error adding item: " + err.message);
+      showToast("Could not add item: " + err.message, "warn");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // Edit Component Form
+  document.getElementById("edit-item-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const id = document.getElementById("edit-item-id").value;
+    try {
+      await updateItem(id, {
+        name: document.getElementById("edit-item-name").value,
+        category: document.getElementById("edit-item-category").value,
+        totalQuantity: document.getElementById("edit-item-qty").value,
+        location: document.getElementById("edit-item-location").value,
+        notes: document.getElementById("edit-item-notes").value
+      });
+      closeModal("edit-modal");
+      showToast("Component updated successfully!", "success");
+    } catch (err) {
+      showToast("Update failed: " + err.message, "warn");
+    }
+  });
+
+  // Guest Sign-Out Form
+  document.getElementById("guest-checkout-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!currentUser) return;
+    const btn = document.getElementById("btn-guest-submit");
+    btn.disabled = true;
+
+    try {
+      const res = await guestCheckOutItem({
+        itemId: document.getElementById("guest-item-select").value,
+        teacherUser: currentUser,
+        studentName: document.getElementById("guest-student-name").value,
+        studentNumber: document.getElementById("guest-student-num").value,
+        studentEmail: document.getElementById("guest-student-email").value,
+        durationDays: parseInt(document.getElementById("guest-duration").value, 10) || 7,
+        notes: document.getElementById("guest-notes").value
+      });
+
+      showToast(`Guest sign-out recorded for "${res.item.name}"!`, "success");
+      document.getElementById("guest-checkout-form").reset();
+      document.getElementById("guest-duration").value = "7";
+    } catch (err) {
+      showToast("Guest sign-out failed: " + err.message, "warn");
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  // CSV Export
+  function handleExportCsv() {
+    if (checkoutHistory.length === 0) {
+      showToast("No checkout history available to export yet.", "warn");
+      return;
+    }
+    exportCheckoutsToCsv(checkoutHistory);
+    showToast(`Exported ${checkoutHistory.length} records to CSV.`, "success");
+  }
+  document.getElementById("btn-export-csv").addEventListener("click", handleExportCsv);
+  document.getElementById("btn-export-csv-top").addEventListener("click", handleExportCsv);
+
+  // Filter Event Listeners
+  document.getElementById("active-search").addEventListener("input", renderActiveCheckouts);
+  document.getElementById("active-status-filter").addEventListener("change", renderActiveCheckouts);
+  document.getElementById("inv-search").addEventListener("input", renderInventory);
+  document.getElementById("inv-cat-filter").addEventListener("change", renderInventory);
+  document.getElementById("history-search").addEventListener("input", renderHistory);
+  document.getElementById("history-status-filter").addEventListener("change", renderHistory);
+
+  // Strict Teacher Role Guard & Realtime Subscriptions
+  requireAuth({
+    requiredRole: "teacher",
+    redirectUrl: "index.html",
+    onAuthorized: (user) => {
+      currentUser = user;
+      document.getElementById("teacher-name").textContent =
+        user.displayName || user.profile?.displayName || "Teacher";
+      document.getElementById("teacher-email").textContent = user.email || "";
+
+      if (unsubItems) unsubItems();
+      unsubItems = subscribeToItems(
+        (items) => {
+          allItems = items;
+          updateStats();
+          renderInventory();
+        },
+        (err) => showToast("Inventory listener error: " + err.message, "warn")
+      );
+
+      if (unsubActive) unsubActive();
+      unsubActive = subscribeToAllActiveCheckouts(
+        (checkouts) => {
+          activeCheckouts = checkouts;
+          updateStats();
+          renderActiveCheckouts();
+        },
+        (err) => showToast("Active checkouts error: " + err.message, "warn")
+      );
+
+      if (unsubHistory) unsubHistory();
+      unsubHistory = subscribeToCheckoutHistory(
+        (records) => {
+          checkoutHistory = records;
+          renderHistory();
+        },
+        200,
+        (err) => console.error("[CEIT] History listener error:", err)
+      );
     }
   });
 
   document.getElementById("btn-logout").addEventListener("click", async () => {
+    if (unsubItems) unsubItems();
+    if (unsubActive) unsubActive();
+    if (unsubHistory) unsubHistory();
     await signOutUser();
     window.location.href = "index.html";
   });
