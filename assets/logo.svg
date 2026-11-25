@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="CEIT Logo">
-  <!-- IC Microcontroller Pins (Console Cool Blue Instrument) -->
-  <g fill="#73b1f4">
+  <!-- IC Microcontroller Pins (Warm Tangerine Hardware Signal) -->
+  <g fill="#f06824">
     <rect x="18" y="2" width="4" height="7" rx="1"/>
     <rect x="30" y="2" width="4" height="7" rx="1"/>
     <rect x="42" y="2" width="4" height="7" rx="1"/>
@@ -15,22 +15,22 @@
     <rect x="55" y="42" width="7" height="4" rx="1"/>
   </g>
 
-  <!-- Graphite IC Package Body -->
-  <rect x="9" y="9" width="46" height="46" rx="4" fill="#181b20" stroke="#4d525c" stroke-width="1.5"/>
+  <!-- Deep Warm Ink IC Package Body -->
+  <rect x="9" y="9" width="46" height="46" rx="4" fill="#1d1a17"/>
 
   <!-- 3 QR Finder Squares inside the IC Die -->
-  <rect x="16" y="16" width="13" height="13" rx="1.5" fill="none" stroke="#eef0f3" stroke-width="2.5"/>
-  <rect x="20" y="20" width="5" height="5" fill="#f0b429"/>
+  <rect x="16" y="16" width="13" height="13" rx="1.5" fill="none" stroke="#fbf9f4" stroke-width="2.5"/>
+  <rect x="20" y="20" width="5" height="5" fill="#f06824"/>
 
-  <rect x="35" y="16" width="13" height="13" rx="1.5" fill="none" stroke="#eef0f3" stroke-width="2.5"/>
-  <rect x="39" y="20" width="5" height="5" fill="#73b1f4"/>
+  <rect x="35" y="16" width="13" height="13" rx="1.5" fill="none" stroke="#fbf9f4" stroke-width="2.5"/>
+  <rect x="39" y="20" width="5" height="5" fill="#fbf9f4"/>
 
-  <rect x="16" y="35" width="13" height="13" rx="1.5" fill="none" stroke="#eef0f3" stroke-width="2.5"/>
-  <rect x="20" y="39" width="5" height="5" fill="#52c980"/>
+  <rect x="16" y="35" width="13" height="13" rx="1.5" fill="none" stroke="#fbf9f4" stroke-width="2.5"/>
+  <rect x="20" y="39" width="5" height="5" fill="#4aa366"/>
 
-  <!-- Bottom-Right Instrument Status Pads -->
-  <rect x="35" y="35" width="4.5" height="4.5" rx="0.8" fill="#f0b429"/>
-  <rect x="43.5" y="35" width="4.5" height="4.5" rx="0.8" fill="#73b1f4"/>
-  <rect x="35" y="43.5" width="4.5" height="4.5" rx="0.8" fill="#52c980"/>
-  <rect x="41" y="41" width="7" height="7" rx="1.2" fill="#f0b429"/>
+  <!-- Bottom-Right Warm Circuit Pads -->
+  <rect x="35" y="35" width="4.5" height="4.5" rx="0.8" fill="#f06824"/>
+  <rect x="43.5" y="35" width="4.5" height="4.5" rx="0.8" fill="#fbf9f4"/>
+  <rect x="35" y="43.5" width="4.5" height="4.5" rx="0.8" fill="#4aa366"/>
+  <rect x="41" y="41" width="7" height="7" rx="1.2" fill="#f06824"/>
 </svg>

@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@600&family=Red+Hat+Text:wght@400;500&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-pending">
@@ -43,7 +43,10 @@
 
 <main class="page-wrapper">
   <div class="page-header">
-    <h1>Teacher Admin Panel</h1>
+    <div>
+      <h1>Teacher Admin Panel</h1>
+      <p>Live hardware loans, inventory stock, printable QR bin sheets, and audit history.</p>
+    </div>
     <div class="btn-row">
       <button type="button" id="btn-print-all-top" class="btn btn-primary">Print All QR Labels</button>
       <button type="button" id="btn-export-csv-top" class="btn btn-ghost">Export CSV</button>
@@ -76,7 +79,7 @@
     </div>
   </section>
 
-  <!-- Segmented 4-Tab Bar -->
+  <!-- Underline Tab Rail -->
   <div class="tab-bar" role="tablist">
     <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
       Active Sign-Outs <span class="tab-count" id="count-active">0</span>
@@ -92,59 +95,57 @@
     </button>
   </div>
 
-  <!-- TAB 1: Active Sign-Outs -->
+  <!-- TAB 1: Active Sign-Outs (Frameless Full-Width Ledger) -->
   <section id="tab-active" class="tab-pane active">
-    <div class="card">
-      <div class="toolbar">
-        <div class="btn-row" style="flex: 1; min-width: 240px;">
-          <input type="search" id="active-search" placeholder="Search by student #, name, item, or code…" maxlength="100" aria-label="Search active sign-outs">
-          <select id="active-period-filter" aria-label="Filter by Class Period">
-            <option value="all">All Periods</option>
-            <option value="Period 1">Period 1</option>
-            <option value="Period 2">Period 2</option>
-            <option value="Period 3">Period 3</option>
-            <option value="Period 4">Period 4</option>
-            <option value="unassigned">No Period Set</option>
-          </select>
-        </div>
-        <div class="chip-group" id="active-filter-chips">
-          <button type="button" class="chip-btn active" data-filter="all">All</button>
-          <button type="button" class="chip-btn" data-filter="overdue">Overdue</button>
-          <button type="button" class="chip-btn" data-filter="due-soon">Due Soon</button>
-          <button type="button" class="chip-btn" data-filter="guest">Guest</button>
-        </div>
+    <div class="ledger-toolbar">
+      <div class="btn-row" style="flex: 1; min-width: 240px;">
+        <input type="search" id="active-search" placeholder="Search by student #, name, item, or code…" maxlength="100" aria-label="Search active sign-outs">
+        <select id="active-period-filter" aria-label="Filter by Class Period">
+          <option value="all">All Periods</option>
+          <option value="Period 1">Period 1</option>
+          <option value="Period 2">Period 2</option>
+          <option value="Period 3">Period 3</option>
+          <option value="Period 4">Period 4</option>
+          <option value="unassigned">No Period Set</option>
+        </select>
       </div>
+      <div class="chip-group" id="active-filter-chips">
+        <button type="button" class="chip-btn active" data-filter="all">All</button>
+        <button type="button" class="chip-btn" data-filter="overdue">Overdue</button>
+        <button type="button" class="chip-btn" data-filter="due-soon">Due Soon</button>
+        <button type="button" class="chip-btn" data-filter="guest">Guest</button>
+      </div>
+    </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Student</th>
-              <th>Student #</th>
-              <th>Period</th>
-              <th>Checked out</th>
-              <th>Due date</th>
-              <th>Status</th>
-              <th style="text-align: right;">Actions</th>
-            </tr>
-          </thead>
-          <tbody id="active-list">
-            <tr><td colspan="8" class="empty-state">Loading active sign-outs…</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Student</th>
+            <th>Student #</th>
+            <th>Period</th>
+            <th>Checked out</th>
+            <th>Due date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="active-list">
+          <tr><td colspan="8" class="empty-state">Loading active sign-outs…</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
-  <!-- TAB 2: Inventory & QR Labels -->
+  <!-- TAB 2: Inventory & QR Labels (Sticky Add Bench + Frameless Ledger) -->
   <section id="tab-inventory" class="tab-pane">
     <div class="grid-teacher">
 
-      <!-- Left: Add New Component -->
-      <div class="card" style="margin-bottom: 0;">
+      <!-- Left: Sticky Add New Component Panel -->
+      <div class="card sticky-panel" style="margin-bottom: 0;">
         <div class="card-header">
-          <h2>Add New Component</h2>
+          <h2>Add Component</h2>
         </div>
         <div class="card-body">
           <form id="add-item-form">
@@ -197,9 +198,9 @@
         </div>
       </div>
 
-      <!-- Right: Live Inventory Table -->
-      <div class="card" style="margin-bottom: 0;">
-        <div class="toolbar">
+      <!-- Right: Frameless Live Inventory Ledger -->
+      <div>
+        <div class="ledger-toolbar">
           <input type="search" id="inv-search" placeholder="Search inventory by name, code, or bin…" maxlength="100" aria-label="Search inventory">
           <div class="btn-row">
             <select id="inv-cat-filter" aria-label="Filter inventory by category">
@@ -236,106 +237,124 @@
     </div>
   </section>
 
-  <!-- TAB 3: Guest Sign-Out -->
+  <!-- TAB 3: Guest Sign-Out (2-Column Split Bench) -->
   <section id="tab-guest" class="tab-pane">
-    <div class="card" style="max-width: 560px; margin-bottom: 0;">
-      <div class="card-header">
-        <h2>Guest Sign-Out</h2>
-      </div>
-      <div class="card-body">
-        <form id="guest-checkout-form">
-          <div class="form-group">
-            <label for="guest-student-name">Student full name</label>
-            <input type="text" id="guest-student-name" placeholder="Full name" maxlength="120" required>
-          </div>
-          <div class="grid-2">
+    <div class="guest-grid">
+      <div class="card" style="margin-bottom: 0;">
+        <div class="card-header">
+          <h2>Guest Sign-Out</h2>
+        </div>
+        <div class="card-body">
+          <form id="guest-checkout-form">
             <div class="form-group">
-              <label for="guest-student-num">Student number</label>
-              <input type="text" id="guest-student-num" placeholder="882914" maxlength="32" required>
+              <label for="guest-student-name">Student full name</label>
+              <input type="text" id="guest-student-name" placeholder="Full name" maxlength="120" required>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="guest-student-num">Student number</label>
+                <input type="text" id="guest-student-num" placeholder="882914" maxlength="32" required>
+              </div>
+              <div class="form-group">
+                <label for="guest-student-email">Email (optional)</label>
+                <input type="email" id="guest-student-email" placeholder="Auto: number@pdsb.net" maxlength="120">
+              </div>
+            </div>
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="guest-period">Class period</label>
+                <select id="guest-period" required>
+                  <option value="">Select period</option>
+                  <option value="Period 1">Period 1</option>
+                  <option value="Period 2">Period 2</option>
+                  <option value="Period 3">Period 3</option>
+                  <option value="Period 4">Period 4</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="guest-duration">Duration (days)</label>
+                <input type="number" id="guest-duration" value="7" min="1" max="30" required>
+              </div>
             </div>
             <div class="form-group">
-              <label for="guest-student-email">Email (optional)</label>
-              <input type="email" id="guest-student-email" placeholder="Auto: number@pdsb.net" maxlength="120">
-            </div>
-          </div>
-          <div class="grid-2">
-            <div class="form-group">
-              <label for="guest-period">Class period</label>
-              <select id="guest-period" required>
-                <option value="">Select period</option>
-                <option value="Period 1">Period 1</option>
-                <option value="Period 2">Period 2</option>
-                <option value="Period 3">Period 3</option>
-                <option value="Period 4">Period 4</option>
+              <label for="guest-item-select">Component</label>
+              <select id="guest-item-select" required>
+                <option value="">Select component</option>
               </select>
             </div>
             <div class="form-group">
-              <label for="guest-duration">Duration (days)</label>
-              <input type="number" id="guest-duration" value="7" min="1" max="30" required>
+              <label for="guest-notes">Note (optional)</label>
+              <input type="text" id="guest-notes" placeholder="Optional note" maxlength="300">
             </div>
-          </div>
-          <div class="form-group">
-            <label for="guest-item-select">Component</label>
-            <select id="guest-item-select" required>
-              <option value="">Select component</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="guest-notes">Note (optional)</label>
-            <input type="text" id="guest-notes" placeholder="Optional note" maxlength="300">
-          </div>
-          <button type="submit" id="btn-guest-submit" class="btn btn-primary btn-block btn-lg">
-            Record Guest Sign-Out
-          </button>
-        </form>
+            <button type="submit" id="btn-guest-submit" class="btn btn-primary btn-block btn-lg">
+              Record Guest Sign-Out
+            </button>
+          </form>
+        </div>
       </div>
+
+      <aside class="guide-panel" aria-label="Guest mode notes">
+        <h2>How guest sign-outs work</h2>
+        <dl>
+          <div>
+            <dt>Automatic school email link</dt>
+            <dd>Leaving Email blank automatically links <code>&lt;studentNumber&gt;@pdsb.net</code> so one-click return reminders still work.</dd>
+          </div>
+          <div>
+            <dt>Tracked under Active Sign-Outs</dt>
+            <dd>Guest records appear with a <code>Guest</code> badge and filter chip, separated from your personal Student View.</dd>
+          </div>
+          <div>
+            <dt>Atomic inventory deduction</dt>
+            <dd>Recording a guest loan immediately decrements stock and logs your teacher email in the audit trail.</dd>
+          </div>
+        </dl>
+      </aside>
     </div>
   </section>
 
-  <!-- TAB 4: Full Audit History -->
+  <!-- TAB 4: Full Audit History (Frameless Ledger) -->
   <section id="tab-history" class="tab-pane">
-    <div class="card">
-      <div class="toolbar">
-        <div class="btn-row" style="flex: 1; min-width: 240px;">
-          <input type="search" id="history-search" placeholder="Search history by student, #, item, or code…" maxlength="100" aria-label="Search audit history">
-          <select id="history-period-filter" aria-label="Filter History by Class Period">
-            <option value="all">All Periods</option>
-            <option value="Period 1">Period 1</option>
-            <option value="Period 2">Period 2</option>
-            <option value="Period 3">Period 3</option>
-            <option value="Period 4">Period 4</option>
-            <option value="unassigned">No Period Set</option>
-          </select>
-        </div>
-        <div class="btn-row">
-          <select id="history-status-filter" aria-label="Filter History by Status">
-            <option value="all">All Records</option>
-            <option value="active">Active Only</option>
-            <option value="returned">Returned Only</option>
-          </select>
-          <button type="button" id="btn-export-csv" class="btn btn-ghost btn-sm">Download CSV</button>
-        </div>
+    <div class="ledger-toolbar">
+      <div class="btn-row" style="flex: 1; min-width: 240px;">
+        <input type="search" id="history-search" placeholder="Search history by student, #, item, or code…" maxlength="100" aria-label="Search audit history">
+        <select id="history-period-filter" aria-label="Filter History by Class Period">
+          <option value="all">All Periods</option>
+          <option value="Period 1">Period 1</option>
+          <option value="Period 2">Period 2</option>
+          <option value="Period 3">Period 3</option>
+          <option value="Period 4">Period 4</option>
+          <option value="unassigned">No Period Set</option>
+        </select>
       </div>
+      <div class="btn-row">
+        <select id="history-status-filter" aria-label="Filter History by Status">
+          <option value="all">All Records</option>
+          <option value="active">Active Only</option>
+          <option value="returned">Returned Only</option>
+        </select>
+        <button type="button" id="btn-export-csv" class="btn btn-ghost btn-sm">Download CSV</button>
+      </div>
+    </div>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Student</th>
-              <th>Student #</th>
-              <th>Period</th>
-              <th>Checked out</th>
-              <th>Due date</th>
-              <th>Returned</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="history-list">
-            <tr><td colspan="8" class="empty-state">Loading checkout history…</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Student</th>
+            <th>Student #</th>
+            <th>Period</th>
+            <th>Checked out</th>
+            <th>Due date</th>
+            <th>Returned</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="history-list">
+          <tr><td colspan="8" class="empty-state">Loading checkout history…</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </main>

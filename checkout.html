@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@600&family=Red+Hat+Text:wght@400;500&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 </head>
@@ -42,27 +42,28 @@
   </div>
 </header>
 
-<main class="page-wrapper" style="max-width: 780px;">
+<main class="page-wrapper">
   <div class="page-header">
-    <h1>Check Out Component</h1>
+    <div>
+      <h1>Check Out Component</h1>
+      <p>Scan a bin QR label or type a code on the left; verify your loan slip on the right.</p>
+    </div>
     <a href="dashboard.html" class="btn btn-ghost">Back to Dashboard</a>
   </div>
 
   <div id="alert-box" class="alert alert-danger" style="display: none;"></div>
   <div id="success-box" class="alert alert-success" style="display: none;"></div>
 
-  <form id="checkout-form" novalidate>
+  <form id="checkout-form" class="checkout-grid" novalidate>
 
-    <!-- STEP 1: Component Code + Inline QR Scanner -->
-    <section class="step-block">
-      <div class="step-block-header">
-        <div>
-          <span class="step-num">1</span>
-          <strong>Component</strong>
+    <!-- Left Column: Open Hairline Steps -->
+    <div class="checkout-flow">
+
+      <section class="checkout-step">
+        <div class="checkout-step-head">
+          <div class="checkout-step-title"><span class="step-num">01</span><h2>Select component</h2></div>
         </div>
-        <span class="badge badge-neutral" id="preview-badge">Not selected</span>
-      </div>
-      <div class="step-block-body">
+
         <div class="form-group">
           <label for="code-input">Component code</label>
           <div class="input-inline">
@@ -99,69 +100,32 @@
         </div>
 
         <div class="form-group mt-12" style="margin-bottom: 0;">
-          <label for="quick-select">In-stock inventory</label>
+          <label for="quick-select">Or pick from in-stock inventory</label>
           <select id="quick-select">
             <option value="">Select component</option>
           </select>
         </div>
+      </section>
 
-        <!-- Inline Component Preview -->
-        <div id="preview-box" class="component-preview" style="display: none;">
-          <div class="component-preview-title" id="prev-name">None</div>
-          <div class="component-meta-row">
-            <span>Code: <code id="prev-code">None</code></span>
-            <span>Category: <strong id="prev-category">None</strong></span>
-            <span>Bin: <strong id="prev-location">None</strong></span>
-            <span>Stock: <strong id="prev-avail-text">0</strong></span>
-          </div>
-          <div id="prev-notes" class="text-small text-muted mt-8" style="display: none;"></div>
+      <section class="checkout-step">
+        <div class="checkout-step-head">
+          <div class="checkout-step-title"><span class="step-num">02</span><h2>Class period</h2></div>
         </div>
-      </div>
-    </section>
-
-    <!-- STEP 2: Explicit Class Period Selection (No Default) -->
-    <section class="step-block">
-      <div class="step-block-header">
-        <div>
-          <span class="step-num">2</span>
-          <strong>Class Period</strong>
-        </div>
-        <span class="badge badge-warn" id="period-status-badge">Required</span>
-      </div>
-      <div class="step-block-body">
-        <div class="chip-group" id="period-chips" role="radiogroup" aria-label="Class Period">
+        <div class="period-grid" id="period-chips" role="radiogroup" aria-label="Class Period">
           <button type="button" class="chip-btn" data-period="Period 1">Period 1</button>
           <button type="button" class="chip-btn" data-period="Period 2">Period 2</button>
           <button type="button" class="chip-btn" data-period="Period 3">Period 3</button>
           <button type="button" class="chip-btn" data-period="Period 4">Period 4</button>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- STEP 3: Loan Details & Confirm -->
-    <section class="step-block">
-      <div class="step-block-header">
-        <div>
-          <span class="step-num">3</span>
-          <strong>Loan Details</strong>
-        </div>
-        <span class="badge badge-accent" id="due-date-preview">Due in 7 days</span>
-      </div>
-      <div class="step-block-body">
-        <div class="grid-2">
-          <div class="form-group">
-            <label for="checkout-student-num">School account ID</label>
-            <input type="text" id="checkout-student-num" readonly>
-          </div>
-
-          <div class="form-group">
-            <label for="checkout-notes">Note (optional)</label>
-            <input type="text" id="checkout-notes" placeholder="Optional note" maxlength="300">
-          </div>
+      <section class="checkout-step">
+        <div class="checkout-step-head">
+          <div class="checkout-step-title"><span class="step-num">03</span><h2>Duration and note</h2></div>
         </div>
 
         <div class="form-group">
-          <label>Duration</label>
+          <label>Loan duration</label>
           <div class="chip-group" id="duration-chips" role="radiogroup" aria-label="Loan Duration">
             <button type="button" class="chip-btn" data-days="1">1 Day</button>
             <button type="button" class="chip-btn" data-days="3">3 Days</button>
@@ -176,14 +140,55 @@
           <input type="number" id="custom-days-input" min="1" max="30" value="5">
         </div>
 
+        <div class="form-group">
+          <label for="checkout-notes">Note (optional)</label>
+          <input type="text" id="checkout-notes" placeholder="e.g. Final robotics project" maxlength="300">
+        </div>
+
         <div class="btn-row mt-12">
           <button type="submit" id="btn-confirm" class="btn btn-primary btn-lg" disabled>
             Confirm Sign Out
           </button>
           <a href="dashboard.html" class="btn btn-ghost btn-lg">Cancel</a>
         </div>
+      </section>
+
+    </div>
+
+    <!-- Right Column: Sticky Live Checkout Slip -->
+    <aside class="checkout-ticket" aria-label="Checkout Slip">
+      <div class="checkout-ticket-head">
+        <h2>Checkout Slip</h2>
+        <span class="badge badge-neutral" id="preview-badge">Not selected</span>
       </div>
-    </section>
+      <div class="checkout-ticket-body">
+        <div id="preview-box" class="component-preview" style="display: none;">
+          <div class="component-preview-title" id="prev-name">None</div>
+          <div class="component-meta-row">
+            <span>Code: <code id="prev-code">None</code></span>
+            <span>Stock: <strong id="prev-avail-text" class="tabular">0</strong></span>
+            <span>Category: <strong id="prev-category">None</strong></span>
+            <span>Bin: <strong id="prev-location">None</strong></span>
+          </div>
+          <div id="prev-notes" class="text-small text-muted mt-8" style="display: none;"></div>
+        </div>
+
+        <dl class="ticket-dl">
+          <div class="ticket-row">
+            <dt><label for="checkout-student-num">School account ID</label></dt>
+            <dd style="width: 160px;"><input type="text" id="checkout-student-num" class="tabular" readonly></dd>
+          </div>
+          <div class="ticket-row">
+            <dt>Class period</dt>
+            <dd><span class="badge badge-warn" id="period-status-badge">Required</span></dd>
+          </div>
+          <div class="ticket-row">
+            <dt>Expected return</dt>
+            <dd><span class="badge badge-accent" id="due-date-preview">Due in 7 days</span></dd>
+          </div>
+        </dl>
+      </div>
+    </aside>
 
   </form>
 </main>

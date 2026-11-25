@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@600&family=Red+Hat+Text:wght@400;500&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-pending">
@@ -42,41 +42,41 @@
 </header>
 
 <main class="page-wrapper">
-  <div class="page-header">
-    <h1>Student Dashboard</h1>
-    <a href="checkout.html" class="btn btn-primary btn-lg">+ Check Out</a>
-  </div>
+  <!-- Command-First Student Workbench Header -->
+  <section class="bench-head" aria-label="Student workbench overview">
+    <div class="bench-head-main">
+      <h1>Student Dashboard</h1>
+      <p class="bench-head-sub">Enter a bin code to jump straight into checkout, or return active components below.</p>
+      <div class="command-row">
+        <form id="quick-code-form" class="command-form" aria-label="Quick Code Lookup">
+          <input type="text" id="quick-code-input" placeholder="MCU-ARDUN-01" maxlength="32" autocomplete="off" aria-label="Component code">
+          <button type="submit" class="btn btn-ghost">Find</button>
+        </form>
+        <a href="checkout.html" class="btn btn-primary">+ Check Out</a>
+      </div>
+    </div>
 
-  <!-- Quick Code Lookup Bar -->
-  <section class="action-banner" aria-label="Quick Code Lookup">
-    <strong>Code Lookup</strong>
-    <form id="quick-code-form" class="action-banner-form">
-      <input type="text" id="quick-code-input" placeholder="MCU-ARDUN-01" maxlength="32" autocomplete="off" aria-label="Component code">
-      <button type="submit" class="btn btn-ghost">Go</button>
-    </form>
+    <div class="stats-grid stats-grid--compact" aria-label="Checkout Summary">
+      <div class="stat-card">
+        <span class="stat-label">Checked out</span>
+        <span class="stat-value is-accent" id="stat-active">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Due 24h</span>
+        <span class="stat-value is-warn" id="stat-due-soon">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Overdue</span>
+        <span class="stat-value is-danger" id="stat-overdue">0</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Returned</span>
+        <span class="stat-value is-success" id="stat-returned">0</span>
+      </div>
+    </div>
   </section>
 
-  <!-- Hairline Instrument Readings -->
-  <section class="stats-grid" aria-label="Checkout Summary">
-    <div class="stat-card">
-      <span class="stat-label">Checked out now</span>
-      <span class="stat-value is-accent" id="stat-active">0</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Due within 24h</span>
-      <span class="stat-value is-warn" id="stat-due-soon">0</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Overdue</span>
-      <span class="stat-value is-danger" id="stat-overdue">0</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-label">Total returned</span>
-      <span class="stat-value is-success" id="stat-returned">0</span>
-    </div>
-  </section>
-
-  <!-- Segmented Tabs -->
+  <!-- Underline Tab Rail -->
   <div class="tab-bar" role="tablist">
     <button type="button" class="tab-btn active" data-tab="tab-active" role="tab" aria-selected="true">
       Active Loans <span class="tab-count" id="tab-active-count">0</span>
@@ -89,86 +89,80 @@
     </button>
   </div>
 
-  <!-- Tab 1: Active Loans -->
+  <!-- Tab 1: Active Loans (Frameless Ledger) -->
   <section id="tab-active" class="tab-pane active">
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Code</th>
-              <th>Period</th>
-              <th>Checked out</th>
-              <th>Due date</th>
-              <th>Status</th>
-              <th style="text-align: right;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="checkouts-list">
-            <tr><td colspan="7" class="empty-state">Loading your checked-out components…</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Code</th>
+            <th>Period</th>
+            <th>Checked out</th>
+            <th>Due date</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="checkouts-list">
+          <tr><td colspan="7" class="empty-state">Loading your checked-out components…</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
   <!-- Tab 2: Return History -->
   <section id="tab-history" class="tab-pane">
-    <div class="card">
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Component</th>
-              <th>Code</th>
-              <th>Period</th>
-              <th>Checked out</th>
-              <th>Returned</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody id="history-list">
-            <tr><td colspan="6" class="empty-state">No returned components yet.</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Code</th>
+            <th>Period</th>
+            <th>Checked out</th>
+            <th>Returned</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="history-list">
+          <tr><td colspan="6" class="empty-state">No returned components yet.</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 
   <!-- Tab 3: Lab Catalog -->
   <section id="tab-catalog" class="tab-pane">
-    <div class="card">
-      <div class="toolbar">
-        <input type="search" id="catalog-search" placeholder="Search by component name, code, or bin…" maxlength="100" aria-label="Search lab catalog">
-        <select id="catalog-category" aria-label="Filter by category">
-          <option value="">All Categories</option>
-          <option value="Microcontrollers">Microcontrollers</option>
-          <option value="Sensors">Sensors</option>
-          <option value="Components">Components</option>
-          <option value="Cables & Tools">Cables &amp; Tools</option>
-          <option value="Cables & Power">Cables &amp; Power</option>
-          <option value="Tools & Meters">Tools &amp; Meters</option>
-          <option value="General">General</option>
-        </select>
-      </div>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Code</th>
-              <th>Component</th>
-              <th>Category</th>
-              <th>Bin / Location</th>
-              <th>Availability</th>
-              <th style="text-align: right;">Action</th>
-            </tr>
-          </thead>
-          <tbody id="catalog-list">
-            <tr><td colspan="6" class="empty-state">Loading lab catalog…</td></tr>
-          </tbody>
-        </table>
-      </div>
+    <div class="ledger-toolbar">
+      <input type="search" id="catalog-search" placeholder="Search by component name, code, or bin…" maxlength="100" aria-label="Search lab catalog">
+      <select id="catalog-category" aria-label="Filter by category">
+        <option value="">All Categories</option>
+        <option value="Microcontrollers">Microcontrollers</option>
+        <option value="Sensors">Sensors</option>
+        <option value="Components">Components</option>
+        <option value="Cables & Tools">Cables &amp; Tools</option>
+        <option value="Cables & Power">Cables &amp; Power</option>
+        <option value="Tools & Meters">Tools &amp; Meters</option>
+        <option value="General">General</option>
+      </select>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Component</th>
+            <th>Category</th>
+            <th>Bin / Location</th>
+            <th>Availability</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody id="catalog-list">
+          <tr><td colspan="6" class="empty-state">Loading lab catalog…</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </main>
@@ -185,7 +179,7 @@
     </div>
     <div class="modal-footer">
       <button type="button" class="btn btn-ghost" data-close-modal="return-modal">Cancel</button>
-      <button type="button" class="btn btn-success" id="btn-confirm-return">Confirm Return</button>
+      <button type="button" class="btn btn-primary" id="btn-confirm-return">Confirm Return</button>
     </div>
   </div>
 </div>

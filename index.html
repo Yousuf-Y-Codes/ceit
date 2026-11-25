@@ -10,7 +10,7 @@
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@600&family=Red+Hat+Text:wght@400;500&family=Red+Hat+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -31,32 +31,24 @@
 </header>
 
 <main class="page-wrapper">
-  <div class="auth-wrap">
-    <div id="timeout-notice" class="alert alert-warn" style="display: none;">
-      You were signed out due to inactivity on this device. Sign in with your <code>@pdsb.net</code> Google account to continue.
-    </div>
-    <div id="redirect-notice" class="alert alert-info" style="display: none;">
-      Sign in with your <code>@pdsb.net</code> Google account to continue.
-    </div>
+  <section class="signin-stage" aria-labelledby="auth-panel-title">
+    <div class="signin-lead">
+      <h1 id="auth-panel-title">Sign out lab hardware without a clipboard.</h1>
+      <p class="signin-lead-copy">
+        Scan a bin QR code, pick your class period, and keep Arduinos, sensors, and cables accounted for with your verified <code>@pdsb.net</code> Google account.
+      </p>
 
-    <section class="card" style="margin-bottom: 0;">
-      <div class="auth-hero">
-        <div class="auth-hero-top">
-          <img src="assets/logo.svg" alt="CEIT Logo" class="auth-hero-logo" width="44" height="44">
-          <div>
-            <h1 id="auth-panel-title">Computer Engineering Item Tracker</h1>
-            <p>Hardware lab sign-out console for <code>@pdsb.net</code> accounts.</p>
-          </div>
+      <div class="signin-action-box">
+        <div id="timeout-notice" class="alert alert-warn" style="display: none;">
+          You were signed out due to inactivity on this device. Sign in with your <code>@pdsb.net</code> Google account to continue.
         </div>
-      </div>
-      <div class="card-body">
+        <div id="redirect-notice" class="alert alert-info" style="display: none;">
+          Sign in with your <code>@pdsb.net</code> Google account to continue.
+        </div>
         <div id="error-box" class="alert alert-danger" style="display: none;"></div>
         <div id="status-box" class="alert alert-info" style="display: none;"></div>
 
         <div id="auth-forms">
-          <p class="text-secondary text-small mb-12">
-            Use your verified Peel District School Board Google account (<code>@pdsb.net</code>) to access CEIT.
-          </p>
           <button id="btn-google" class="btn btn-google" type="button">
             <svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
               <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -68,16 +60,71 @@
           </button>
         </div>
 
-        <div id="auth-redirecting" style="display: none; text-align: center; padding: 16px 8px;">
+        <div id="auth-redirecting" style="display: none; padding: 12px 0;">
           <p class="fw-bold mb-12" id="redirect-msg">Redirecting…</p>
-          <div class="btn-row" style="justify-content: center;">
+          <div class="btn-row">
             <button id="btn-continue" class="btn btn-ghost" type="button">Continue</button>
             <button id="btn-logout" class="btn btn-ghost" type="button">Sign Out</button>
           </div>
         </div>
       </div>
-    </section>
-  </div>
+
+      <dl class="signin-specs">
+        <div>
+          <dt>Verified Google only</dt>
+          <dd>Restricted to <code>@pdsb.net</code> student and teacher accounts.</dd>
+        </div>
+        <div>
+          <dt>Automatic routing</dt>
+          <dd>Student numbers open the dashboard; teacher accounts open the admin ledger.</dd>
+        </div>
+        <div>
+          <dt>Shared PC safe</dt>
+          <dd>Sessions end when the tab closes or after 30 minutes idle.</dd>
+        </div>
+      </dl>
+    </div>
+
+    <aside class="bench-panel" aria-label="Checkout workflow overview">
+      <div class="bench-panel-head">
+        <span class="bench-panel-brand">
+          <img src="assets/logo.svg" alt="" width="22" height="22">
+          <span>Lab Bench Sign-Out Flow</span>
+        </span>
+        <span class="badge badge-accent">Live Ledger</span>
+      </div>
+      <ol class="bench-rows">
+        <li class="bench-row">
+          <span class="bench-idx">01</span>
+          <div>
+            <span class="bench-row-title">Scan bin QR or enter code</span>
+            <span class="bench-row-sub">Camera decoder, photo upload, or manual bin lookup</span>
+          </div>
+          <code>MCU-ARDUN-01</code>
+        </li>
+        <li class="bench-row bench-row--active">
+          <span class="bench-idx">02</span>
+          <div>
+            <span class="bench-row-title">Assign class period</span>
+            <span class="bench-row-sub">Every loan is grouped cleanly for teacher check-ins</span>
+          </div>
+          <span class="badge badge-warn">Period 1 to 4</span>
+        </li>
+        <li class="bench-row">
+          <span class="bench-idx">03</span>
+          <div>
+            <span class="bench-row-title">Atomic stock update</span>
+            <span class="bench-row-sub">Inventory count updates in Firestore on checkout and return</span>
+          </div>
+          <span class="badge badge-success">In stock</span>
+        </li>
+      </ol>
+      <div class="bench-panel-foot">
+        <span>PDSB Computer Engineering Lab</span>
+        <a href="docs.html">Read documentation</a>
+      </div>
+    </aside>
+  </section>
 </main>
 
 <script type="module" src="./js/pages/index.js"></script>
