@@ -141,7 +141,7 @@ service cloud.firestore {
       let changed = data.diff(resource.data).affectedKeys();
       return changed.hasOnly([
           'name', 'category', 'totalQuantity', 'availableQuantity',
-          'location', 'notes', 'updatedAt'
+          'location', 'notes', 'lastCheckoutId', 'updatedAt'
         ]) &&
         data.name is string && data.name.size() >= 1 && data.name.size() <= 120 &&
         data.category is string && data.category.size() >= 1 && data.category.size() <= 60 &&
@@ -154,25 +154,52 @@ service cloud.firestore {
         data.updatedAt == request.time;
     }
 
-    function validStudentItemStockStep() {
+    function validStudentCheckoutDecrement(itemId, checkoutId) {
+      let checkoutPath = /databases/$(database)/documents/checkouts/$(checkoutId);
+      return !exists(checkoutPath) &&
+        existsAfter(checkoutPath) &&
+        getAfter(checkoutPath).data.itemId == itemId &&
+        getAfter(checkoutPath).data.userId == request.auth.uid &&
+        getAfter(checkoutPath).data.status == 'active';
+    }
+
+    function validStudentReturnIncrement(itemId, checkoutId) {
+      let checkoutPath = /databases/$(database)/documents/checkouts/$(checkoutId);
+      return exists(checkoutPath) &&
+        get(checkoutPath).data.itemId == itemId &&
+        get(checkoutPath).data.userId == request.auth.uid &&
+        get(checkoutPath).data.get('isGuest', false) == false &&
+        get(checkoutPath).data.status == 'active' &&
+        getAfter(checkoutPath).data.status == 'returned';
+    }
+
+    function validStudentItemStockStep(itemId) {
       let data = request.resource.data;
       let changed = data.diff(resource.data).affectedKeys();
-      return changed.hasOnly(['availableQuantity', 'updatedAt']) &&
+      return changed.hasOnly(['availableQuantity', 'lastCheckoutId', 'updatedAt']) &&
         data.availableQuantity is int &&
         data.availableQuantity >= 0 &&
         data.availableQuantity <= resource.data.totalQuantity &&
+        data.lastCheckoutId is string &&
+        data.lastCheckoutId.size() >= 1 &&
+        data.lastCheckoutId.size() <= 128 &&
+        data.updatedAt == request.time &&
         (
-          data.availableQuantity == resource.data.availableQuantity - 1 ||
-          data.availableQuantity == resource.data.availableQuantity + 1
-        ) &&
-        data.updatedAt == request.time;
+          (
+            data.availableQuantity == resource.data.availableQuantity - 1 &&
+            validStudentCheckoutDecrement(itemId, data.lastCheckoutId)
+          ) || (
+            data.availableQuantity == resource.data.availableQuantity + 1 &&
+            validStudentReturnIncrement(itemId, data.lastCheckoutId)
+          )
+        );
     }
 
     match /items/{itemId} {
       allow read: if isAuthenticated();
       allow create: if isTeacher() && validItemCreate();
       allow update: if (isTeacher() && validTeacherItemUpdate()) ||
-                       (isAuthenticated() && validStudentItemStockStep());
+                       (isAuthenticated() && validStudentItemStockStep(itemId));
       allow delete: if isTeacher();
     }
 

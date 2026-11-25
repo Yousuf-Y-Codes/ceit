@@ -124,6 +124,7 @@ export async function checkOutItem({
 
     transaction.update(itemRef, {
       availableQuantity: itemData.availableQuantity - 1,
+      lastCheckoutId: newCheckoutRef.id,
       updatedAt: serverTimestamp()
     });
 
@@ -199,6 +200,7 @@ export async function returnItem(checkoutId) {
       if (currentAvail < totalQty) {
         transaction.update(itemRef, {
           availableQuantity: currentAvail + 1,
+          lastCheckoutId: checkoutId,
           updatedAt: serverTimestamp()
         });
       }
@@ -275,6 +277,7 @@ export async function guestCheckOutItem({
 
     transaction.update(itemRef, {
       availableQuantity: itemData.availableQuantity - 1,
+      lastCheckoutId: newCheckoutRef.id,
       updatedAt: serverTimestamp()
     });
 

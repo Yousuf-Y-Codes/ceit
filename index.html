@@ -6,6 +6,7 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <title>CEIT — Sign In</title>
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,7 +15,7 @@
   <div class="header-inner">
     <div class="brand-group">
       <a href="index.html" class="brand-wordmark">
-        <span class="brand-mark">CE</span>
+        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="30" height="30">
         <span>CEIT</span>
       </a>
       <span class="brand-tag">PDSB</span>
@@ -35,10 +36,11 @@
       Sign in with your <code>@pdsb.net</code> Google account to continue.
     </div>
 
-    <section class="card" style="margin-bottom: 0;">
-      <div class="card-header">
-        <h2 id="auth-panel-title">Sign In</h2>
-        <span class="badge badge-neutral">@pdsb.net</span>
+    <section class="card auth-card" style="margin-bottom: 0;">
+      <div class="auth-hero">
+        <img src="assets/logo.svg" alt="CEIT Logo" class="auth-hero-logo" width="56" height="56">
+        <h1 id="auth-panel-title">Computer Engineering Item Tracker</h1>
+        <p>PDSB Hardware Lab &middot; <span class="badge badge-accent">@pdsb.net</span></p>
       </div>
       <div class="card-body">
         <div id="error-box" class="alert alert-danger" style="display: none;"></div>
