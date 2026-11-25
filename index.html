@@ -33,9 +33,9 @@
 <main class="page-wrapper">
   <section class="signin-stage" aria-labelledby="auth-panel-title">
     <div class="signin-lead">
-      <h1 id="auth-panel-title">Sign out lab hardware without a clipboard.</h1>
+      <h1 id="auth-panel-title">Sign out lab gear in seconds.</h1>
       <p class="signin-lead-copy">
-        Scan a bin QR code, pick your class period, and keep Arduinos, sensors, and cables accounted for with your verified <code>@pdsb.net</code> Google account.
+        Track Arduinos, sensors, and cables with your <code>@pdsb.net</code> Google account.
       </p>
 
       <div class="signin-action-box">
@@ -71,57 +71,57 @@
 
       <dl class="signin-specs">
         <div>
-          <dt>Verified Google only</dt>
-          <dd>Restricted to <code>@pdsb.net</code> student and teacher accounts.</dd>
+          <dt>School accounts only</dt>
+          <dd>Sign in with your <code>@pdsb.net</code> Google account.</dd>
         </div>
         <div>
-          <dt>Automatic routing</dt>
-          <dd>Student numbers open the dashboard; teacher accounts open the admin ledger.</dd>
+          <dt>Student and teacher views</dt>
+          <dd>Students track their loans and teachers manage lab stock.</dd>
         </div>
         <div>
-          <dt>Shared PC safe</dt>
-          <dd>Sessions end when the tab closes or after 30 minutes idle.</dd>
+          <dt>Safe on lab computers</dt>
+          <dd>Closing the tab signs you out automatically.</dd>
         </div>
       </dl>
     </div>
 
-    <aside class="bench-panel" aria-label="Checkout workflow overview">
+    <aside class="bench-panel" aria-label="How sign-out works">
       <div class="bench-panel-head">
         <span class="bench-panel-brand">
           <img src="assets/logo.svg" alt="" width="22" height="22">
-          <span>Lab Bench Sign-Out Flow</span>
+          <span>How sign-out works</span>
         </span>
-        <span class="badge badge-accent">Live Ledger</span>
+        <span class="badge badge-accent">3 steps</span>
       </div>
       <ol class="bench-rows">
         <li class="bench-row">
           <span class="bench-idx">01</span>
           <div>
-            <span class="bench-row-title">Scan bin QR or enter code</span>
-            <span class="bench-row-sub">Camera decoder, photo upload, or manual bin lookup</span>
+            <span class="bench-row-title">Pick your part</span>
+            <span class="bench-row-sub">Scan the bin QR code or type the item code.</span>
           </div>
-          <code>MCU-ARDUN-01</code>
+          <span class="badge badge-neutral">QR or code</span>
         </li>
         <li class="bench-row bench-row--active">
           <span class="bench-idx">02</span>
           <div>
-            <span class="bench-row-title">Assign class period</span>
-            <span class="bench-row-sub">Every loan is grouped cleanly for teacher check-ins</span>
+            <span class="bench-row-title">Choose your period</span>
+            <span class="bench-row-sub">Select Period 1, 2, 3, or 4 for your class.</span>
           </div>
           <span class="badge badge-warn">Period 1 to 4</span>
         </li>
         <li class="bench-row">
           <span class="bench-idx">03</span>
           <div>
-            <span class="bench-row-title">Atomic stock update</span>
-            <span class="bench-row-sub">Inventory count updates in Firestore on checkout and return</span>
+            <span class="bench-row-title">Return when done</span>
+            <span class="bench-row-sub">Tap Return on your dashboard and put the part back.</span>
           </div>
-          <span class="badge badge-success">In stock</span>
+          <span class="badge badge-success">Returned</span>
         </li>
       </ol>
       <div class="bench-panel-foot">
-        <span>PDSB Computer Engineering Lab</span>
-        <a href="docs.html">Read documentation</a>
+        <span>Computer Engineering Lab</span>
+        <a href="docs.html">Read guide</a>
       </div>
     </aside>
   </section>
