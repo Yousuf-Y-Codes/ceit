@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="description" content="Instructions for students and teachers using the Computer Engineering Item Tracker.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Documentation — CEIT</title>
+  <title>Documentation, CEIT</title>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -14,8 +18,8 @@
 <header class="site-header">
   <div class="header-inner">
     <div class="brand-group">
-      <a href="index.html" id="brand-home-link" class="brand-wordmark">
-        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="30" height="30">
+      <a href="index.html" id="brand-home-link" class="brand-wordmark" aria-label="CEIT Home">
+        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="28" height="28">
         <span>CEIT</span>
       </a>
     </div>
@@ -44,14 +48,14 @@
       <h1>CEIT User Documentation</h1>
       <p>Instructions for students and teachers using the Computer Engineering Item Tracker.</p>
     </div>
-    <a href="index.html" class="btn btn-primary" id="cta-portal">Open CEIT Portal &rarr;</a>
+    <a href="index.html" class="btn btn-primary" id="cta-portal">Open CEIT Portal</a>
   </div>
 
   <div class="grid-sidebar">
 
     <aside class="card">
       <div class="card-header">
-        <h3>Contents</h3>
+        <h2>Contents</h2>
       </div>
       <ul class="docs-nav">
         <li><a href="#overview">1. Overview</a></li>
@@ -74,13 +78,13 @@
         </div>
         <div class="card-body">
           <p>
-            The <strong>Computer Engineering Item Tracker (CEIT)</strong> is a fast, zero-bloat web app built for
-            Mr. Kidston's Computer Engineering lab. It tracks Arduinos, sensors, cables, and tools using pure HTML, CSS,
-            JavaScript, and Firebase with zero external frameworks or animations.
+            The <strong>Computer Engineering Item Tracker (CEIT)</strong> is a lightweight web app built for
+            Mr. Kidston’s Computer Engineering lab. It tracks Arduinos, sensors, cables, and tools using pure HTML, CSS,
+            JavaScript, and Firebase with zero external frameworks.
           </p>
           <ul>
-            <li><strong>Students</strong> sign in with their verified <code>@pdsb.net</code> Google account, scan a QR label or type a code, choose their class period (Period 1–4), and track due dates.</li>
-            <li><strong>Teachers</strong> filter active loans by Period 1–4 or overdue status, manage stock, print QR bin label sheets, record guest loans, and export audit CSVs.</li>
+            <li><strong>Students</strong> sign in with their verified <code>@pdsb.net</code> Google account, scan a QR label or type a code, choose their class period (Period 1 to 4), and track due dates.</li>
+            <li><strong>Teachers</strong> filter active loans by Period 1 to 4 or overdue status, manage stock, print QR bin label sheets, record guest loans, and export audit CSVs.</li>
           </ul>
         </div>
       </section>
@@ -109,7 +113,7 @@
       <section id="student-dashboard" class="card docs-section">
         <div class="card-header">
           <h2>3. Student Dashboard (<code>dashboard.html</code>)</h2>
-          <span class="badge badge-success">Student Guide</span>
+          <span class="badge badge-success">Student guide</span>
         </div>
         <div class="card-body">
           <h3>Active Loans, Returning Items &amp; Catalog</h3>
@@ -125,27 +129,27 @@
       <section id="checkout-page" class="card docs-section">
         <div class="card-header">
           <h2>4. Single-Screen Check Out Form (<code>checkout.html</code>)</h2>
-          <span class="badge badge-success">Student Guide</span>
+          <span class="badge badge-success">Student guide</span>
         </div>
         <div class="card-body">
           <ol>
-            <li><strong>Step 1 — Select Component:</strong> Type the bin code and click <strong>Find</strong>, pick from the in-stock dropdown, or click <strong>Scan QR</strong> to open the inline camera scanner (or upload a QR image if your PC has no webcam).</li>
-            <li><strong>Step 2 — Class Period (Required):</strong> Explicitly pick <strong>Period 1</strong>, <strong>Period 2</strong>, <strong>Period 3</strong>, or <strong>Period 4</strong>. No period is pre-selected by default so loans stay accurately grouped.</li>
-            <li><strong>Step 3 — Loan Details &amp; Confirm:</strong> Your PDSB ID is auto-filled and loan duration defaults to <strong>1 Week (7 Days)</strong> (adjustable to 1 Day, 3 Days, 2 Weeks, or Custom 1–30 days). Click <strong>Confirm Sign Out</strong> to decrement stock and return to your dashboard.</li>
+            <li><strong>Step 1, Select Component:</strong> Type the bin code and click <strong>Find</strong>, pick from the in-stock dropdown, or click <strong>Scan QR</strong> to open the inline camera scanner (or upload a QR image if your PC has no webcam).</li>
+            <li><strong>Step 2, Class Period (Required):</strong> Explicitly pick <strong>Period 1</strong>, <strong>Period 2</strong>, <strong>Period 3</strong>, or <strong>Period 4</strong>. No period is pre-selected by default so loans stay accurately grouped.</li>
+            <li><strong>Step 3, Loan Details &amp; Confirm:</strong> Your school account ID is auto-filled and loan duration defaults to <strong>1 Week (7 Days)</strong> (adjustable to 1 Day, 3 Days, 2 Weeks, or Custom 1 to 30 days). Click <strong>Confirm Sign Out</strong> to decrement stock and return to your dashboard.</li>
           </ol>
         </div>
       </section>
 
       <section id="teacher-panel" class="card docs-section">
         <div class="card-header">
-          <h2>5. Teacher Panel — Active Loans &amp; Period Filtering (<code>teacher.html</code>)</h2>
-          <span class="badge badge-accent">Teacher Guide</span>
+          <h2>5. Teacher Panel: Active Loans &amp; Period Filtering (<code>teacher.html</code>)</h2>
+          <span class="badge badge-accent">Teacher guide</span>
         </div>
         <div class="card-body">
           <ul>
-            <li><strong>Period Filter:</strong> Use the Period dropdown (<code>All Periods</code>, <code>Period 1</code>–<code>Period 4</code>) to view only the students in your current class.</li>
+            <li><strong>Period Filter:</strong> Use the Period dropdown (<code>All Periods</code>, <code>Period 1</code> to <code>Period 4</code>) to view only the students in your current class.</li>
             <li><strong>Overdue Attention Banner &amp; Filter Chips:</strong> Immediately spot overdue loans and filter by <strong>Overdue</strong>, <strong>Due Soon</strong>, or <strong>Guest</strong>.</li>
-            <li><strong>Check In &amp; Email Reminders:</strong> Return components back into stock with one click or open a pre-filled <code>mailto:</code> reminder to the student's <code>@pdsb.net</code> address.</li>
+            <li><strong>Check In &amp; Email Reminders:</strong> Return components back into stock with one click or open a pre-filled <code>mailto:</code> reminder to the student’s <code>@pdsb.net</code> address.</li>
           </ul>
         </div>
       </section>
@@ -153,7 +157,7 @@
       <section id="teacher-inventory" class="card docs-section">
         <div class="card-header">
           <h2>6. Inventory &amp; Printable QR Labels</h2>
-          <span class="badge badge-accent">Teacher Guide</span>
+          <span class="badge badge-accent">Teacher guide</span>
         </div>
         <div class="card-body">
           <ul>
@@ -168,18 +172,18 @@
       <section id="teacher-guest-audit" class="card docs-section">
         <div class="card-header">
           <h2>7. Guest Mode &amp; Audit History</h2>
-          <span class="badge badge-accent">Teacher Guide</span>
+          <span class="badge badge-accent">Teacher guide</span>
         </div>
         <div class="card-body">
           <p>
             <strong>Guest Sign-Out:</strong> If a student forgot their device or cannot sign in during class, record a loan
-            under the <strong>Guest Sign-Out</strong> tab using their name, student number, class period (Period 1–4), component,
-            and duration. Entering a student's numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> so you can still
-            send one-click email reminders, and the loan appears in <em>Active Sign-Outs</em> with a <code>GUEST</code> badge.
+            under the <strong>Guest Sign-Out</strong> tab using their name, student number, class period (Period 1 to 4), component,
+            and duration. Entering a student’s numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> so you can still
+            send one-click email reminders, and the loan appears in <em>Active Sign-Outs</em> with a <code>Guest</code> badge.
           </p>
           <p>
-            <strong>Audit History &amp; CSV Export:</strong> Filter complete sign-out/return logs by Period, status, or search
-            keyword, and click <strong>Download CSV</strong> / <strong>Export CSV</strong> (includes the <code>Period</code> column).
+            <strong>Audit History &amp; CSV Export:</strong> Filter complete sign-out and return logs by Period, status, or search
+            keyword, and click <strong>Download CSV</strong> or <strong>Export CSV</strong> (includes the <code>Period</code> column).
           </p>
         </div>
       </section>
@@ -192,7 +196,7 @@
           <ul>
             <li><strong>Shared Lab Computer Safety:</strong> Sessions automatically expire when the browser tab is closed or after 30 minutes of inactivity.</li>
             <li><strong>Email rejected:</strong> Only verified <code>@pdsb.net</code> Google accounts are permitted.</li>
-            <li><strong>Camera won't start:</strong> Open CEIT over HTTPS (<code>https://ceit.site</code>), grant browser camera permission, or type the code / upload a QR photo instead.</li>
+            <li><strong>Camera won’t start:</strong> Open CEIT over HTTPS (<code>https://ceit.site</code>), grant browser camera permission, or type the code or upload a QR photo instead.</li>
             <li><strong>Teacher backend diagnostics:</strong> Teachers can visit <a href="test-backend.html">Backend Diagnostics</a> to test live Firebase auth and Firestore operations.</li>
           </ul>
         </div>

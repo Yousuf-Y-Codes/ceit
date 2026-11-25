@@ -30,7 +30,7 @@ function applyNavLayout(role) {
     navCheckout.style.display = "inline-block";
     brandLink.href = "teacher.html";
     cta.href = "teacher.html";
-    cta.textContent = "Go to Teacher Panel →";
+    cta.textContent = "Go to Teacher Panel";
   } else if (role === "student") {
     navHome.style.display = "none";
     navTeacher.style.display = "none";
@@ -39,7 +39,7 @@ function applyNavLayout(role) {
     navCheckout.style.display = "inline-block";
     brandLink.href = "dashboard.html";
     cta.href = "dashboard.html";
-    cta.textContent = "Go to Student Dashboard →";
+    cta.textContent = "Go to Student Dashboard";
   } else {
     navHome.style.display = "inline-block";
     navTeacher.style.display = "none";
@@ -48,7 +48,7 @@ function applyNavLayout(role) {
     headerUser.style.display = "none";
     brandLink.href = "index.html";
     cta.href = "index.html";
-    cta.textContent = "Open CEIT Portal →";
+    cta.textContent = "Open CEIT Portal";
   }
 }
 

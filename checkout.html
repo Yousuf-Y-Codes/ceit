@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="description" content="Sign out Computer Engineering lab components by scanning a QR bin label or entering a component code.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; media-src 'self' blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Check Out Component — CEIT</title>
+  <title>Check Out Component, CEIT</title>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
 </head>
@@ -15,8 +19,8 @@
 <header class="site-header">
   <div class="header-inner">
     <div class="brand-group">
-      <a href="dashboard.html" class="brand-wordmark">
-        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="30" height="30">
+      <a href="dashboard.html" class="brand-wordmark" aria-label="CEIT Dashboard">
+        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="28" height="28">
         <span>CEIT</span>
       </a>
     </div>
@@ -30,8 +34,8 @@
 
     <div class="header-user">
       <span class="user-pill">
-        <strong id="student-name">Loading...</strong>
-        <span class="user-pill-id" id="student-number-pill">#—</span>
+        <strong id="student-name">Loading…</strong>
+        <span class="user-pill-id" id="student-number-pill">#0</span>
       </span>
       <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
     </div>
@@ -41,7 +45,7 @@
 <main class="page-wrapper" style="max-width: 780px;">
   <div class="page-header">
     <h1>Check Out Component</h1>
-    <a href="dashboard.html" class="btn btn-ghost">&larr; Dashboard</a>
+    <a href="dashboard.html" class="btn btn-ghost">Back to Dashboard</a>
   </div>
 
   <div id="alert-box" class="alert alert-danger" style="display: none;"></div>
@@ -56,14 +60,14 @@
           <span class="step-num">1</span>
           <strong>Component</strong>
         </div>
-        <span class="badge badge-neutral" id="preview-badge">Not Selected</span>
+        <span class="badge badge-neutral" id="preview-badge">Not selected</span>
       </div>
       <div class="step-block-body">
         <div class="form-group">
-          <label for="code-input">Component Code</label>
+          <label for="code-input">Component code</label>
           <div class="input-inline">
             <input type="text" id="code-input" placeholder="MCU-ARDUN-01" maxlength="32" autocomplete="off" autofocus>
-            <button type="button" id="btn-lookup" class="btn btn-primary">Find</button>
+            <button type="button" id="btn-lookup" class="btn btn-ghost">Find</button>
             <button type="button" id="btn-toggle-qr" class="btn btn-ghost">Scan QR</button>
           </div>
         </div>
@@ -71,16 +75,16 @@
         <!-- Inline QR Scanner Drawer -->
         <div id="scanner-drawer" class="scanner-drawer">
           <div id="scanner-box" class="scanner-box">
-            <video id="qr-video" playsinline muted style="display: none;"></video>
+            <video id="qr-video" poster="assets/scanner-poster.svg" playsinline muted style="display: none;"></video>
             <div class="scanner-reticle" aria-hidden="true"></div>
             <div id="scanner-placeholder" class="scanner-placeholder">
               <p class="fw-bold">Camera QR Scanner</p>
             </div>
           </div>
-          <canvas id="qr-canvas" style="display: none;"></canvas>
+          <canvas id="qr-canvas" aria-hidden="true" style="display: none;"></canvas>
 
           <div class="btn-row mb-8">
-            <button type="button" id="btn-start-cam" class="btn btn-primary btn-sm">Start Camera</button>
+            <button type="button" id="btn-start-cam" class="btn btn-ghost btn-sm">Start Camera</button>
             <button type="button" id="btn-stop-cam" class="btn btn-ghost btn-sm" disabled>Stop</button>
             <button type="button" id="btn-flip-cam" class="btn btn-ghost btn-sm" style="display: none;">Flip</button>
             <button type="button" id="btn-close-qr" class="btn btn-ghost btn-sm" style="margin-left: auto;">Close</button>
@@ -88,27 +92,27 @@
 
           <div id="scanner-status" class="text-small text-muted mb-8">Camera off.</div>
 
-          <div class="form-group" style="margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--border);">
-            <label for="qr-file-input">QR Image File</label>
+          <div class="form-group" style="margin-bottom: 0; padding-top: 8px; border-top: 1px solid var(--color-rule);">
+            <label for="qr-file-input">QR image file</label>
             <input type="file" id="qr-file-input" accept="image/*">
           </div>
         </div>
 
         <div class="form-group mt-12" style="margin-bottom: 0;">
-          <label for="quick-select">In-Stock Inventory</label>
+          <label for="quick-select">In-stock inventory</label>
           <select id="quick-select">
-            <option value="">-- Select component --</option>
+            <option value="">Select component</option>
           </select>
         </div>
 
         <!-- Inline Component Preview -->
         <div id="preview-box" class="component-preview" style="display: none;">
-          <div class="component-preview-title" id="prev-name">—</div>
+          <div class="component-preview-title" id="prev-name">None</div>
           <div class="component-meta-row">
-            <span>Code: <code id="prev-code">—</code></span>
-            <span>Category: <strong id="prev-category">—</strong></span>
-            <span>Bin: <strong id="prev-location">—</strong></span>
-            <span>Stock: <strong id="prev-avail-text">—</strong></span>
+            <span>Code: <code id="prev-code">None</code></span>
+            <span>Category: <strong id="prev-category">None</strong></span>
+            <span>Bin: <strong id="prev-location">None</strong></span>
+            <span>Stock: <strong id="prev-avail-text">0</strong></span>
           </div>
           <div id="prev-notes" class="text-small text-muted mt-8" style="display: none;"></div>
         </div>
@@ -141,17 +145,17 @@
           <span class="step-num">3</span>
           <strong>Loan Details</strong>
         </div>
-        <span class="badge badge-accent" id="due-date-preview">—</span>
+        <span class="badge badge-accent" id="due-date-preview">Due in 7 days</span>
       </div>
       <div class="step-block-body">
-        <div class="grid-2" style="gap: 12px;">
+        <div class="grid-2">
           <div class="form-group">
-            <label for="checkout-student-num">PDSB ID</label>
+            <label for="checkout-student-num">School account ID</label>
             <input type="text" id="checkout-student-num" readonly>
           </div>
 
           <div class="form-group">
-            <label for="checkout-notes">Note (Optional)</label>
+            <label for="checkout-notes">Note (optional)</label>
             <input type="text" id="checkout-notes" placeholder="Optional note" maxlength="300">
           </div>
         </div>
@@ -168,12 +172,12 @@
         </div>
 
         <div class="form-group" id="custom-days-group" style="display: none; max-width: 200px;">
-          <label for="custom-days-input">Days (1–30)</label>
+          <label for="custom-days-input">Days (1 to 30)</label>
           <input type="number" id="custom-days-input" min="1" max="30" value="5">
         </div>
 
         <div class="btn-row mt-12">
-          <button type="submit" id="btn-confirm" class="btn btn-success btn-lg" disabled>
+          <button type="submit" id="btn-confirm" class="btn btn-primary btn-lg" disabled>
             Confirm Sign Out
           </button>
           <a href="dashboard.html" class="btn btn-ghost btn-lg">Cancel</a>

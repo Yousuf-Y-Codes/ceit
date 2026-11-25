@@ -3,10 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
+  <meta name="description" content="Teacher-only Firebase Authentication and Firestore diagnostics console for CEIT.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com wss://*.firebaseio.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://firestore.googleapis.com; frame-src 'self' https://compengit.firebaseapp.com https://accounts.google.com https://apis.google.com; object-src 'none'; base-uri 'self'; form-action 'self';">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <title>Backend Diagnostics — CEIT</title>
+  <title>Backend Diagnostics, CEIT</title>
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Host+Grotesk:wght@400;500&family=Atkinson+Hyperlegible+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="auth-pending">
@@ -14,8 +18,8 @@
 <header class="site-header">
   <div class="header-inner">
     <div class="brand-group">
-      <a href="teacher.html" class="brand-wordmark">
-        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="30" height="30">
+      <a href="teacher.html" class="brand-wordmark" aria-label="CEIT Teacher Panel">
+        <img src="assets/logo-nav.svg" alt="" class="brand-logo" width="28" height="28">
         <span>CEIT</span>
       </a>
     </div>
@@ -28,7 +32,7 @@
     <div class="header-user">
       <span class="user-pill">
         <strong id="diag-teacher-name">Teacher</strong>
-        <span class="user-pill-id" id="diag-teacher-email">...</span>
+        <span class="user-pill-id" id="diag-teacher-email">…</span>
       </span>
       <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
     </div>
@@ -39,7 +43,7 @@
   <div class="page-header">
     <h1>Backend Diagnostics</h1>
     <div id="config-status-badge">
-      <span class="badge badge-warn">Checking Config...</span>
+      <span class="badge badge-warn">Checking config…</span>
     </div>
   </div>
 
@@ -54,17 +58,17 @@
       </div>
       <div class="card-body">
         <div class="btn-row mb-12" style="justify-content: space-between;">
-          <span id="user-role-badge" class="badge badge-success">TEACHER</span>
+          <span id="user-role-badge" class="badge badge-success">Teacher</span>
           <button id="btn-sign-out" type="button" class="btn btn-danger-soft btn-xs">Sign Out</button>
         </div>
         <div class="table-wrap">
           <table>
             <tbody>
-              <tr><th>Name</th><td id="user-display-name">—</td></tr>
-              <tr><th>Email</th><td id="user-email">—</td></tr>
-              <tr><th>Student #</th><td id="user-student-number">—</td></tr>
-              <tr><th>Role</th><td id="user-role-text">—</td></tr>
-              <tr><th>UID</th><td id="user-uid" style="font-family: var(--font-mono); font-size: 11.5px;">—</td></tr>
+              <tr><th>Name</th><td id="user-display-name">None</td></tr>
+              <tr><th>Email</th><td id="user-email">None</td></tr>
+              <tr><th>Student #</th><td id="user-student-number">None</td></tr>
+              <tr><th>Role</th><td id="user-role-text">None</td></tr>
+              <tr><th>UID</th><td id="user-uid" class="tabular">None</td></tr>
             </tbody>
           </table>
         </div>
@@ -77,12 +81,12 @@
       </div>
       <div class="card-body">
         <div class="form-group">
-          <label for="item-name">Item Name</label>
+          <label for="item-name">Item name</label>
           <input type="text" id="item-name" placeholder="e.g. Arduino Uno R3" maxlength="120">
         </div>
-        <div class="grid-2" style="gap: 8px;">
+        <div class="grid-2">
           <div class="form-group">
-            <label for="item-code">Item Code</label>
+            <label for="item-code">Item code</label>
             <input type="text" id="item-code" placeholder="e.g. ARD-UNO-01" maxlength="32">
           </div>
           <div class="form-group">
@@ -97,9 +101,9 @@
             </select>
           </div>
         </div>
-        <div class="grid-2" style="gap: 8px;">
+        <div class="grid-2">
           <div class="form-group">
-            <label for="item-quantity">Total Quantity</label>
+            <label for="item-quantity">Total quantity</label>
             <input type="number" id="item-quantity" value="10" min="1" max="9999">
           </div>
           <div class="form-group">
@@ -117,15 +121,15 @@
       <h2>3. Atomic Checkout Test</h2>
     </div>
     <div class="card-body">
-      <div class="grid-2" style="gap: 8px;">
+      <div class="grid-2">
         <div class="form-group">
-          <label for="checkout-item-select">Select Item</label>
+          <label for="checkout-item-select">Select item</label>
           <select id="checkout-item-select">
-            <option value="">-- Choose an item --</option>
+            <option value="">Choose an item</option>
           </select>
         </div>
         <div class="form-group">
-          <label for="checkout-code-lookup">Or Enter Code</label>
+          <label for="checkout-code-lookup">Or enter code</label>
           <input type="text" id="checkout-code-lookup" placeholder="ARD-UNO-01" maxlength="32">
         </div>
       </div>
