@@ -1,9 +1,9 @@
 # Computer Engineering Item Tracker (CEIT)
 
-A lightweight, secure, pure HTML/CSS/JS web application for the **PDSB Computer Engineering Lab (Mr. Kidston)** allowing students to sign out and return hardware components via QR codes or text codes, with a full admin panel for teachers to manage inventory and print QR bin labels.
+A lightweight, secure, pure HTML/CSS/JS web application for the **Computer Engineering Lab (Mr. Kidston)** allowing students to sign out and return hardware components via QR codes or text codes, with a full admin panel for teachers to manage inventory and print QR bin labels.
 
 - **Live Site:** [https://ceit.site](https://ceit.site) / [https://yousuf-y-codes.github.io/ceit/](https://yousuf-y-codes.github.io/ceit/)
-- **Course / Stakeholder:** Computer Engineering — Mr. Kidston (`p0161177@pdsb.net`)
+- **Course / Stakeholder:** Computer Engineering — Mr. Kidston
 - **Team:** Yousuf Yaghmour & Ahmed Salem
 - **Tech Stack:** Pure Vanilla HTML5, CSS3, ES Module JavaScript (zero frameworks, zero build step) + Firebase v11 CDN (Auth & Cloud Firestore)
 - **Visual Style:** Classic Flat Blueprint Lab (sharp corners, flat solid colors, 100% system fonts, zero animations for instant classroom load speed)
@@ -13,12 +13,12 @@ A lightweight, secure, pure HTML/CSS/JS web application for the **PDSB Computer 
 ## Features & Security Architecture
 
 ### 1. Verified Google OAuth Only (`index.html`)
-- **Google Sign-In ONLY (`@pdsb.net`):** Email/Password authentication has been removed to eliminate unverified email impersonation.
-- **Multi-layer verification:** Both `auth-service.js` (ID token claim + provider check) and `firestore.rules` (`sign_in_provider == 'google.com'` + `email_verified == true`) enforce verified `@pdsb.net` Google sessions.
+- **Google Sign-In ONLY:** Email/Password authentication has been removed to eliminate unverified email impersonation.
+- **Multi-layer verification:** Both `auth-service.js` (ID token claim + provider check) and `firestore.rules` (`sign_in_provider == 'google.com'` + `email_verified == true`) enforce verified school Google sessions.
 - **Shared Lab PC Protection:** Uses `browserSessionPersistence` (closing the browser tab ends the session) plus a 30-minute inactivity auto-sign-out timer.
 - **Automatic Role & Student Number Detection:**
-  - `<digits>@pdsb.net` -> **Student** role, student number = `<digits>`
-  - `p<digits>@pdsb.net` -> **Teacher** role (routed to `teacher.html`)
+  - Numeric student ID email -> **Student** role, student number extracted automatically
+  - Staff ID email (`p<digits>`) -> **Teacher** role (routed to `teacher.html`)
 - **Defense-in-Depth Hardening:**
   - Strict Content Security Policy (CSP) on every page with zero inline scripts (`js/pages/*`).
   - Anti-privilege-escalation and atomic `getAfter()` validation in `firestore.rules`, plus immutable checkout audit logs.
@@ -33,7 +33,7 @@ A lightweight, secure, pure HTML/CSS/JS web application for the **PDSB Computer 
 ### 3. Single-Screen Check Out Form (`checkout.html`)
 - **Step 1 — Component Code or Inline QR Scan:** Type an item code, pick from the in-stock dropdown, or open the inline camera QR scanner (`getUserMedia` + `jsQR` / `BarcodeDetector`) with an image upload fallback.
 - **Step 2 — Explicit Class Period (`Period 1`–`Period 4`):** No default pre-selected so every loan is accurately grouped by class period.
-- **Step 3 — Defaults & Confirm:** Auto-filled PDSB ID, default 1-week duration (adjustable 1–30 days) with live due-date preview, and atomic Firestore checkout.
+- **Step 3 — Defaults & Confirm:** Auto-filled school account ID, default 1-week duration (adjustable 1–30 days) with live due-date preview, and atomic Firestore checkout.
 
 ### 4. Teacher Admin Panel (`teacher.html`)
 - Strict teacher role guard (`requireAuth({ requiredRole: "teacher" })`).

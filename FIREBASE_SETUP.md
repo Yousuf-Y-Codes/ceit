@@ -8,7 +8,7 @@ This guide walks you through setting up and securing the Firebase backend for th
 
 1. Navigate to the [Firebase Console](https://console.firebase.google.com/).
 2. Click **Add project** (or **Create a project**).
-3. Name your project (e.g., `ceit-pdsb` or `computer-engineering-tracker`).
+3. Name your project (e.g., `ceit-app` or `computer-engineering-tracker`).
 4. You can disable Google Analytics (not required for this project) to simplify setup, then click **Create project**.
 5. Once your project is ready, click **Continue**.
 
@@ -30,7 +30,7 @@ This guide walks you through setting up and securing the Firebase backend for th
 2. Click **Get Started**.
 3. Under the **Sign-in method** tab:
 
-### A. Enable Google Sign-In (Required for `@pdsb.net`)
+### A. Enable Google Sign-In
 - Click **Google**.
 - Toggle **Enable**.
 - Set the **Project public-facing name** to `CEIT - Computer Engineering`.
@@ -39,7 +39,7 @@ This guide walks you through setting up and securing the Firebase backend for th
 
 ### B. Disable Email / Password (Important Security Step)
 - Ensure **Email/Password** is **DISABLED** (or deleted) under **Sign-in method**.
-- Email/Password sign-up allows creating unverified accounts with arbitrary `@pdsb.net` addresses. Both the client app and `firestore.rules` strictly require verified Google OAuth sessions (`sign_in_provider == 'google.com'` and `email_verified == true`).
+- Email/Password sign-up allows creating unverified accounts with arbitrary school email addresses. Both the client app and `firestore.rules` strictly require verified Google OAuth sessions (`sign_in_provider == 'google.com'` and `email_verified == true`).
 - If any test Email/Password accounts were previously created, delete them under **Authentication -> Users**.
 
 ### C. Configure Authorized Domains
@@ -55,7 +55,7 @@ This guide walks you through setting up and securing the Firebase backend for th
 3. Replace the existing rules with the exact contents of [`firestore.rules`](./firestore.rules) from this repository and click **Publish**.
 
 ### What `firestore.rules` Enforces Server-Side
-- **Google OAuth + Verified `@pdsb.net` Only:** Rejects all non-Google providers, unverified emails, and non-`@pdsb.net` domains.
+- **Google OAuth + Verified School Domain Only:** Rejects all non-Google providers, unverified emails, and unauthorized email domains.
 - **Anti-Privilege-Escalation on `/users/{uid}`:** Students can only read their own profile and can never set `role: "teacher"` or spoof another student's ID/email.
 - **Atomic Stock Integrity on `/items/{itemId}`:** Students can only update `availableQuantity` by exactly `±1` within `[0, totalQuantity]`. Only teachers can create, edit metadata/totals, or delete items.
 - **Tamper-Proof Loans & Audit Trail on `/checkouts/{checkoutId}`:** Student checkouts must match their verified UID, email, student number, valid period (`Period 1`–`Period 4`), duration (1–30 days), and verify atomic stock decrement via `getAfter()`. Students can only transition their own active loan to `returned`. Audit deletions are blocked (`allow delete: if false`).
@@ -65,7 +65,7 @@ This guide walks you through setting up and securing the Firebase backend for th
 
 ## 5. Teacher Whitelist Configuration
 
-In [`js/firebase-config.js`](./js/firebase-config.js), Mr. Kidston's email (`p0161177@pdsb.net`) is whitelisted, and all verified `p<digits>@pdsb.net` Google accounts are automatically recognized as teachers in both client code and `firestore.rules`.
+In [`js/firebase-config.js`](./js/firebase-config.js), initial teacher accounts are whitelisted, and all verified staff (`p<digits>`) school Google accounts are automatically recognized as teachers in both client code and `firestore.rules`.
 
 ---
 
@@ -75,5 +75,5 @@ In [`js/firebase-config.js`](./js/firebase-config.js), Mr. Kidston's email (`p01
    ```bash
    python3 -m http.server 8000
    ```
-2. Sign in with a verified teacher `@pdsb.net` Google account at `http://localhost:8000/`.
+2. Sign in with a verified teacher Google account at `http://localhost:8000/`.
 3. Visit [http://localhost:8000/test-backend.html](http://localhost:8000/test-backend.html) (restricted to teachers only) to verify live inventory creation, atomic checkout, and return transactions.

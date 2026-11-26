@@ -81,7 +81,7 @@ export async function checkOutItem({
 
   const verifiedEmail = (liveAuthUser.email || "").toLowerCase().trim();
   if (!isPdsbEmail(verifiedEmail)) {
-    throw new Error("Only verified @pdsb.net accounts can check out components.");
+    throw new Error("Only verified school accounts can check out components.");
   }
 
   if (!itemId) throw new Error("Item ID is required for checkout.");

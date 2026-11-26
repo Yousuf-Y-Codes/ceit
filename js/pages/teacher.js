@@ -35,6 +35,7 @@ let checkoutHistory = [];
 let activeQrItem = null;
 let pendingConfirmAction = null;
 let activeStatusFilter = "all";
+let isSubmittingGuest = false;
 
 let unsubItems = null;
 let unsubActive = null;
@@ -287,6 +288,7 @@ function renderInventory() {
     guestSelect.appendChild(opt);
   });
   guestSelect.value = prevGuestVal;
+  syncGuestSubmitEnabled();
 
   const filtered = getFilteredInventory();
   const tbody = document.getElementById("inventory-list");
@@ -535,7 +537,32 @@ document.getElementById("edit-item-form").addEventListener("submit", async (e) =
   }
 });
 
-document.getElementById("guest-checkout-form").addEventListener("submit", async (e) => {
+function syncGuestSubmitEnabled() {
+  const btn = document.getElementById("btn-guest-submit");
+  if (!btn) return;
+  if (isSubmittingGuest) {
+    btn.disabled = true;
+    return;
+  }
+  const name = document.getElementById("guest-student-name").value.trim();
+  const num = document.getElementById("guest-student-num").value.trim();
+  const period = document.getElementById("guest-period").value.trim();
+  const durationRaw = document.getElementById("guest-duration").value.trim();
+  const duration = Number.parseInt(durationRaw, 10);
+  const hasValidDuration = /^\d+$/.test(durationRaw) && duration >= 1 && duration <= 30;
+  const itemId = document.getElementById("guest-item-select").value.trim();
+  const selectedItem = itemId ? allItems.find((i) => i.id === itemId) : null;
+  const hasValidItem = Boolean(selectedItem && selectedItem.availableQuantity > 0);
+
+  btn.disabled = !(name && num && period && hasValidDuration && hasValidItem);
+}
+
+const guestCheckoutForm = document.getElementById("guest-checkout-form");
+guestCheckoutForm.addEventListener("input", syncGuestSubmitEnabled);
+guestCheckoutForm.addEventListener("change", syncGuestSubmitEnabled);
+syncGuestSubmitEnabled();
+
+guestCheckoutForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!currentUser) return;
   const period = document.getElementById("guest-period").value;
@@ -544,8 +571,8 @@ document.getElementById("guest-checkout-form").addEventListener("submit", async 
     return;
   }
 
-  const btn = document.getElementById("btn-guest-submit");
-  btn.disabled = true;
+  isSubmittingGuest = true;
+  syncGuestSubmitEnabled();
 
   try {
     const res = await guestCheckOutItem({
@@ -560,12 +587,13 @@ document.getElementById("guest-checkout-form").addEventListener("submit", async 
     });
 
     showToast(`Recorded guest sign-out for "${res.item.name}" (${period})`, "success");
-    document.getElementById("guest-checkout-form").reset();
+    guestCheckoutForm.reset();
     document.getElementById("guest-duration").value = "7";
   } catch (err) {
     showToast("Guest sign-out failed: " + err.message, "warn");
   } finally {
-    btn.disabled = false;
+    isSubmittingGuest = false;
+    syncGuestSubmitEnabled();
   }
 });
 

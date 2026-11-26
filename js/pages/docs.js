@@ -73,7 +73,7 @@ observeAuthState((user) => {
   userNameEl.textContent = name;
   userIdEl.textContent = sNum
     ? `#${sNum}`
-    : (user.email || "").split("@")[0] || "PDSB";
+    : (user.email || "").split("@")[0] || "User";
   headerUser.style.display = "flex";
 });
 

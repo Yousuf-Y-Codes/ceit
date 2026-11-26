@@ -969,6 +969,17 @@ tbody tr:last-child td {
   box-shadow: var(--shadow-key-accent);
 }
 
+.btn-primary:disabled,
+.btn-primary[aria-disabled="true"],
+.btn-google:disabled,
+.btn-google[aria-disabled="true"] {
+  background: var(--color-paper-3);
+  border-color: var(--color-rule-2);
+  color: var(--color-muted);
+  box-shadow: none;
+  opacity: 0.85;
+}
+
 .btn-primary:hover:not(:disabled),
 .btn-google:hover:not(:disabled) {
   background: var(--color-accent-hover);

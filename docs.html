@@ -35,7 +35,7 @@
     <div class="header-user" id="docs-header-user" style="display: none;">
       <span class="user-pill">
         <strong id="docs-user-name">User</strong>
-        <span class="user-pill-id" id="docs-user-id">PDSB</span>
+        <span class="user-pill-id" id="docs-user-id">ID</span>
       </span>
       <button type="button" id="btn-logout" class="btn-nav-signout">Sign Out</button>
     </div>
@@ -44,10 +44,7 @@
 
 <main class="page-wrapper">
   <div class="page-header">
-    <div>
-      <h1>CEIT User Documentation</h1>
-      <p>Instructions for students and teachers using the Computer Engineering Item Tracker.</p>
-    </div>
+    <h1>CEIT User Documentation</h1>
     <a href="index.html" class="btn btn-primary" id="cta-portal">Open CEIT Portal</a>
   </div>
 
@@ -57,7 +54,7 @@
       <h2>Contents</h2>
       <ul class="docs-nav">
         <li><a href="#overview">1. Overview</a></li>
-        <li><a href="#login">2. Signing In (@pdsb.net)</a></li>
+        <li><a href="#login">2. Signing In</a></li>
         <li><a href="#student-dashboard">3. Student Dashboard</a></li>
         <li><a href="#checkout-page">4. Check Out Form</a></li>
         <li><a href="#teacher-panel">5. Teacher Active Loans</a></li>
@@ -72,7 +69,6 @@
       <section id="overview" class="docs-section">
         <div class="docs-section-head">
           <h2>1. Project Overview</h2>
-          <span class="badge badge-accent">PDSB Computer Engineering</span>
         </div>
         <p>
           The <strong>Computer Engineering Item Tracker (CEIT)</strong> is a lightweight web app built for
@@ -80,7 +76,7 @@
           JavaScript, and Firebase with zero external frameworks.
         </p>
         <ul>
-          <li><strong>Students</strong> sign in with their verified <code>@pdsb.net</code> Google account, scan a QR label or type a code, choose their class period (Period 1 to 4), and track due dates.</li>
+          <li><strong>Students</strong> sign in with their verified school Google account, scan a QR label or type a code, choose their class period (Period 1 to 4), and track due dates.</li>
           <li><strong>Teachers</strong> filter active loans by Period 1 to 4 or overdue status, manage stock, print QR bin label sheets, record guest loans, and export audit CSVs.</li>
         </ul>
       </section>
@@ -89,18 +85,18 @@
         <div class="docs-section-head">
           <h2>2. Signing In &amp; Role Routing (<code>index.html</code>)</h2>
         </div>
-        <h3>Google OAuth Only (@pdsb.net)</h3>
+        <h3>Google OAuth Only</h3>
         <p>
-          Click <strong>Sign In with Google</strong> and select your verified Peel District School Board
-          (<code>@pdsb.net</code>) Google account. Password-based sign-in is disabled to prevent unverified email
+          Click <strong>Sign In with Google</strong> and select your verified school Google account.
+          Password-based sign-in is disabled to prevent unverified email
           impersonation. If a student cannot sign in on a lab computer, teachers can record the loan using
           <strong>Guest Sign-Out</strong> in the Teacher Panel.
         </p>
         <h3>Automatic Role &amp; Student Number Detection</h3>
         <ul>
-          <li><strong>Students (<code>&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>student</code> role with their student number extracted from the verified Google email and routed to <code>dashboard.html</code>.</li>
-          <li><strong>Teachers (<code>p&lt;digits&gt;@pdsb.net</code>):</strong> Automatically assigned the <code>teacher</code> role (e.g. <code>p0161177@pdsb.net</code>) and routed to <code>teacher.html</code>.</li>
-          <li>Non-<code>@pdsb.net</code> accounts and non-Google sessions are strictly blocked in both the app and Cloud Firestore security rules.</li>
+          <li><strong>Students (numeric student ID):</strong> Automatically assigned the <code>student</code> role with their student number extracted from the verified Google email and routed to <code>dashboard.html</code>.</li>
+          <li><strong>Teachers (staff ID):</strong> Automatically assigned the <code>teacher</code> role and routed to <code>teacher.html</code>.</li>
+          <li>Unauthorized accounts and non-Google sessions are strictly blocked in both the app and Cloud Firestore security rules.</li>
         </ul>
       </section>
 
@@ -138,7 +134,7 @@
         <ul>
           <li><strong>Period Filter:</strong> Use the Period dropdown (<code>All Periods</code>, <code>Period 1</code> to <code>Period 4</code>) to view only the students in your current class.</li>
           <li><strong>Overdue Attention Banner &amp; Filter Chips:</strong> Immediately spot overdue loans and filter by <strong>Overdue</strong>, <strong>Due Soon</strong>, or <strong>Guest</strong>.</li>
-          <li><strong>Check In &amp; Email Reminders:</strong> Return components back into stock with one click or open a pre-filled <code>mailto:</code> reminder to the student’s <code>@pdsb.net</code> address.</li>
+          <li><strong>Check In &amp; Email Reminders:</strong> Return components back into stock with one click or open a pre-filled <code>mailto:</code> reminder to the student’s school email address.</li>
         </ul>
       </section>
 
@@ -163,7 +159,7 @@
         <p>
           <strong>Guest Sign-Out:</strong> If a student forgot their device or cannot sign in during class, record a loan
           under the <strong>Guest Sign-Out</strong> tab using their name, student number, class period (Period 1 to 4), component,
-          and duration. Entering a student’s numeric ID automatically links <code>&lt;number&gt;@pdsb.net</code> so you can still
+          and duration. Entering a student’s numeric ID automatically links their school email address so you can still
           send one-click email reminders, and the loan appears in <em>Active Sign-Outs</em> with a <code>Guest</code> badge.
         </p>
         <p>
@@ -178,7 +174,7 @@
         </div>
         <ul>
           <li><strong>Shared Lab Computer Safety:</strong> Sessions automatically expire when the browser tab is closed or after 30 minutes of inactivity.</li>
-          <li><strong>Email rejected:</strong> Only verified <code>@pdsb.net</code> Google accounts are permitted.</li>
+          <li><strong>Email rejected:</strong> Only verified school Google accounts are permitted.</li>
           <li><strong>Camera won’t start:</strong> Open CEIT over HTTPS (<code>https://ceit.site</code>), grant browser camera permission, or type the code or upload a QR photo instead.</li>
           <li><strong>Teacher backend diagnostics:</strong> Teachers can visit <a href="test-backend.html">Backend Diagnostics</a> to test live Firebase auth and Firestore operations.</li>
         </ul>

@@ -43,10 +43,7 @@
 
 <main class="page-wrapper">
   <div class="page-header">
-    <div>
-      <h1>Teacher Admin Panel</h1>
-      <p>Live hardware loans, inventory stock, printable QR bin sheets, and audit history.</p>
-    </div>
+    <h1>Teacher Admin Panel</h1>
     <div class="btn-row">
       <button type="button" id="btn-print-all-top" class="btn btn-primary">Print All QR Labels</button>
       <button type="button" id="btn-export-csv-top" class="btn btn-ghost">Export CSV</button>
@@ -257,7 +254,7 @@
               </div>
               <div class="form-group">
                 <label for="guest-student-email">Email (optional)</label>
-                <input type="email" id="guest-student-email" placeholder="Auto: number@pdsb.net" maxlength="120">
+                <input type="email" id="guest-student-email" placeholder="Auto-filled from student #" maxlength="120">
               </div>
             </div>
             <div class="grid-2">
@@ -286,7 +283,7 @@
               <label for="guest-notes">Note (optional)</label>
               <input type="text" id="guest-notes" placeholder="Optional note" maxlength="300">
             </div>
-            <button type="submit" id="btn-guest-submit" class="btn btn-primary btn-block btn-lg">
+            <button type="submit" id="btn-guest-submit" class="btn btn-primary btn-block btn-lg" disabled>
               Record Guest Sign-Out
             </button>
           </form>
@@ -298,7 +295,7 @@
         <dl>
           <div>
             <dt>Automatic school email link</dt>
-            <dd>Leaving Email blank automatically links <code>&lt;studentNumber&gt;@pdsb.net</code> so one-click return reminders still work.</dd>
+            <dd>Leaving Email blank automatically links the student's school email address so one-click return reminders still work.</dd>
           </div>
           <div>
             <dt>Tracked under Active Sign-Outs</dt>

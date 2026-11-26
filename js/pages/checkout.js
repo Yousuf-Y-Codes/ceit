@@ -64,9 +64,20 @@ function showSuccess(msg) {
   successBox.style.display = "block";
 }
 
+function hasValidDuration() {
+  if (selectedDurationMode === "custom") {
+    const raw = customDaysInput.value.trim();
+    const val = Number.parseInt(raw, 10);
+    return /^\d+$/.test(raw) && val >= 1 && val <= 30;
+  }
+  const val = Number.parseInt(selectedDurationMode, 10);
+  return Number.isInteger(val) && val >= 1 && val <= 30;
+}
+
 function syncConfirmEnabled() {
   const hasStock = Boolean(foundItem && foundItem.availableQuantity > 0);
-  confirmBtn.disabled = !hasStock;
+  const hasPeriod = Boolean(selectedPeriod);
+  confirmBtn.disabled = !(hasStock && hasPeriod && hasValidDuration());
 }
 
 function getSelectedDurationDays() {
@@ -92,6 +103,7 @@ document.querySelectorAll("#period-chips .chip-btn").forEach((chip) => {
     periodBadge.className = "badge badge-success";
     periodBadge.textContent = selectedPeriod;
     showAlert("");
+    syncConfirmEnabled();
   });
 });
 
@@ -103,10 +115,15 @@ document.querySelectorAll("#duration-chips .chip-btn").forEach((chip) => {
     selectedDurationMode = chip.dataset.days;
     customDaysGroup.style.display = selectedDurationMode === "custom" ? "block" : "none";
     updateDueDatePreview();
+    syncConfirmEnabled();
   });
 });
-customDaysInput.addEventListener("input", updateDueDatePreview);
+customDaysInput.addEventListener("input", () => {
+  updateDueDatePreview();
+  syncConfirmEnabled();
+});
 updateDueDatePreview();
+syncConfirmEnabled();
 
 // Inline QR Drawer Toggle
 document.getElementById("btn-toggle-qr").addEventListener("click", () => {
@@ -180,7 +197,17 @@ codeInput.addEventListener("keydown", (e) => {
   }
 });
 quickSelect.addEventListener("change", () => {
-  if (quickSelect.value) lookupCode(quickSelect.value);
+  if (quickSelect.value) {
+    lookupCode(quickSelect.value);
+  } else {
+    foundItem = null;
+    codeInput.value = "";
+    previewBox.style.display = "none";
+    previewBadge.className = "badge badge-neutral";
+    previewBadge.textContent = "Not selected";
+    showAlert("");
+    syncConfirmEnabled();
+  }
 });
 
 // QR Scanning
@@ -387,8 +414,8 @@ document.getElementById("checkout-form").addEventListener("submit", async (e) =>
     window.location.href = "dashboard.html";
   } catch (err) {
     showAlert(err.message);
-    confirmBtn.disabled = false;
     confirmBtn.textContent = "Confirm Sign Out";
+    syncConfirmEnabled();
   }
 });
 
@@ -399,11 +426,11 @@ requireAuth({
     currentUser = user;
     const name = user.displayName || user.profile?.displayName || "Student";
     const sNum = extractStudentNumberFromEmail(user.email);
-    const pdsbId = sNum || (user.email ? user.email.split("@")[0] : "N/A");
+    const accountId = sNum || (user.email ? user.email.split("@")[0] : "N/A");
 
     document.getElementById("student-name").textContent = name;
-    document.getElementById("student-number-pill").textContent = sNum ? `#${sNum}` : pdsbId;
-    studentNumInput.value = pdsbId;
+    document.getElementById("student-number-pill").textContent = sNum ? `#${sNum}` : accountId;
+    studentNumInput.value = accountId;
 
     if (user.profile?.role === "teacher") {
       document.getElementById("nav-teacher-link").style.display = "inline-block";
@@ -422,6 +449,23 @@ requireAuth({
         quickSelect.appendChild(opt);
       });
       quickSelect.value = prev;
+
+      if (foundItem) {
+        const updated = items.find((i) => i.id === foundItem.id);
+        if (updated) {
+          foundItem = updated;
+          document.getElementById("prev-avail-text").textContent =
+            `${updated.availableQuantity} of ${updated.totalQuantity} available`;
+          if (updated.availableQuantity > 0) {
+            previewBadge.className = "badge badge-success";
+            previewBadge.textContent = "In Stock";
+          } else {
+            previewBadge.className = "badge badge-danger";
+            previewBadge.textContent = "Out of Stock";
+          }
+          syncConfirmEnabled();
+        }
+      }
     });
 
     const urlCode = new URLSearchParams(window.location.search).get("code");

@@ -72,7 +72,7 @@ function renderStudentHeader() {
     ? `#${sNum}`
     : isTeacher
       ? (currentUser.email || "").split("@")[0]
-      : "PDSB";
+      : "User";
 }
 
 function renderStatusBadge(status) {

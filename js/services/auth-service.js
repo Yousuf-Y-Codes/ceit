@@ -178,7 +178,7 @@ async function verifyGooglePdsbSession(firebaseUser) {
   if (!isPdsbEmail(email)) {
     return {
       ok: false,
-      reason: `Access restricted: Only Peel District School Board (@pdsb.net) Google accounts are allowed.${email ? ` You used: ${email}` : ""}`
+      reason: `Access restricted: Only verified school Google accounts are allowed.${email ? ` You used: ${email}` : ""}`
     };
   }
 
@@ -196,7 +196,7 @@ async function verifyGooglePdsbSession(firebaseUser) {
   if (!hasGoogleProvider) {
     return {
       ok: false,
-      reason: "Password sign-in has been disabled. Please sign in with your @pdsb.net Google account."
+      reason: "Password sign-in has been disabled. Please sign in with your school Google account."
     };
   }
 
@@ -205,7 +205,7 @@ async function verifyGooglePdsbSession(firebaseUser) {
     if (tokenResult.signInProvider !== "google.com") {
       return {
         ok: false,
-        reason: "Password sign-in has been disabled. Please sign in with your @pdsb.net Google account."
+        reason: "Password sign-in has been disabled. Please sign in with your school Google account."
       };
     }
     if (tokenResult.claims && tokenResult.claims.email_verified !== true) {
