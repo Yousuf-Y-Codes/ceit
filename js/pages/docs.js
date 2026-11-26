@@ -18,7 +18,6 @@ const navCheckout = document.getElementById("nav-checkout");
 const headerUser = document.getElementById("docs-header-user");
 const userNameEl = document.getElementById("docs-user-name");
 const userIdEl = document.getElementById("docs-user-id");
-const cta = document.getElementById("cta-portal");
 const brandLink = document.getElementById("brand-home-link");
 
 function applyNavLayout(role) {
@@ -29,8 +28,6 @@ function applyNavLayout(role) {
     navDash.textContent = "Student View";
     navCheckout.style.display = "inline-block";
     brandLink.href = "teacher.html";
-    cta.href = "teacher.html";
-    cta.textContent = "Go to Teacher Panel";
   } else if (role === "student") {
     navHome.style.display = "none";
     navTeacher.style.display = "none";
@@ -38,8 +35,6 @@ function applyNavLayout(role) {
     navDash.textContent = "Dashboard";
     navCheckout.style.display = "inline-block";
     brandLink.href = "dashboard.html";
-    cta.href = "dashboard.html";
-    cta.textContent = "Go to Student Dashboard";
   } else {
     navHome.style.display = "inline-block";
     navTeacher.style.display = "none";
@@ -47,8 +42,6 @@ function applyNavLayout(role) {
     navCheckout.style.display = "none";
     headerUser.style.display = "none";
     brandLink.href = "index.html";
-    cta.href = "index.html";
-    cta.textContent = "Open CEIT Portal";
   }
 }
 

@@ -45,7 +45,6 @@
 <main class="page-wrapper">
   <div class="page-header">
     <h1>CEIT User Documentation</h1>
-    <a href="index.html" class="btn btn-primary" id="cta-portal">Open CEIT Portal</a>
   </div>
 
   <div class="manual-grid">
@@ -72,8 +71,7 @@
         </div>
         <p>
           The <strong>Computer Engineering Item Tracker (CEIT)</strong> is a lightweight web app built for
-          Mr. Kidston’s Computer Engineering lab. It tracks Arduinos, sensors, cables, and tools using pure HTML, CSS,
-          JavaScript, and Firebase with zero external frameworks.
+          Mr. Kidston’s Computer Engineering lab to track Arduinos, sensors, cables, and tools.
         </p>
         <ul>
           <li><strong>Students</strong> sign in with their verified school Google account, scan a QR label or type a code, choose their class period (Period 1 to 4), and track due dates.</li>
@@ -85,7 +83,7 @@
         <div class="docs-section-head">
           <h2>2. Signing In &amp; Role Routing (<code>index.html</code>)</h2>
         </div>
-        <h3>Google OAuth Only</h3>
+        <h3>Google Sign-In Only</h3>
         <p>
           Click <strong>Sign In with Google</strong> and select your verified school Google account.
           Password-based sign-in is disabled to prevent unverified email
@@ -96,7 +94,7 @@
         <ul>
           <li><strong>Students (numeric student ID):</strong> Automatically assigned the <code>student</code> role with their student number extracted from the verified Google email and routed to <code>dashboard.html</code>.</li>
           <li><strong>Teachers (staff ID):</strong> Automatically assigned the <code>teacher</code> role and routed to <code>teacher.html</code>.</li>
-          <li>Unauthorized accounts and non-Google sessions are strictly blocked in both the app and Cloud Firestore security rules.</li>
+          <li>Unauthorized accounts and non-Google sessions are automatically blocked.</li>
         </ul>
       </section>
 
@@ -176,7 +174,6 @@
           <li><strong>Shared Lab Computer Safety:</strong> Sessions automatically expire when the browser tab is closed or after 30 minutes of inactivity.</li>
           <li><strong>Email rejected:</strong> Only verified school Google accounts are permitted.</li>
           <li><strong>Camera won’t start:</strong> Open CEIT over HTTPS (<code>https://ceit.site</code>), grant browser camera permission, or type the code or upload a QR photo instead.</li>
-          <li><strong>Teacher backend diagnostics:</strong> Teachers can visit <a href="test-backend.html">Backend Diagnostics</a> to test live Firebase auth and Firestore operations.</li>
         </ul>
       </section>
 
